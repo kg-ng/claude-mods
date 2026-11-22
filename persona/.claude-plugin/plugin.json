@@ -1,6 +1,6 @@
 {
   "name": "persona",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Personas for the Claude Code terminal: replies, tool rows, spinner words and terminal colours in an editor theme or one you make. /persona to pick.",
   "author": {
     "name": "kg-ng",

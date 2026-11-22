@@ -15,7 +15,7 @@ Restart Claude Code, then type `/persona` to pick one.
 
 | Part | What you see |
 |---|---|
-| Replies | Headings, bold, inline code, links, lists, task ticks, `> [!NOTE]` boxes, tables and highlighted code blocks in the persona's colours |
+| Replies | Headings, bold, inline code, links, lists, task ticks, `> [!NOTE]` boxes, tables and highlighted code blocks in the persona's colours. Code blocks have a **copy** button, and no side border, so selecting the lines copies just the code |
 | Tool rows | A coloured icon per kind: ◇ read, ✎ edit, ▶ shell, ⌕ search, ◎ web, ◆ MCP; amber while running, red on failure |
 | Spinner and footer | The persona's words: `Brooding…`, `Risen for 12s` |
 | Band | The persona's name and swatches above the prompt |

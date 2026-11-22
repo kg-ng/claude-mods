@@ -1,7 +1,10 @@
 import type { Palette } from './themes'
 
-/** The two elements the renderer draws with, from `$.ui.resolve(e)`. */
-type El = { Box: any; Text: any }
+/** The elements the renderer draws with, from `$.ui.resolve(e)`. `Button` is optional: without it, no copy buttons. */
+type El = { Box: any; Text: any; Button?: any }
+
+/** What a code block's copy button does: copy `text`, the block's lines as written. */
+export type CopyCode = (text: string, press: any) => unknown
 
 type Block =
   | { kind: 'heading'; level: number; text: string }
@@ -208,8 +211,8 @@ export function wrapCell(src: string, width: number): string[] {
   })
 }
 
-export function renderMarkdown(t: El, p: Palette, src: string, columns: number): any {
-  const { Box, Text } = t
+export function renderMarkdown(t: El, p: Palette, src: string, columns: number, copy?: CopyCode): any {
+  const { Box, Text, Button } = t
   const blocks = parse(src)
   const width = Math.max(20, columns)
   const parts: any[] = []
@@ -271,10 +274,19 @@ export function renderMarkdown(t: El, p: Palette, src: string, columns: number):
       }
       case 'code': {
         const isDiff = /^(diff|patch)$/i.test(b.lang)
+        // Rules above and below only, and no indent: selecting the lines copies the code
+        // and nothing else (a side border would come along on every line).
+        const rule = '─'.repeat(Math.max(4, Math.min(width - 12, Math.max(0, ...b.lines.map(l => l.length)))))
         parts.push(
-          <Box flexDirection="column" borderStyle="round" borderColor={p.muted} paddingX={1} {...gap}>
-            {b.lang && <Text color={p.muted} italic>{b.lang}</Text>}
+          <Box flexDirection="column" {...gap}>
+            <Box flexDirection="row" gap={1}>
+              <Text color={p.muted}>{`──${b.lang ? ` ${b.lang}` : ''}`}</Text>
+              {copy && Button && (
+                <Button key={`copy-${n}`} plain label="copy" onPress={(press: any) => copy(b.lines.join('\n'), press)} />
+              )}
+            </Box>
             {b.lines.map(l => (isDiff ? diffLine(t, p, l) : <Text>{highlight(t, p, l, b.lang)}</Text>))}
+            <Text color={p.muted}>{rule}</Text>
           </Box>,
         )
         break
