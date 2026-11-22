@@ -1,14 +1,15 @@
 # persona
 
-Give your Claude Code terminal a persona: Claude's replies, tool rows, spinner words and the terminal's own colours (all 16, plus background, text and cursor), all in one editor theme. Pick from ten built-ins, or make your own and share it as a file.
+Give your Claude Code terminal a persona: Claude's replies, tool rows, spinner words and the terminal's own colours (all 16, plus background, text and cursor), all in one editor theme. Pick from 24 built-ins, or make your own and share it as a file.
 
 ## Install
 
-```
-/plugin install persona --marketplace <owner>/<repo>
+```sh
+claude plugin marketplace add kg-ng/claude-mods
+claude plugin install persona@claude-mods
 ```
 
-Answer `y` to add the marketplace, then pick a scope. Type `/persona` to pick one.
+Restart Claude Code, then type `/persona` to pick one.
 
 ## What it changes
 
@@ -20,7 +21,9 @@ Answer `y` to add the marketplace, then pick a scope. Type `/persona` to pick on
 | Band | The persona's name and swatches above the prompt |
 | Terminal colours | The 16 ANSI colours, background, text and cursor of the terminal running Claude Code. Apple Terminal: a `Persona <name>` profile built from your current one (font and window kept). iTerm2, Windows Terminal, kitty, WezTerm, Ghostty, Alacritty, VS Code, GNOME, xterm: standard OSC colour codes. `/persona terminal off` puts your own back |
 
-Built-ins: `tokyo-night`, `dracula`, `catppuccin`, `rose-pine`, `nord`, `gruvbox`, `kanagawa`, `everforest`, `one-dark`, `noir`.
+Built-ins (24): `tokyo-night`, `dracula`, `catppuccin`, `rose-pine`, `nord`, `gruvbox`, `kanagawa`, `everforest`, `one-dark`, `solarized-dark`, `monokai`, `github-dark`, `ayu-mirage`, `night-owl`, `palenight`, `synthwave`, `horizon`, `cobalt`, `iceberg`, `ember`, `deep-forest`, `solarized-light`, `paper`, `noir`.
+
+![The 24 built-in personas](../docs/images/personas.svg)
 
 ## Commands
 

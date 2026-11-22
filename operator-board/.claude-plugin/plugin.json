@@ -2,5 +2,11 @@
   "name": "operator-board",
   "version": "0.9.0",
   "description": "Session board (recent asks, needs reply, pending), live PR status and searchable recall of past questions and answers.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
   "types": "./types/index.d.ts"
 }

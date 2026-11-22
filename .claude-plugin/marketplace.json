@@ -1,8 +1,18 @@
 {
   "name": "claude-mods",
-  "owner": { "name": "local" },
+  "description": "Claude Code mods: operator-board (a side pane for running sessions) and persona (terminal themes).",
+  "owner": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
   "plugins": [
-    { "name": "operator-board", "source": "./operator-board" },
-    { "name": "persona", "source": "./persona" }
+    {
+      "name": "operator-board",
+      "source": "./operator-board"
+    },
+    {
+      "name": "persona",
+      "source": "./persona"
+    }
   ]
 }

@@ -2,6 +2,11 @@
   "name": "persona",
   "version": "0.6.1",
   "description": "Personas for the Claude Code terminal: replies, tool rows, spinner words and terminal colours in an editor theme or one you make. /persona to pick.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
   "license": "MIT",
   "types": "./types/index.d.ts",
   "userConfig": {
