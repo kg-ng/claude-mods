@@ -180,13 +180,13 @@ test('secondary text uses the persona muted colour', async ($, on) => {
   await ui.unmount()
 })
 
-test('the operator pane opens on session start, asking for a right-hand dock width', async ($, on) => {
+test('the operator pane opens on session start, sized to the terminal rather than a fixed width', async ($, on) => {
   const opens: any[] = []
   engine(on, opens)
   await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
   const board = opens.find(o => o.id === 'operator')
   expect(board).toBeDefined()
-  expect(board.columns).toBe(48)
+  expect(board.columns).toBeUndefined()
 })
 
 test('sections start folded, open when clicked, and fold again', async ($, on) => {

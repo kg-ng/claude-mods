@@ -56,7 +56,6 @@ const ANSWER_CAP = 4000
 const STALE_MS = 24 * 60 * 60 * 1000
 const PR_EVERY_MS = 3 * 60 * 1000
 // Width asked for when the pane docks to the right of a fullscreen transcript.
-const DOCK_COLUMNS = 48
 
 // One pane holds every section; each section folds open or closed.
 const PANE = { id: 'operator', title: 'operator' } as const
@@ -367,7 +366,9 @@ const shellQuote = (v: string) => `'${v.replace(/'/g, `'\\''`)}'`
 const isPaneOpen = async ($: $T) => (await $.ui.panes()).some(p => p.id === PANE.id && p.isPlaced)
 
 async function openPane($: $T) {
-  const opened = await $.ui.open({ id: PANE.id, title: PANE.title, columns: DOCK_COLUMNS })
+  // No fixed width: the dock takes Claude Code's share of the terminal and follows it as the
+  // terminal resizes; a width the person drags or keys the dock to wins and is kept.
+  const opened = await $.ui.open({ id: PANE.id, title: PANE.title })
   measurePane($, 'start')
   return opened
 }
