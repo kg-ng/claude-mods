@@ -31,6 +31,8 @@ const written: any[] = []
 const submitted: string[] = []
 let gitFixture: Record<string, string> | null = null
 let usageFixture: any = null
+let panesFixture: any[] = []
+const closes: any[] = []
 
 function engine(on: any, opens: any[] = []) {
   on('session.id', () => ({ value: 'me' }))
@@ -41,7 +43,8 @@ function engine(on: any, opens: any[] = []) {
     return { value: { isSent: true, channel: 'iterm2' } }
   })
   on('ui.copy', () => ({ value: { isCopied: true } }))
-  on('ui.panes', () => ({ value: [] }))
+  on('ui.panes', () => ({ value: panesFixture }))
+  on('ui.close', (_: unknown, e: any) => (closes.push(e), { value: undefined }))
   on('fs.write', (_: unknown, e: any) => {
     written.push(e)
     return { value: undefined }
@@ -545,4 +548,22 @@ test('the pane draws a scrollbar pinned to its window once it is taller than the
   ui = await $.ui.mount(at(0))
   expect(await ui.find({ key: 'pane-scrollbar' })).toBeUndefined()
   await ui.unmount()
+})
+
+test('/operator shows a pane that waits undrawn (narrow terminal) instead of closing it', async ($, on) => {
+  const opens: any[] = []
+  engine(on, opens)
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  // Opened at session start on a narrow terminal: open, but not drawn.
+  panesFixture = [{ id: 'operator', title: 'operator', isPlaced: false }]
+  const before = opens.length
+  const r1 = await $.command.run({ command: 'operator', args: '' } as any)
+  expect(r1.text).toBe('Opened the operator pane.')
+  expect(opens.length).toBe(before + 1)
+  // Drawn: /operator closes it.
+  panesFixture = [{ id: 'operator', title: 'operator', isPlaced: true }]
+  const r2 = await $.command.run({ command: 'operator', args: '' } as any)
+  expect(r2.text).toBe('Closed the operator pane.')
+  expect(closes.at(-1)?.id).toBe('operator')
+  panesFixture = []
 })
