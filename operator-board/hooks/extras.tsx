@@ -482,6 +482,8 @@ export async function quickBody($: $T, e: any, L: Look) {
 // ---------- 4. git ----------
 
 let gitBusy = false
+export const GIT_REVIEW_PROMPT = '/code-review'
+export const GIT_COMMIT_PROMPT = 'Commit the current changes with a clear message (branch first if on main).'
 
 export async function refreshGit($: $T) {
   if (gitBusy) return
@@ -576,12 +578,68 @@ export async function gitBody($: $T, e: any, L: Look) {
       )}
       {g.last && <Text wrap="truncate-end">last: {g.last}</Text>}
       {g.error && <Text color={L.err}>{g.error}</Text>}
+      {(g.changed ?? 0) > 0 && (
+        <Box flexDirection="row" gap={2}>
+          <Button
+            key="git-review"
+            plain
+            variant="primary"
+            label="review"
+            onPress={() => $.prompt.fill({ text: GIT_REVIEW_PROMPT, mode: 'replace' })}
+          />
+          <Button
+            key="git-commit"
+            plain
+            label="commit"
+            onPress={() => $.prompt.fill({ text: GIT_COMMIT_PROMPT, mode: 'replace' })}
+          />
+        </Box>
+      )}
       <Box flexDirection="row" gap={2}>
         <Text {...dim(L)}>updated {hhmm(g.updatedAt)}</Text>
         <Button key="git-refresh" plain label="refresh" onPress={() => refreshGit($)} />
       </Box>
     </Box>
   )
+}
+
+// ---------- folded-header summaries ----------
+
+/** One line for the Git header: ` · main · 3 changed · ↑2`. */
+export async function gitSummary($: $T): Promise<string> {
+  const g = await read($, git)
+  if (!g.updatedAt || g.isRepo === false) return ''
+  const parts = [g.branch || '(no branch)', g.changed ? `${g.changed} changed` : 'clean']
+  if (!g.upstream) parts.push('not pushed')
+  else {
+    if (g.ahead) parts.push(`↑${g.ahead}`)
+    if (g.behind) parts.push(`↓${g.behind}`)
+  }
+  return ` · ${parts.join(' · ')}`
+}
+
+/** One line for the Usage header: ` · ctx 42% · 5h 30% · $1.20`. */
+export async function usageSummary($: $T): Promise<string> {
+  const u = await read($, usage)
+  const parts: string[] = []
+  if (u.contextPct !== undefined) parts.push(`ctx ${Math.round(u.contextPct)}%`)
+  if (u.fiveHour) parts.push(`5h ${Math.round(u.fiveHour.pct)}%`)
+  if (u.sevenDay) parts.push(`wk ${Math.round(u.sevenDay.pct)}%`)
+  if (u.costUsd !== undefined) parts.push(`$${u.costUsd.toFixed(2)}`)
+  return parts.length ? ` · ${parts.join(' · ')}` : ''
+}
+
+/** Highest 5-hour or weekly reading against the limits: 'stop', 'warn' or ''. */
+export async function usageLevel($: $T): Promise<'stop' | 'warn' | ''> {
+  const u = await read($, usage)
+  const lim = await read($, usageLimits)
+  const top = Math.max(u.fiveHour?.pct ?? 0, u.sevenDay?.pct ?? 0)
+  return top >= lim.stop ? 'stop' : top >= lim.warn ? 'warn' : ''
+}
+
+export async function quickSummary($: $T): Promise<string> {
+  const n = (await read($, quick)).length
+  return n ? ` (${n})` : ''
 }
 
 /** Why usage says autopilot should stop: a window at or past the warn line. */

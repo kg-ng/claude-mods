@@ -443,3 +443,35 @@ test('times can switch between 24-hour and 12-hour', async ($, on) => {
   await ui.unmount()
   usageFixture = null
 })
+
+test('folded headers summarise git, and git review fills the prompt', async ($, on) => {
+  gitFixture = {
+    status: ['# branch.head feature/x', '# branch.upstream origin/feature/x', '# branch.ab +2 -0', '? notes.md'].join('\n'),
+    log: 'abc1234 Add the thing (2 hours ago)',
+  }
+  const fills: any[] = []
+  engine(on)
+  on('prompt.fill', (_: unknown, e: any) => {
+    fills.push(e)
+    return { isFilled: true }
+  })
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.turn.complete({ answer: 'ok', durationMs: 1, isAborted: false, turnId: 't', reason: 'answer' } as any)
+  const ui = await $.ui.mount({ ...pane('operator', 'operator'), surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: /▸ Git · feature\/x · 1 changed · ↑2/ })).toBeDefined()
+  await ui.press({ key: 'sec-git' })
+  await ui.press({ key: 'git-review' })
+  expect(fills.at(-1)?.text).toBe('/code-review')
+  await ui.unmount()
+  gitFixture = null
+})
+
+test('needs reply comes before recent asks on the board', async ($, on) => {
+  engine(on)
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  const ui = await $.ui.mount({ ...pane('operator', 'operator'), surface: 'terminal' })
+  await openAll(ui)
+  const tree = JSON.stringify(await ui.find({ key: 'section-board' }))
+  expect(tree.indexOf('Needs reply')).toBeLessThan(tree.indexOf('Recent asks'))
+  await ui.unmount()
+})

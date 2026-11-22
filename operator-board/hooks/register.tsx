@@ -13,6 +13,10 @@ import {
   toggleAlerts,
   alert,
   gitBody,
+  gitSummary,
+  quickSummary,
+  usageLevel,
+  usageSummary,
   latestFor,
   loadCheckpoints,
   loadQuick,
@@ -588,39 +592,6 @@ async function boardBody($: $T, e: any) {
         />
       </Box>
       <Box flexDirection="column">
-        <Text color={L.accent} bold>
-          Recent asks
-        </Text>
-        <Text wrap="truncate-end" color={L.fg} bold>
-          ◆ This session{thisName ? ` · ${oneLine(thisName, 60)}` : ''}
-        </Text>
-        {recent.length === 0 && <Text {...dim(L)}>  Nothing asked yet.</Text>}
-        {recent.map(a => (
-          <Text wrap="truncate-end" dimColor={a.answer !== undefined}>
-            {'  '}
-            {a.answer === undefined ? '… ' : ''}
-            {oneLine(a.question, 200)}
-          </Text>
-        ))}
-        {others.map(r => (
-          <Box flexDirection="column" marginTop={1} key={`asks-${r.id}`}>
-            <Text wrap="truncate-end">
-              <Text color={L.accent} bold>
-                ◇ {oneLine(r.name || '(unnamed session)', 60)}
-              </Text>
-              <Text {...dim(L)}> · {hhmm(r.at)}{r.project !== cwd ? ` · ${home && r.project.startsWith(home) ? `~${r.project.slice(home.length)}` : r.project}` : ''}</Text>
-            </Text>
-            {r.recent.map(q => (
-              <Text wrap="truncate-end" {...dim(L)}>
-                {'  '}
-                {q}
-              </Text>
-            ))}
-          </Box>
-        ))}
-      </Box>
-
-      <Box flexDirection="column">
         <Box flexDirection="row" gap={2}>
           <Text color={L.accent} bold>
             Needs reply ({replies.length})
@@ -681,9 +652,59 @@ async function boardBody($: $T, e: any) {
         )
       })}
       {pending.length === 0 && <Text {...dim(L)}>No pending items.</Text>}
+      <Box flexDirection="column">
+        <Text color={L.accent} bold>
+          Recent asks
+        </Text>
+        <Text wrap="truncate-end" color={L.fg} bold>
+          ◆ This session{thisName ? ` · ${oneLine(thisName, 60)}` : ''}
+        </Text>
+        {recent.length === 0 && <Text {...dim(L)}>  Nothing asked yet.</Text>}
+        {recent.map(a => (
+          <Text wrap="truncate-end" dimColor={a.answer !== undefined}>
+            {'  '}
+            {a.answer === undefined ? '… ' : ''}
+            {oneLine(a.question, 200)}
+          </Text>
+        ))}
+        {others.map(r => (
+          <Box flexDirection="column" marginTop={1} key={`asks-${r.id}`}>
+            <Text wrap="truncate-end">
+              <Text color={L.accent} bold>
+                ◇ {oneLine(r.name || '(unnamed session)', 60)}
+              </Text>
+              <Text {...dim(L)}> · {hhmm(r.at)}{r.project !== cwd ? ` · ${home && r.project.startsWith(home) ? `~${r.project.slice(home.length)}` : r.project}` : ''}</Text>
+            </Text>
+            {r.recent.map(q => (
+              <Text wrap="truncate-end" {...dim(L)}>
+                {'  '}
+                {q}
+              </Text>
+            ))}
+          </Box>
+        ))}
+      </Box>
       <Text {...dim(L)}>updated {dayTime(now)}</Text>
     </Box>
   )
+}
+
+/** The one-click next step for a PR that needs work, as a prompt to fill in. */
+export function prAction(p: Pr): { label: string; text: string } | undefined {
+  const ref = `${p.repo}#${p.number} (${p.url})`
+  if (p.status === 'red')
+    return {
+      label: 'fix CI',
+      text: `Fix the failing CI on ${ref}. Failing checks: ${p.ci.failedNames.join(', ') || 'unknown'}.`,
+    }
+  if (p.status === 'attention')
+    return {
+      label: p.openThreads ? 'address threads' : 'address review',
+      text: p.openThreads
+        ? `Address the ${p.openThreads} open review thread${p.openThreads > 1 ? 's' : ''} on ${ref}.`
+        : `Address the requested changes on ${ref}.`,
+    }
+  return undefined
 }
 
 // ---------- PRs pane ----------
@@ -747,6 +768,17 @@ async function prsBody($: $T, e: any) {
           </Text>
           {p.reviewDecision && (
             <Text {...dim(L)}>review: {p.reviewDecision.toLowerCase().replace(/_/g, ' ')}</Text>
+          )}
+          {prAction(p) && (
+            <Box flexDirection="row" gap={2}>
+              <Button
+                key={`pract-${p.repo}-${p.number}`}
+                plain
+                variant="primary"
+                label={prAction(p)!.label}
+                onPress={() => $.prompt.fill({ text: prAction(p)!.text, mode: 'replace' })}
+              />
+            </Box>
           )}
         </Box>
       ))}
@@ -1194,16 +1226,29 @@ export const register: Register = on => {
     const replies = list.filter(i => i.kind === 'reply').length
     const snap = await read($, prs)
     const red = snap.items.filter(p => p.status === 'red').length
+    const pendingN = list.filter(i => i.kind === 'pending').length
+    const sessN = (await read($, sessions)).items.length
+    const recallN = (await read($, recallIndex)).length
+    const level = await usageLevel($)
     const counts: Record<PaneKey, string> = {
-      board: replies ? ` (${replies} need reply)` : '',
+      board:
+        replies || pendingN
+          ? ` (${[replies && `${replies} need reply`, pendingN && `${pendingN} pending`].filter(Boolean).join(', ')})`
+          : '',
       todo: await todoCount($, await read($, cwdAtom)),
-      usage: '',
-      git: '',
-      sessions: '',
-      quick: '',
+      usage: await usageSummary($),
+      git: await gitSummary($),
+      sessions: sessN ? ` (${sessN})` : '',
+      quick: await quickSummary($),
       prs: ` (${snap.items.length}${red ? `, ${red} red` : ''})`,
-      recall: '',
+      recall: recallN ? ` (${recallN} saved)` : '',
     }
+    const headColor = (k: PaneKey) =>
+      (k === 'prs' && red) || (k === 'usage' && level === 'stop')
+        ? L.err
+        : (k === 'board' && replies) || (k === 'usage' && level === 'warn')
+          ? L.warn
+          : L.accent
     const keys = Object.keys(SECTIONS) as PaneKey[]
     // In SECTIONS order.
     const rendered = [
@@ -1221,7 +1266,7 @@ export const register: Register = on => {
         {keys.map((k, n) => (
           <Box flexDirection="column" key={`section-${k}`}>
             <Button key={`sec-${k}`} plain onPress={() => setSection($, k, !open[k])}>
-              <Text color={k === 'prs' && red ? L.err : L.accent} bold>
+              <Text wrap="truncate-end" color={headColor(k)} bold>
                 {open[k] ? '▾' : '▸'} {SECTIONS[k]}
                 {counts[k]}
               </Text>
