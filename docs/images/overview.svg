@@ -2,25 +2,25 @@
 <title>How the repo, the two mods and Claude Code fit together</title>
 <rect width="920" height="470" rx="12" fill="#1a1b26"/>
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#737aa2"/></marker></defs>
-<rect x="310" y="20" width="300" height="76" rx="8" fill="#16161e" stroke="#7aa2f7"/>
+<rect x="310" y="20" width="300" height="76" rx="8" fill="#20212d" stroke="#7aa2f7"/>
 <text x="324" y="44" fill="#7aa2f7" font-weight="700">kg-ng/claude-mods</text>
 <text x="324" y="68" fill="#c0caf5" font-size="13">GitHub repo = plugin marketplace</text>
 <text x="324" y="88" fill="#c0caf5" font-size="13">.claude-plugin/marketplace.json</text>
-<rect x="40" y="150" width="390" height="150" rx="8" fill="#16161e" stroke="#e0af68"/>
+<rect x="40" y="150" width="390" height="150" rx="8" fill="#20212d" stroke="#e0af68"/>
 <text x="54" y="174" fill="#e0af68" font-weight="700">operator-board  0.14.0</text>
 <text x="54" y="198" fill="#c0caf5" font-size="13">pane  /operator  (docked, sized to terminal)</text>
 <text x="54" y="218" fill="#c0caf5" font-size="13">band  board · recall · PRs · alerts</text>
 <text x="54" y="238" fill="#c0caf5" font-size="13">tools  board_update · todo_update</text>
 <text x="54" y="258" fill="#c0caf5" font-size="13">       checkpoint_save</text>
 <text x="54" y="278" fill="#c0caf5" font-size="13">cmds  /board /prs /sessions /quick ...</text>
-<rect x="490" y="150" width="390" height="150" rx="8" fill="#16161e" stroke="#bb9af7"/>
+<rect x="490" y="150" width="390" height="150" rx="8" fill="#20212d" stroke="#bb9af7"/>
 <text x="504" y="174" fill="#bb9af7" font-weight="700">persona  0.7.1</text>
 <text x="504" y="198" fill="#c0caf5" font-size="13">24 built-in themes + your own .json</text>
 <text x="504" y="218" fill="#c0caf5" font-size="13">replies, tool-row icons, spinner words</text>
 <text x="504" y="238" fill="#c0caf5" font-size="13">terminal colours (16 ANSI + bg/fg)</text>
 <text x="504" y="258" fill="#c0caf5" font-size="13">band + animated scene while working</text>
 <text x="504" y="278" fill="#c0caf5" font-size="13">tool  design   cmd  /persona</text>
-<rect x="240" y="360" width="440" height="90" rx="8" fill="#16161e" stroke="#9ece6a"/>
+<rect x="240" y="360" width="440" height="90" rx="8" fill="#20212d" stroke="#9ece6a"/>
 <text x="254" y="384" fill="#9ece6a" font-weight="700">Claude Code</text>
 <text x="254" y="408" fill="#c0caf5" font-size="13">claude plugin marketplace add kg-ng/claude-mods</text>
 <text x="254" y="428" fill="#c0caf5" font-size="13">claude plugin install &lt;mod&gt;@claude-mods</text>

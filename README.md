@@ -1,5 +1,7 @@
 # claude-mods
 
+<img src="docs/images/hero.svg" width="900" alt="Illustration: Claude Code at work with the operator pane docked beside it">
+
 Two mods for [Claude Code](https://claude.com/claude-code), published as a plugin marketplace:
 
 | Mod | Version | What it does |
@@ -7,9 +9,13 @@ Two mods for [Claude Code](https://claude.com/claude-code), published as a plugi
 | [`operator-board`](operator-board) | 0.14.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 
+### Before and after
+
+<img src="docs/images/before-after.svg" width="900" alt="Illustration: the same Claude Code session without the mods, and with operator-board and persona">
+
 ![How the repo, the two mods and Claude Code fit together](docs/images/overview.svg)
 
-> The pictures and animations in this README are drawn from the mods' render code with sample data. They are illustrations, not screenshots.
+> The pictures and animations in this README are drawn from the mods' render code with sample data. They are illustrations, not screenshots. Each one is painted in a different persona, named in its corner, so you can see the colours.
 
 ## Requirements
 
@@ -54,18 +60,18 @@ Header colours: **amber** when something waits on you (a reply, a usage warning)
 
 When the pane is taller than its window, a scrollbar on the right shows where you are. Scroll with the mouse wheel, or click the pane and use the arrow and page keys.
 
-| Section | What it shows |
-|---|---|
-| **Board** | *Needs reply*: questions Claude asked you, each with a button that fills your answer into the prompt. *Pending*: open work grouped by section (CI, follow-ups, your action). *Recent asks* from this and other sessions. Switch between "this folder" and "all sessions". |
-| **To-do** | A to-do list for the folder, shared by every session in it. Claude proposes items, you approve them. Turn on **autopilot** and Claude starts the next item when it finishes one. It stops at a cap, or when usage reaches your warn line. |
-| **Usage** | Context used, 5-hour and weekly limits, and session cost. |
-| **Git** | Branch, changed files, ahead and behind, and buttons that fill in `/code-review` or a commit request. When Claude has edited files this session, one line shows them, `Claude changed 4 files +120 −30`, with **review** and **commit**, until they're committed. The header offers the branch's next step: **push** (not pushed, or new commits) or **open PR** (pushed, no PR yet). |
-| **Sessions** | Earlier sessions with **resume**, **continue** and **copy cmd**, plus checkpoints saved with `/savepoint`. |
-| **Quick prompts** | Prompts you pin with `/quick` and send with one click. |
-| **PRs** | Your open PRs, two lines each: the title, then what's wrong, CI and age (`CI red: lint, e2e · 2d`). A PR that needs work gets a button on that line that fills the prompt: **fix CI**, **address threads** or **address review**. Nothing is sent until you press Enter. PRs that are ready collapse to one line each, with a **merge** button. **To review** lists PRs where someone asked for your review, each with a **review** button (`/code-review <number>` for this repo), and the folded header counts them: `PRs (2, 1 red · 3 to review)`. |
-| **Recall** | Search earlier questions and answers. |
+Each section, opened, in a different persona:
 
-<img src="docs/images/board-and-prs.svg" width="480" alt="Illustration: Board and PRs sections open, with one-click reply and fix CI buttons">
+| Section | |
+|---|---|
+| **Board**<br><br>*Needs reply*: questions Claude asked you, each with a button that fills your answer into the prompt.<br><br>*Pending*: open work grouped by section (CI, follow-ups, your action).<br><br>*Recent asks* from this and other sessions. Switch between "this folder" and "all sessions". | <img src="docs/images/section-board.svg" width="420" alt="Illustration: the Board section"> |
+| **To-do**<br><br>A to-do list for the folder, shared by every session in it. Claude proposes items, you approve them.<br><br>Turn on **autopilot** and Claude starts the next item when it finishes one. It stops at a cap, on a question, or when usage reaches your warn line. | <img src="docs/images/section-todo.svg" width="420" alt="Illustration: the To-do section"> |
+| **Usage**<br><br>Context used, 5-hour and weekly limits with when they reset, and session cost.<br><br>Meters turn amber at your warn line and red at your stop line. **Log** saves a labelled reading. | <img src="docs/images/section-usage.svg" width="420" alt="Illustration: the Usage section"> |
+| **Git**<br><br>Branch, changed files, ahead and behind, with **review** (`/code-review`) and **commit**.<br><br>**Claude changed N files +a −b**: the files Claude edited this session, until they're committed.<br><br>The header offers the branch's next step: **push**, or **open PR**. | <img src="docs/images/section-git.svg" width="420" alt="Illustration: the Git section"> |
+| **Sessions**<br><br>Earlier sessions with **resume**, **continue** (from its checkpoint) and **copy cmd** (works from any folder).<br><br>**checkpoint** and `/savepoint` save where this session stands. | <img src="docs/images/section-sessions.svg" width="420" alt="Illustration: the Sessions section"> |
+| **Quick prompts**<br><br>Prompts you pin with `/quick` or **Pin**; click one to put it in the prompt box.<br><br>*You often send* suggests prompts you repeat, with **+ pin**. | <img src="docs/images/section-quick.svg" width="420" alt="Illustration: the Quick prompts section"> |
+| **PRs**<br><br>Your open PRs, two lines each: the title, then what's wrong, CI and age. A PR that needs work gets **fix CI**, **address threads** or **address review**.<br><br>**Ready** PRs get **merge**. **To review** lists PRs that ask for your review, with **review**. Buttons fill the prompt; nothing is sent until you press Enter. | <img src="docs/images/section-prs.svg" width="420" alt="Illustration: the PRs section"> |
+| **Recall**<br><br>Search earlier questions, by words or `"a phrase"`, and open one to see the answer it got. `/recall <words>` searches straight from the prompt. | <img src="docs/images/section-recall.svg" width="420" alt="Illustration: the Recall section"> |
 
 ### Alerts
 
@@ -99,6 +105,8 @@ Claude also gets three tools, `board_update`, `todo_update` and `checkpoint_save
 ## persona
 
 Type `/persona` and use ↑/↓ to preview, Enter to pick. Your choice is remembered across sessions.
+
+<img src="docs/images/persona-picker.svg" width="760" alt="Animation: picking a persona with /persona: Dracula, Nord, then Gruvbox, the whole window recolouring">
 
 ![The 24 built-in personas](docs/images/personas.svg)
 
@@ -155,7 +163,7 @@ The README pictures are SVGs in `docs/images/`, drawn by two scripts. If you cha
 
 ```sh
 python3 docs/tools/draw_pictures.py docs/images persona/hooks/themes.ts
-python3 docs/tools/draw_animations.py docs/images
+python3 docs/tools/draw_animations.py docs/images persona/hooks/themes.ts
 ```
 
 ## Contributing

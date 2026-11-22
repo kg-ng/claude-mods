@@ -1,0 +1,310 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560" role="img" aria-label="Animation: picking a persona with /persona: Dracula, Nord, then Gruvbox, the whole window recolouring" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13">
+<title>Animation: picking a persona with /persona: Dracula, Nord, then Gruvbox, the whole window recolouring</title>
+<style>
+@keyframes p0{0%,30.33%{opacity:1}33.33%,97.00%{opacity:0}100%{opacity:1}}.p0{animation:p0 12s linear infinite}
+@keyframes p1{0%,30.33%{opacity:0}33.33%,63.67%{opacity:1}66.67%,100%{opacity:0}}.p1{animation:p1 12s linear infinite}
+@keyframes p2{0%,63.67%{opacity:0}66.67%,100%{opacity:1}}.p2{animation:p2 12s linear infinite}
+.st{opacity:0}
+@media (prefers-reduced-motion: reduce){.st{animation:none!important;opacity:0}.rm{opacity:1}}
+</style>
+<g class="st p2">
+<rect width="980" height="560" rx="14" fill="#282828"/>
+<rect x="0.5" y="0.5" width="979" height="559" rx="14" fill="none" stroke="#534f46"/>
+<circle cx="22" cy="20" r="6" fill="#f7768e"/><circle cx="40" cy="20" r="6" fill="#e0af68"/><circle cx="58" cy="20" r="6" fill="#9ece6a"/>
+<text x="392.5" y="25" fill="#928374" xml:space="preserve">claude-mods — Claude Code</text>
+<text x="962" y="25" fill="#928374" font-size="12" text-anchor="end">persona: Gruvbox</text>
+<line x1="0" y1="38" x2="980" y2="38" stroke="#534f46"/>
+<rect x="580" y="52" width="380" height="422" rx="8" fill="#2f2e2d" stroke="#534f46"/>
+<text x="594.0" y="72" fill="#928374" font-weight="700" xml:space="preserve">Pick a persona</text>
+<line x1="580" y1="82" x2="960" y2="82" stroke="#534f46"/>
+<rect x="20" y="420" width="540" height="34" rx="6" fill="none" stroke="#534f46"/>
+<line x1="0" y1="492" x2="980" y2="492" stroke="#534f46"/>
+<text x="24.0" y="72" fill="#928374" xml:space="preserve">&gt; /persona</text>
+<text x="24.0" y="110" fill="#83a598" xml:space="preserve">◆</text>
+<text x="31.8" y="110" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="39.6" y="110" fill="#ebdbb2" xml:space="preserve">Read</text>
+<text x="70.8" y="110" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="78.6" y="110" fill="#928374" xml:space="preserve">operator-board/hooks/prs.tsx</text>
+<text x="24.0" y="129" fill="#fe8019" xml:space="preserve">✎</text>
+<text x="31.8" y="129" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="39.6" y="129" fill="#ebdbb2" xml:space="preserve">Edit</text>
+<text x="70.8" y="129" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="78.6" y="129" fill="#928374" xml:space="preserve">operator-board/hooks/prs.tsx</text>
+<text x="297.0" y="129" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="304.8" y="129" fill="#b8bb26" xml:space="preserve">+12</text>
+<text x="328.2" y="129" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="336.0" y="129" fill="#fb4934" xml:space="preserve">−18</text>
+<text x="24.0" y="148" fill="#b8bb26" xml:space="preserve">▶</text>
+<text x="31.8" y="148" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#ebdbb2" xml:space="preserve">Bash</text>
+<text x="70.8" y="148" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="78.6" y="148" fill="#928374" xml:space="preserve">claude plugin test .</text>
+<text x="234.6" y="148" fill="#ebdbb2" xml:space="preserve">  </text>
+<text x="250.2" y="148" fill="#b8bb26" xml:space="preserve">39 pass</text>
+<text x="24.0" y="186" fill="#8ec07c" font-weight="700" xml:space="preserve">## Shorter PR rows</text>
+<text x="24.0" y="205" fill="#ebdbb2" xml:space="preserve">Each PR now takes </text>
+<text x="164.4" y="205" fill="#ebdbb2" font-weight="700" xml:space="preserve">two lines</text>
+<text x="234.6" y="205" fill="#ebdbb2" xml:space="preserve">: the title, then</text>
+<text x="24.0" y="224" fill="#83a598" xml:space="preserve">CI red: lint · 2d</text>
+<text x="156.6" y="224" fill="#ebdbb2" xml:space="preserve"> with its </text>
+<text x="234.6" y="224" fill="#8ec07c" xml:space="preserve">fix CI</text>
+<text x="281.4" y="224" fill="#ebdbb2" xml:space="preserve"> button.</text>
+<text x="24.0" y="262" fill="#928374" xml:space="preserve">⣾ Brewing…</text>
+<text x="24.0" y="406" fill="#8ec07c" font-weight="700" xml:space="preserve">◆ Gruvbox</text>
+<text x="94.2" y="406" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="102.0" y="406" fill="#83a598" xml:space="preserve">●</text>
+<text x="109.8" y="406" fill="#fe8019" xml:space="preserve">●</text>
+<text x="117.6" y="406" fill="#b8bb26" xml:space="preserve">●</text>
+<text x="125.4" y="406" fill="#d3869b" xml:space="preserve">●</text>
+<text x="133.2" y="406" fill="#8ec07c" xml:space="preserve">●</text>
+<text x="141.0" y="406" fill="#fabd2f" xml:space="preserve">●</text>
+<text x="148.8" y="406" fill="#b8bb26" xml:space="preserve">●</text>
+<text x="156.6" y="406" fill="#fe8019" xml:space="preserve">●</text>
+<text x="164.4" y="406" fill="#fb4934" xml:space="preserve">●</text>
+<text x="172.2" y="406" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="180.0" y="406" fill="#928374" xml:space="preserve">/persona to switch</text>
+<text x="34.0" y="442" fill="#928374" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#ebdbb2" xml:space="preserve"> ▌</text>
+<rect x="588" y="96" width="364" height="70" rx="8" fill="none" stroke="#8ec07c"/>
+<text x="598.0" y="114" fill="#8ec07c" font-weight="700" xml:space="preserve">Gruvbox</text>
+<text x="598.0" y="133" fill="#83a598" xml:space="preserve">◇ Read</text>
+<text x="644.8" y="133" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="652.6" y="133" fill="#fe8019" xml:space="preserve">✎ Edit</text>
+<text x="699.4" y="133" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="707.2" y="133" fill="#b8bb26" xml:space="preserve">▶ Bash</text>
+<text x="754.0" y="133" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="761.8" y="133" fill="#d3869b" xml:space="preserve">⌕ Grep</text>
+<text x="808.6" y="133" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="816.4" y="133" fill="#8ec07c" xml:space="preserve">◎ Web</text>
+<text x="855.4" y="133" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="863.2" y="133" fill="#fabd2f" xml:space="preserve">◆ MCP</text>
+<text x="598.0" y="152" fill="#ebdbb2" xml:space="preserve">Body text</text>
+<text x="668.2" y="152" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="676.0" y="152" fill="#928374" xml:space="preserve">muted</text>
+<text x="715.0" y="152" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="722.8" y="152" fill="#b8bb26" xml:space="preserve">✓ ok</text>
+<text x="754.0" y="152" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="761.8" y="152" fill="#fe8019" xml:space="preserve">! warn</text>
+<text x="808.6" y="152" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="816.4" y="152" fill="#fb4934" xml:space="preserve">✗ error</text>
+<text x="871.0" y="152" fill="#ebdbb2" xml:space="preserve"> </text>
+<text x="878.8" y="152" fill="#928374" xml:space="preserve">Brewing…</text>
+<text x="594.0" y="188" fill="#928374" xml:space="preserve">now: terminal Gruvbox · chat Gruvbox</text>
+<text x="594" y="212" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#7dcfff">■</tspan><tspan fill="#ff9e64">■</tspan><tspan fill="#e0af68">■</tspan><tspan fill="#bb9af7">■</tspan><tspan fill="#7aa2f7">■</tspan><tspan fill="#9ece6a">■</tspan><tspan fill="#f7768e">■</tspan><tspan fill="#928374" font-weight="400">  Tokyo Night</tspan></text>
+<text x="594" y="231" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#8be9fd">■</tspan><tspan fill="#ffb86c">■</tspan><tspan fill="#f1fa8c">■</tspan><tspan fill="#bd93f9">■</tspan><tspan fill="#ff79c6">■</tspan><tspan fill="#50fa7b">■</tspan><tspan fill="#ff5555">■</tspan><tspan fill="#928374" font-weight="400">  Dracula</tspan></text>
+<text x="594" y="250" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#89dceb">■</tspan><tspan fill="#fab387">■</tspan><tspan fill="#f9e2af">■</tspan><tspan fill="#cba6f7">■</tspan><tspan fill="#74c7ec">■</tspan><tspan fill="#a6e3a1">■</tspan><tspan fill="#f38ba8">■</tspan><tspan fill="#928374" font-weight="400">  Catppuccin Mocha</tspan></text>
+<text x="594" y="269" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#9ccfd8">■</tspan><tspan fill="#ebbcba">■</tspan><tspan fill="#f6c177">■</tspan><tspan fill="#c4a7e7">■</tspan><tspan fill="#3e8fb0">■</tspan><tspan fill="#9ccfd8">■</tspan><tspan fill="#eb6f92">■</tspan><tspan fill="#928374" font-weight="400">  Rosé Pine</tspan></text>
+<text x="594" y="288" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#8fbcbb">■</tspan><tspan fill="#d08770">■</tspan><tspan fill="#ebcb8b">■</tspan><tspan fill="#b48ead">■</tspan><tspan fill="#5e81ac">■</tspan><tspan fill="#a3be8c">■</tspan><tspan fill="#bf616a">■</tspan><tspan fill="#928374" font-weight="400">  Nord</tspan></text>
+<rect x="588" y="293" width="364" height="19" rx="4" fill="#3c4639"/>
+<text x="594" y="307" xml:space="preserve"><tspan fill="#ebdbb2">● </tspan><tspan fill="#83a598">■</tspan><tspan fill="#fe8019">■</tspan><tspan fill="#b8bb26">■</tspan><tspan fill="#d3869b">■</tspan><tspan fill="#8ec07c">■</tspan><tspan fill="#b8bb26">■</tspan><tspan fill="#fb4934">■</tspan><tspan fill="#ebdbb2" font-weight="700">  Gruvbox</tspan></text>
+<text x="594" y="326" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#7fb4ca">■</tspan><tspan fill="#ffa066">■</tspan><tspan fill="#e6c384">■</tspan><tspan fill="#957fb8">■</tspan><tspan fill="#7e9cd8">■</tspan><tspan fill="#98bb6c">■</tspan><tspan fill="#e46876">■</tspan><tspan fill="#928374" font-weight="400">  Kanagawa</tspan></text>
+<text x="594" y="345" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#7fbbb3">■</tspan><tspan fill="#e69875">■</tspan><tspan fill="#dbbc7f">■</tspan><tspan fill="#d699b6">■</tspan><tspan fill="#83c092">■</tspan><tspan fill="#a7c080">■</tspan><tspan fill="#e67e80">■</tspan><tspan fill="#928374" font-weight="400">  Everforest</tspan></text>
+<text x="594" y="364" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#56b6c2">■</tspan><tspan fill="#d19a66">■</tspan><tspan fill="#e5c07b">■</tspan><tspan fill="#c678dd">■</tspan><tspan fill="#61afef">■</tspan><tspan fill="#98c379">■</tspan><tspan fill="#e06c75">■</tspan><tspan fill="#928374" font-weight="400">  One Dark</tspan></text>
+<text x="594" y="383" xml:space="preserve"><tspan fill="#ebdbb2">  </tspan><tspan fill="#2aa198">■</tspan><tspan fill="#d67349">■</tspan><tspan fill="#b58900">■</tspan><tspan fill="#8488cd">■</tspan><tspan fill="#3794d6">■</tspan><tspan fill="#859900">■</tspan><tspan fill="#e56765">■</tspan><tspan fill="#928374" font-weight="400">  Solarized Dark</tspan></text>
+<text x="594.0" y="406" fill="#928374" xml:space="preserve">↑/↓ preview · Enter pick · Esc close</text>
+<text x="24.0" y="531" fill="#8ec07c" font-weight="700" font-size="15" xml:space="preserve">/persona</text>
+<text x="96.0" y="531" fill="#ebdbb2" font-size="15" xml:space="preserve"> → </text>
+<text x="123.0" y="531" fill="#8ec07c" font-weight="700" font-size="15" xml:space="preserve">Gruvbox</text>
+<text x="186.0" y="531" fill="#ebdbb2" font-size="15" xml:space="preserve">: chat, tool icons, band and terminal follow</text><circle cx="892" cy="526" r="5" fill="#534f46"/><circle cx="914" cy="526" r="5" fill="#534f46"/><circle cx="936" cy="526" r="5" fill="#8ec07c"/>
+</g>
+<g class="st p0 rm">
+<rect width="980" height="560" rx="14" fill="#282a36"/>
+<rect x="0.5" y="0.5" width="979" height="559" rx="14" fill="none" stroke="#56575f"/>
+<circle cx="22" cy="20" r="6" fill="#f7768e"/><circle cx="40" cy="20" r="6" fill="#e0af68"/><circle cx="58" cy="20" r="6" fill="#9ece6a"/>
+<text x="392.5" y="25" fill="#6272a4" xml:space="preserve">claude-mods — Claude Code</text>
+<text x="962" y="25" fill="#6272a4" font-size="12" text-anchor="end">persona: Dracula</text>
+<line x1="0" y1="38" x2="980" y2="38" stroke="#56575f"/>
+<rect x="580" y="52" width="380" height="422" rx="8" fill="#2f313d" stroke="#56575f"/>
+<text x="594.0" y="72" fill="#6272a4" font-weight="700" xml:space="preserve">Pick a persona</text>
+<line x1="580" y1="82" x2="960" y2="82" stroke="#56575f"/>
+<rect x="20" y="420" width="540" height="34" rx="6" fill="none" stroke="#56575f"/>
+<line x1="0" y1="492" x2="980" y2="492" stroke="#56575f"/>
+<text x="24.0" y="72" fill="#6272a4" xml:space="preserve">&gt; /persona</text>
+<text x="24.0" y="110" fill="#8be9fd" xml:space="preserve">☽</text>
+<text x="31.8" y="110" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="39.6" y="110" fill="#f8f8f2" xml:space="preserve">Read</text>
+<text x="70.8" y="110" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="78.6" y="110" fill="#6272a4" xml:space="preserve">operator-board/hooks/prs.tsx</text>
+<text x="24.0" y="129" fill="#ffb86c" xml:space="preserve">✠</text>
+<text x="31.8" y="129" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="39.6" y="129" fill="#f8f8f2" xml:space="preserve">Edit</text>
+<text x="70.8" y="129" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="78.6" y="129" fill="#6272a4" xml:space="preserve">operator-board/hooks/prs.tsx</text>
+<text x="297.0" y="129" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="304.8" y="129" fill="#50fa7b" xml:space="preserve">+12</text>
+<text x="328.2" y="129" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="336.0" y="129" fill="#ff5555" xml:space="preserve">−18</text>
+<text x="24.0" y="148" fill="#f1fa8c" xml:space="preserve">†</text>
+<text x="31.8" y="148" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#f8f8f2" xml:space="preserve">Bash</text>
+<text x="70.8" y="148" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="78.6" y="148" fill="#6272a4" xml:space="preserve">claude plugin test .</text>
+<text x="234.6" y="148" fill="#f8f8f2" xml:space="preserve">  </text>
+<text x="250.2" y="148" fill="#50fa7b" xml:space="preserve">39 pass</text>
+<text x="24.0" y="186" fill="#ff79c6" font-weight="700" xml:space="preserve">## Shorter PR rows</text>
+<text x="24.0" y="205" fill="#f8f8f2" xml:space="preserve">Each PR now takes </text>
+<text x="164.4" y="205" fill="#f8f8f2" font-weight="700" xml:space="preserve">two lines</text>
+<text x="234.6" y="205" fill="#f8f8f2" xml:space="preserve">: the title, then</text>
+<text x="24.0" y="224" fill="#8be9fd" xml:space="preserve">CI red: lint · 2d</text>
+<text x="156.6" y="224" fill="#f8f8f2" xml:space="preserve"> with its </text>
+<text x="234.6" y="224" fill="#ff79c6" xml:space="preserve">fix CI</text>
+<text x="281.4" y="224" fill="#f8f8f2" xml:space="preserve"> button.</text>
+<text x="24.0" y="262" fill="#6272a4" xml:space="preserve">◐ Brooding…</text>
+<text x="24.0" y="406" fill="#ff79c6" font-weight="700" xml:space="preserve">◆ Dracula</text>
+<text x="94.2" y="406" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="102.0" y="406" fill="#8be9fd" xml:space="preserve">●</text>
+<text x="109.8" y="406" fill="#ffb86c" xml:space="preserve">●</text>
+<text x="117.6" y="406" fill="#f1fa8c" xml:space="preserve">●</text>
+<text x="125.4" y="406" fill="#bd93f9" xml:space="preserve">●</text>
+<text x="133.2" y="406" fill="#ff79c6" xml:space="preserve">●</text>
+<text x="141.0" y="406" fill="#50fa7b" xml:space="preserve">●</text>
+<text x="148.8" y="406" fill="#50fa7b" xml:space="preserve">●</text>
+<text x="156.6" y="406" fill="#f1fa8c" xml:space="preserve">●</text>
+<text x="164.4" y="406" fill="#ff5555" xml:space="preserve">●</text>
+<text x="172.2" y="406" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="180.0" y="406" fill="#6272a4" xml:space="preserve">/persona to switch</text>
+<text x="34.0" y="442" fill="#6272a4" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#f8f8f2" xml:space="preserve"> ▌</text>
+<rect x="588" y="96" width="364" height="70" rx="8" fill="none" stroke="#ff79c6"/>
+<text x="598.0" y="114" fill="#ff79c6" font-weight="700" xml:space="preserve">Dracula</text>
+<text x="598.0" y="133" fill="#8be9fd" xml:space="preserve">◇ Read</text>
+<text x="644.8" y="133" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="652.6" y="133" fill="#ffb86c" xml:space="preserve">✎ Edit</text>
+<text x="699.4" y="133" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="707.2" y="133" fill="#f1fa8c" xml:space="preserve">▶ Bash</text>
+<text x="754.0" y="133" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="761.8" y="133" fill="#bd93f9" xml:space="preserve">⌕ Grep</text>
+<text x="808.6" y="133" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="816.4" y="133" fill="#ff79c6" xml:space="preserve">◎ Web</text>
+<text x="855.4" y="133" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="863.2" y="133" fill="#50fa7b" xml:space="preserve">◆ MCP</text>
+<text x="598.0" y="152" fill="#f8f8f2" xml:space="preserve">Body text</text>
+<text x="668.2" y="152" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="676.0" y="152" fill="#6272a4" xml:space="preserve">muted</text>
+<text x="715.0" y="152" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="722.8" y="152" fill="#50fa7b" xml:space="preserve">✓ ok</text>
+<text x="754.0" y="152" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="761.8" y="152" fill="#f1fa8c" xml:space="preserve">! warn</text>
+<text x="808.6" y="152" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="816.4" y="152" fill="#ff5555" xml:space="preserve">✗ error</text>
+<text x="871.0" y="152" fill="#f8f8f2" xml:space="preserve"> </text>
+<text x="878.8" y="152" fill="#6272a4" xml:space="preserve">Brooding…</text>
+<text x="594.0" y="188" fill="#6272a4" xml:space="preserve">now: terminal Dracula · chat Dracula</text>
+<text x="594" y="212" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#7dcfff">■</tspan><tspan fill="#ff9e64">■</tspan><tspan fill="#e0af68">■</tspan><tspan fill="#bb9af7">■</tspan><tspan fill="#7aa2f7">■</tspan><tspan fill="#9ece6a">■</tspan><tspan fill="#f7768e">■</tspan><tspan fill="#6272a4" font-weight="400">  Tokyo Night</tspan></text>
+<rect x="588" y="217" width="364" height="19" rx="4" fill="#533a53"/>
+<text x="594" y="231" xml:space="preserve"><tspan fill="#f8f8f2">● </tspan><tspan fill="#8be9fd">■</tspan><tspan fill="#ffb86c">■</tspan><tspan fill="#f1fa8c">■</tspan><tspan fill="#bd93f9">■</tspan><tspan fill="#ff79c6">■</tspan><tspan fill="#50fa7b">■</tspan><tspan fill="#ff5555">■</tspan><tspan fill="#f8f8f2" font-weight="700">  Dracula</tspan></text>
+<text x="594" y="250" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#89dceb">■</tspan><tspan fill="#fab387">■</tspan><tspan fill="#f9e2af">■</tspan><tspan fill="#cba6f7">■</tspan><tspan fill="#74c7ec">■</tspan><tspan fill="#a6e3a1">■</tspan><tspan fill="#f38ba8">■</tspan><tspan fill="#6272a4" font-weight="400">  Catppuccin Mocha</tspan></text>
+<text x="594" y="269" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#9ccfd8">■</tspan><tspan fill="#ebbcba">■</tspan><tspan fill="#f6c177">■</tspan><tspan fill="#c4a7e7">■</tspan><tspan fill="#3e8fb0">■</tspan><tspan fill="#9ccfd8">■</tspan><tspan fill="#eb6f92">■</tspan><tspan fill="#6272a4" font-weight="400">  Rosé Pine</tspan></text>
+<text x="594" y="288" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#8fbcbb">■</tspan><tspan fill="#d08770">■</tspan><tspan fill="#ebcb8b">■</tspan><tspan fill="#b48ead">■</tspan><tspan fill="#5e81ac">■</tspan><tspan fill="#a3be8c">■</tspan><tspan fill="#bf616a">■</tspan><tspan fill="#6272a4" font-weight="400">  Nord</tspan></text>
+<text x="594" y="307" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#83a598">■</tspan><tspan fill="#fe8019">■</tspan><tspan fill="#b8bb26">■</tspan><tspan fill="#d3869b">■</tspan><tspan fill="#8ec07c">■</tspan><tspan fill="#b8bb26">■</tspan><tspan fill="#fb4934">■</tspan><tspan fill="#6272a4" font-weight="400">  Gruvbox</tspan></text>
+<text x="594" y="326" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#7fb4ca">■</tspan><tspan fill="#ffa066">■</tspan><tspan fill="#e6c384">■</tspan><tspan fill="#957fb8">■</tspan><tspan fill="#7e9cd8">■</tspan><tspan fill="#98bb6c">■</tspan><tspan fill="#e46876">■</tspan><tspan fill="#6272a4" font-weight="400">  Kanagawa</tspan></text>
+<text x="594" y="345" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#7fbbb3">■</tspan><tspan fill="#e69875">■</tspan><tspan fill="#dbbc7f">■</tspan><tspan fill="#d699b6">■</tspan><tspan fill="#83c092">■</tspan><tspan fill="#a7c080">■</tspan><tspan fill="#e67e80">■</tspan><tspan fill="#6272a4" font-weight="400">  Everforest</tspan></text>
+<text x="594" y="364" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#56b6c2">■</tspan><tspan fill="#d19a66">■</tspan><tspan fill="#e5c07b">■</tspan><tspan fill="#c678dd">■</tspan><tspan fill="#61afef">■</tspan><tspan fill="#98c379">■</tspan><tspan fill="#e06c75">■</tspan><tspan fill="#6272a4" font-weight="400">  One Dark</tspan></text>
+<text x="594" y="383" xml:space="preserve"><tspan fill="#f8f8f2">  </tspan><tspan fill="#2aa198">■</tspan><tspan fill="#d67349">■</tspan><tspan fill="#b58900">■</tspan><tspan fill="#8488cd">■</tspan><tspan fill="#3794d6">■</tspan><tspan fill="#859900">■</tspan><tspan fill="#e56765">■</tspan><tspan fill="#6272a4" font-weight="400">  Solarized Dark</tspan></text>
+<text x="594.0" y="406" fill="#6272a4" xml:space="preserve">↑/↓ preview · Enter pick · Esc close</text>
+<text x="24.0" y="531" fill="#ff79c6" font-weight="700" font-size="15" xml:space="preserve">/persona</text>
+<text x="96.0" y="531" fill="#f8f8f2" font-size="15" xml:space="preserve"> → </text>
+<text x="123.0" y="531" fill="#ff79c6" font-weight="700" font-size="15" xml:space="preserve">Dracula</text>
+<text x="186.0" y="531" fill="#f8f8f2" font-size="15" xml:space="preserve">: chat, tool icons, band and terminal follow</text><circle cx="892" cy="526" r="5" fill="#ff79c6"/><circle cx="914" cy="526" r="5" fill="#56575f"/><circle cx="936" cy="526" r="5" fill="#56575f"/>
+</g>
+<g class="st p1">
+<rect width="980" height="560" rx="14" fill="#2e3440"/>
+<rect x="0.5" y="0.5" width="979" height="559" rx="14" fill="none" stroke="#565c67"/>
+<circle cx="22" cy="20" r="6" fill="#f7768e"/><circle cx="40" cy="20" r="6" fill="#e0af68"/><circle cx="58" cy="20" r="6" fill="#9ece6a"/>
+<text x="392.5" y="25" fill="#7b88a1" xml:space="preserve">claude-mods — Claude Code</text>
+<text x="962" y="25" fill="#7b88a1" font-size="12" text-anchor="end">persona: Nord</text>
+<line x1="0" y1="38" x2="980" y2="38" stroke="#565c67"/>
+<rect x="580" y="52" width="380" height="422" rx="8" fill="#343a46" stroke="#565c67"/>
+<text x="594.0" y="72" fill="#7b88a1" font-weight="700" xml:space="preserve">Pick a persona</text>
+<line x1="580" y1="82" x2="960" y2="82" stroke="#565c67"/>
+<rect x="20" y="420" width="540" height="34" rx="6" fill="none" stroke="#565c67"/>
+<line x1="0" y1="492" x2="980" y2="492" stroke="#565c67"/>
+<text x="24.0" y="72" fill="#7b88a1" xml:space="preserve">&gt; /persona</text>
+<text x="24.0" y="110" fill="#8fbcbb" xml:space="preserve">❄</text>
+<text x="31.8" y="110" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="39.6" y="110" fill="#e5e9f0" xml:space="preserve">Read</text>
+<text x="70.8" y="110" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="78.6" y="110" fill="#7b88a1" xml:space="preserve">operator-board/hooks/prs.tsx</text>
+<text x="24.0" y="129" fill="#d08770" xml:space="preserve">✎</text>
+<text x="31.8" y="129" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="39.6" y="129" fill="#e5e9f0" xml:space="preserve">Edit</text>
+<text x="70.8" y="129" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="78.6" y="129" fill="#7b88a1" xml:space="preserve">operator-board/hooks/prs.tsx</text>
+<text x="297.0" y="129" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="304.8" y="129" fill="#a3be8c" xml:space="preserve">+12</text>
+<text x="328.2" y="129" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="336.0" y="129" fill="#bf616a" xml:space="preserve">−18</text>
+<text x="24.0" y="148" fill="#ebcb8b" xml:space="preserve">›</text>
+<text x="31.8" y="148" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#e5e9f0" xml:space="preserve">Bash</text>
+<text x="70.8" y="148" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="78.6" y="148" fill="#7b88a1" xml:space="preserve">claude plugin test .</text>
+<text x="234.6" y="148" fill="#e5e9f0" xml:space="preserve">  </text>
+<text x="250.2" y="148" fill="#a3be8c" xml:space="preserve">39 pass</text>
+<text x="24.0" y="186" fill="#5e81ac" font-weight="700" xml:space="preserve">## Shorter PR rows</text>
+<text x="24.0" y="205" fill="#e5e9f0" xml:space="preserve">Each PR now takes </text>
+<text x="164.4" y="205" fill="#e5e9f0" font-weight="700" xml:space="preserve">two lines</text>
+<text x="234.6" y="205" fill="#e5e9f0" xml:space="preserve">: the title, then</text>
+<text x="24.0" y="224" fill="#8fbcbb" xml:space="preserve">CI red: lint · 2d</text>
+<text x="156.6" y="224" fill="#e5e9f0" xml:space="preserve"> with its </text>
+<text x="234.6" y="224" fill="#5e81ac" xml:space="preserve">fix CI</text>
+<text x="281.4" y="224" fill="#e5e9f0" xml:space="preserve"> button.</text>
+<text x="24.0" y="262" fill="#7b88a1" xml:space="preserve">❄ Drifting…</text>
+<text x="24.0" y="406" fill="#5e81ac" font-weight="700" xml:space="preserve">◆ Nord</text>
+<text x="70.8" y="406" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="78.6" y="406" fill="#8fbcbb" xml:space="preserve">●</text>
+<text x="86.4" y="406" fill="#d08770" xml:space="preserve">●</text>
+<text x="94.2" y="406" fill="#ebcb8b" xml:space="preserve">●</text>
+<text x="102.0" y="406" fill="#b48ead" xml:space="preserve">●</text>
+<text x="109.8" y="406" fill="#5e81ac" xml:space="preserve">●</text>
+<text x="117.6" y="406" fill="#88c0d0" xml:space="preserve">●</text>
+<text x="125.4" y="406" fill="#a3be8c" xml:space="preserve">●</text>
+<text x="133.2" y="406" fill="#ebcb8b" xml:space="preserve">●</text>
+<text x="141.0" y="406" fill="#bf616a" xml:space="preserve">●</text>
+<text x="148.8" y="406" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="156.6" y="406" fill="#7b88a1" xml:space="preserve">/persona to switch</text>
+<text x="34.0" y="442" fill="#7b88a1" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#e5e9f0" xml:space="preserve"> ▌</text>
+<rect x="588" y="96" width="364" height="70" rx="8" fill="none" stroke="#5e81ac"/>
+<text x="598.0" y="114" fill="#5e81ac" font-weight="700" xml:space="preserve">Nord</text>
+<text x="598.0" y="133" fill="#8fbcbb" xml:space="preserve">◇ Read</text>
+<text x="644.8" y="133" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="652.6" y="133" fill="#d08770" xml:space="preserve">✎ Edit</text>
+<text x="699.4" y="133" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="707.2" y="133" fill="#ebcb8b" xml:space="preserve">▶ Bash</text>
+<text x="754.0" y="133" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="761.8" y="133" fill="#b48ead" xml:space="preserve">⌕ Grep</text>
+<text x="808.6" y="133" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="816.4" y="133" fill="#5e81ac" xml:space="preserve">◎ Web</text>
+<text x="855.4" y="133" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="863.2" y="133" fill="#88c0d0" xml:space="preserve">◆ MCP</text>
+<text x="598.0" y="152" fill="#e5e9f0" xml:space="preserve">Body text</text>
+<text x="668.2" y="152" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="676.0" y="152" fill="#7b88a1" xml:space="preserve">muted</text>
+<text x="715.0" y="152" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="722.8" y="152" fill="#a3be8c" xml:space="preserve">✓ ok</text>
+<text x="754.0" y="152" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="761.8" y="152" fill="#ebcb8b" xml:space="preserve">! warn</text>
+<text x="808.6" y="152" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="816.4" y="152" fill="#bf616a" xml:space="preserve">✗ error</text>
+<text x="871.0" y="152" fill="#e5e9f0" xml:space="preserve"> </text>
+<text x="878.8" y="152" fill="#7b88a1" xml:space="preserve">Drifting…</text>
+<text x="594.0" y="188" fill="#7b88a1" xml:space="preserve">now: terminal Nord · chat Nord</text>
+<text x="594" y="212" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#7dcfff">■</tspan><tspan fill="#ff9e64">■</tspan><tspan fill="#e0af68">■</tspan><tspan fill="#bb9af7">■</tspan><tspan fill="#7aa2f7">■</tspan><tspan fill="#9ece6a">■</tspan><tspan fill="#f7768e">■</tspan><tspan fill="#7b88a1" font-weight="400">  Tokyo Night</tspan></text>
+<text x="594" y="231" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#8be9fd">■</tspan><tspan fill="#ffb86c">■</tspan><tspan fill="#f1fa8c">■</tspan><tspan fill="#bd93f9">■</tspan><tspan fill="#ff79c6">■</tspan><tspan fill="#50fa7b">■</tspan><tspan fill="#ff5555">■</tspan><tspan fill="#7b88a1" font-weight="400">  Dracula</tspan></text>
+<text x="594" y="250" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#89dceb">■</tspan><tspan fill="#fab387">■</tspan><tspan fill="#f9e2af">■</tspan><tspan fill="#cba6f7">■</tspan><tspan fill="#74c7ec">■</tspan><tspan fill="#a6e3a1">■</tspan><tspan fill="#f38ba8">■</tspan><tspan fill="#7b88a1" font-weight="400">  Catppuccin Mocha</tspan></text>
+<text x="594" y="269" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#9ccfd8">■</tspan><tspan fill="#ebbcba">■</tspan><tspan fill="#f6c177">■</tspan><tspan fill="#c4a7e7">■</tspan><tspan fill="#3e8fb0">■</tspan><tspan fill="#9ccfd8">■</tspan><tspan fill="#eb6f92">■</tspan><tspan fill="#7b88a1" font-weight="400">  Rosé Pine</tspan></text>
+<rect x="588" y="274" width="364" height="19" rx="4" fill="#384356"/>
+<text x="594" y="288" xml:space="preserve"><tspan fill="#e5e9f0">● </tspan><tspan fill="#8fbcbb">■</tspan><tspan fill="#d08770">■</tspan><tspan fill="#ebcb8b">■</tspan><tspan fill="#b48ead">■</tspan><tspan fill="#5e81ac">■</tspan><tspan fill="#a3be8c">■</tspan><tspan fill="#bf616a">■</tspan><tspan fill="#e5e9f0" font-weight="700">  Nord</tspan></text>
+<text x="594" y="307" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#83a598">■</tspan><tspan fill="#fe8019">■</tspan><tspan fill="#b8bb26">■</tspan><tspan fill="#d3869b">■</tspan><tspan fill="#8ec07c">■</tspan><tspan fill="#b8bb26">■</tspan><tspan fill="#fb4934">■</tspan><tspan fill="#7b88a1" font-weight="400">  Gruvbox</tspan></text>
+<text x="594" y="326" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#7fb4ca">■</tspan><tspan fill="#ffa066">■</tspan><tspan fill="#e6c384">■</tspan><tspan fill="#957fb8">■</tspan><tspan fill="#7e9cd8">■</tspan><tspan fill="#98bb6c">■</tspan><tspan fill="#e46876">■</tspan><tspan fill="#7b88a1" font-weight="400">  Kanagawa</tspan></text>
+<text x="594" y="345" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#7fbbb3">■</tspan><tspan fill="#e69875">■</tspan><tspan fill="#dbbc7f">■</tspan><tspan fill="#d699b6">■</tspan><tspan fill="#83c092">■</tspan><tspan fill="#a7c080">■</tspan><tspan fill="#e67e80">■</tspan><tspan fill="#7b88a1" font-weight="400">  Everforest</tspan></text>
+<text x="594" y="364" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#56b6c2">■</tspan><tspan fill="#d19a66">■</tspan><tspan fill="#e5c07b">■</tspan><tspan fill="#c678dd">■</tspan><tspan fill="#61afef">■</tspan><tspan fill="#98c379">■</tspan><tspan fill="#e06c75">■</tspan><tspan fill="#7b88a1" font-weight="400">  One Dark</tspan></text>
+<text x="594" y="383" xml:space="preserve"><tspan fill="#e5e9f0">  </tspan><tspan fill="#2aa198">■</tspan><tspan fill="#d67349">■</tspan><tspan fill="#b58900">■</tspan><tspan fill="#8488cd">■</tspan><tspan fill="#3794d6">■</tspan><tspan fill="#859900">■</tspan><tspan fill="#e56765">■</tspan><tspan fill="#7b88a1" font-weight="400">  Solarized Dark</tspan></text>
+<text x="594.0" y="406" fill="#7b88a1" xml:space="preserve">↑/↓ preview · Enter pick · Esc close</text>
+<text x="24.0" y="531" fill="#5e81ac" font-weight="700" font-size="15" xml:space="preserve">/persona</text>
+<text x="96.0" y="531" fill="#e5e9f0" font-size="15" xml:space="preserve"> → </text>
+<text x="123.0" y="531" fill="#5e81ac" font-weight="700" font-size="15" xml:space="preserve">Nord</text>
+<text x="159.0" y="531" fill="#e5e9f0" font-size="15" xml:space="preserve">: chat, tool icons, band and terminal follow</text><circle cx="892" cy="526" r="5" fill="#565c67"/><circle cx="914" cy="526" r="5" fill="#5e81ac"/><circle cx="936" cy="526" r="5" fill="#565c67"/>
+</g>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="479" height="291" viewBox="0 0 479 291" role="img" aria-label="Illustration: Recall: search earlier questions and their answers (persona: Solarized Light)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="14">
+<title>Illustration: Recall: search earlier questions and their answers (persona: Solarized Light)</title>
+<rect width="479" height="291" rx="12" fill="#fdf6e3"/>
+<g transform="translate(20,20)">
+<rect x="0.5" y="0.5" width="438" height="250" rx="10" fill="#f7f1df" stroke="#d9d8cb"/>
+<line x1="0" y1="32" x2="439" y2="32" stroke="#d9d8cb"/>
+<text x="18.0" y="22" fill="#809193" font-weight="700" xml:space="preserve">operator</text>
+<text x="421" y="22" fill="#809193" font-size="12" text-anchor="end">persona: Solarized Light</text>
+<text x="18.0" y="58" fill="#2075b0" font-weight="700" xml:space="preserve">▾ Recall (120 saved)</text>
+<text x="18.0" y="79" fill="#809193" xml:space="preserve">Find </text>
+<text x="60.0" y="79" fill="#d9d8cb" xml:space="preserve">[</text>
+<text x="68.4" y="79" fill="#586e75" xml:space="preserve"> merge                       </text>
+<text x="312.0" y="79" fill="#d9d8cb" xml:space="preserve">]</text>
+<text x="320.4" y="79" fill="#586e75" xml:space="preserve"> </text>
+<text x="328.8" y="79" fill="#586e75" text-decoration="underline" xml:space="preserve">search</text>
+<text x="18.0" y="121" fill="#809193" xml:space="preserve">3 earlier questions match &quot;merge&quot;</text>
+<text x="18.0" y="142" fill="#809193" xml:space="preserve">11-22 15:20</text>
+<text x="110.4" y="142" fill="#586e75" xml:space="preserve"> merge 6</text>
+<text x="18.0" y="163" fill="#809193" xml:space="preserve">11-22 14:41</text>
+<text x="110.4" y="163" fill="#586e75" xml:space="preserve"> merge 2 and 3</text>
+<text x="18.0" y="184" fill="#809193" xml:space="preserve">11-20 10:02</text>
+<text x="110.4" y="184" fill="#586e75" xml:space="preserve"> how do I merge into a protected bra</text>
+<text x="412.8" y="184" fill="#586e75" xml:space="preserve">…</text>
+<text x="18.0" y="226" fill="#809193" xml:space="preserve">Picking a question shows it with the reply it g</text>
+<text x="412.8" y="226" fill="#809193" xml:space="preserve">…</text>
+</g>
+</svg>
