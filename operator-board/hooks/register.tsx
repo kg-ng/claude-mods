@@ -359,7 +359,12 @@ const shellQuote = (v: string) => `'${v.replace(/'/g, `'\\''`)}'`
 
 // ---------- panes ----------
 
-const isPaneOpen = async ($: $T) => (await $.ui.panes()).some(p => p.id === PANE.id)
+/**
+ * True only while the pane is drawn. The pane opened at session start is "unasked", and on a
+ * terminal under 144 columns (110 once you've opened it yourself) it waits open but undrawn:
+ * that counts as closed, so /operator shows it instead of closing it.
+ */
+const isPaneOpen = async ($: $T) => (await $.ui.panes()).some(p => p.id === PANE.id && p.isPlaced)
 
 async function openPane($: $T) {
   const opened = await $.ui.open({ id: PANE.id, title: PANE.title, columns: DOCK_COLUMNS })

@@ -4,7 +4,7 @@ Two mods for [Claude Code](https://claude.com/claude-code), published as a plugi
 
 | Mod | Version | What it does |
 |---|---|---|
-| [`operator-board`](operator-board) | 0.11.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
+| [`operator-board`](operator-board) | 0.11.1 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.0 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 
 ![How the repo, the two mods and Claude Code fit together](docs/images/overview.svg)
@@ -33,7 +33,7 @@ To check they loaded, type `/operator` (the pane opens) and `/persona` (the pick
 
 ### The pane
 
-`/operator` opens or closes the pane. Every section starts folded, and its header carries a one-line summary, so you can see what needs you without opening anything. Click a header to open it.
+`/operator` opens or closes the pane. The pane also opens by itself when a session starts, but Claude Code only shows a pane opened that way on a terminal at least 144 columns wide (110 once you've opened it yourself). On a narrower terminal, type `/operator` to show it. Every section starts folded, and its header carries a one-line summary, so you can see what needs you without opening anything. Click a header to open it.
 
 <img src="docs/images/operator-pane.svg" width="480" alt="Illustration: the operator pane with every section folded, each header showing a one-line summary">
 
