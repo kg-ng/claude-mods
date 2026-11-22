@@ -15,10 +15,12 @@
 <text x="60.0" y="100" fill="#c0caf5" xml:space="preserve"> CI failed: #12 Shorter PR rows        </text>
 <text x="387.6" y="100" fill="#737aa2" text-decoration="underline" xml:space="preserve">✓</text>
 <text x="18.0" y="142" fill="#e0af68" font-weight="700" xml:space="preserve">▸ Board (1 need reply, 2 pending)</text>
-<text x="18.0" y="184" fill="#f7768e" font-weight="700" xml:space="preserve">▸ PRs (3, 1 red)</text>
+<text x="18.0" y="184" fill="#f7768e" font-weight="700" xml:space="preserve">▸ PRs (3, 1 red · 2 to review)</text>
 <text x="18.0" y="226" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ To-do (3 open) · autopilot on</text>
 <text x="18.0" y="268" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Usage · ctx 42% · 5h 30% · wk 12% · $1.20</text>
-<text x="18.0" y="310" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Git · main · 3 changed · ↑2</text>
+<text x="18.0" y="310" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Git · feat/x · 3 changed</text>
+<text x="236.4" y="310" fill="#c0caf5" xml:space="preserve">         </text>
+<text x="312.0" y="310" fill="#7aa2f7" text-decoration="underline" xml:space="preserve">open PR</text>
 <text x="18.0" y="352" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Sessions (8)</text>
 <text x="18.0" y="394" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Quick prompts (3)</text>
 <text x="18.0" y="436" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Recall (120 saved)</text>

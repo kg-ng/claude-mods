@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560" role="img" aria-label="Animation: how an operator-board alert works, in four steps" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13">
+<title>Animation: how an operator-board alert works, in four steps</title>
+<style>
+@keyframes k1{0%{opacity:1}0.00%{opacity:1}1.50%{opacity:1}23.50%{opacity:1}25.00%{opacity:0}100%{opacity:0}}
+@keyframes k2{0%{opacity:0}24.99%{opacity:0}26.50%{opacity:1}48.50%{opacity:1}50.00%{opacity:0}100%{opacity:0}}
+@keyframes k3{0%{opacity:0}49.99%{opacity:0}51.50%{opacity:1}73.50%{opacity:1}75.00%{opacity:0}100%{opacity:0}}
+@keyframes k4{0%{opacity:0}74.99%{opacity:0}76.50%{opacity:1}98.50%{opacity:1}100.00%{opacity:0}100%{opacity:0}}
+.s1{animation:k1 16s linear infinite}
+.s2{animation:k2 16s linear infinite}
+.s3{animation:k3 16s linear infinite}
+.s4{animation:k4 16s linear infinite}
+@keyframes c12{0%{opacity:1}0.00%{opacity:1}1.50%{opacity:1}48.50%{opacity:1}50.00%{opacity:0}100%{opacity:0}}
+.c12{animation:c12 16s linear infinite}
+@keyframes c123{0%{opacity:1}0.00%{opacity:1}1.50%{opacity:1}73.50%{opacity:1}75.00%{opacity:0}100%{opacity:0}}
+.c123{animation:c123 16s linear infinite}
+@keyframes c23{0%{opacity:0}24.99%{opacity:0}26.50%{opacity:1}73.50%{opacity:1}75.00%{opacity:0}100%{opacity:0}}
+.c23{animation:c23 16s linear infinite}
+@keyframes b23{0%,25.00%{transform:translateX(420px);opacity:0}28.00%{transform:translateX(0);opacity:1}73.00%{transform:translateX(0);opacity:1}75.00%,100%{transform:translateX(420px);opacity:0}}.b23{animation:b23 16s ease-out infinite}
+.st{opacity:0}
+@media (prefers-reduced-motion: reduce){.st{animation:none!important;opacity:0;transform:none!important}.rm{opacity:1}}
+</style>
+<rect width="980" height="560" rx="14" fill="#1a1b26"/>
+<rect x="0.5" y="0.5" width="979" height="559" rx="14" fill="none" stroke="#3b4261"/>
+<circle cx="22" cy="20" r="6" fill="#f7768e"/><circle cx="40" cy="20" r="6" fill="#e0af68"/><circle cx="58" cy="20" r="6" fill="#9ece6a"/>
+<text x="392.5" y="25" fill="#737aa2" xml:space="preserve">claude-mods — Claude Code</text>
+<line x1="0" y1="38" x2="980" y2="38" stroke="#3b4261"/>
+<rect x="580" y="52" width="380" height="422" rx="8" fill="#16161e" stroke="#3b4261"/>
+<text x="594.0" y="72" fill="#737aa2" font-weight="700" xml:space="preserve">operator</text>
+<line x1="580" y1="82" x2="960" y2="82" stroke="#3b4261"/>
+<rect x="20" y="420" width="540" height="34" rx="6" fill="none" stroke="#3b4261"/>
+<line x1="0" y1="492" x2="980" y2="492" stroke="#3b4261"/>
+<g class="st rm c123">
+<text x="24.0" y="72" fill="#737aa2" xml:space="preserve">&gt; make the panel friendlier</text>
+<text x="24.0" y="110" fill="#7aa2f7" xml:space="preserve">●</text>
+<text x="31.8" y="110" fill="#c0caf5" xml:space="preserve"> Done: header summaries, PR buttons, board order.</text>
+<text x="24.0" y="148" fill="#73daca" xml:space="preserve">⬢</text>
+<text x="31.8" y="148" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#c0caf5" xml:space="preserve">board_update</text>
+<text x="133.2" y="148" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="148.8" y="148" fill="#737aa2" xml:space="preserve">add reply &quot;Merge 0.9.0 into main?&quot;</text>
+<text x="24.0" y="186" fill="#7aa2f7" xml:space="preserve">●</text>
+<text x="31.8" y="186" fill="#c0caf5" xml:space="preserve"> Should I merge 0.9.0 into main?</text>
+</g>
+<g class="st s4">
+<text x="24.0" y="72" fill="#737aa2" xml:space="preserve">&gt; make the panel friendlier</text>
+<text x="24.0" y="110" fill="#7aa2f7" xml:space="preserve">●</text>
+<text x="31.8" y="110" fill="#c0caf5" xml:space="preserve"> Done: header summaries, PR buttons, board order.</text>
+<text x="24.0" y="148" fill="#73daca" xml:space="preserve">⬢</text>
+<text x="31.8" y="148" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#c0caf5" xml:space="preserve">board_update</text>
+<text x="133.2" y="148" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="148.8" y="148" fill="#737aa2" xml:space="preserve">add reply &quot;Merge 0.9.0 into main?&quot;</text>
+<text x="24.0" y="186" fill="#7aa2f7" xml:space="preserve">●</text>
+<text x="31.8" y="186" fill="#c0caf5" xml:space="preserve"> Should I merge 0.9.0 into main?</text>
+<text x="24.0" y="224" fill="#737aa2" xml:space="preserve">&gt; yes, merge it</text>
+<text x="24.0" y="262" fill="#73daca" xml:space="preserve">⬢</text>
+<text x="31.8" y="262" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="262" fill="#c0caf5" xml:space="preserve">board_update</text>
+<text x="133.2" y="262" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="148.8" y="262" fill="#737aa2" xml:space="preserve">remove r1</text>
+<text x="24.0" y="300" fill="#7aa2f7" xml:space="preserve">●</text>
+<text x="31.8" y="300" fill="#c0caf5" xml:space="preserve"> Merged 0.9.0 into main.</text>
+</g>
+<g class="st s1">
+<text x="594.0" y="104" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Board</text>
+<text x="594.0" y="142" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ PRs (2)</text>
+<text x="594.0" y="180" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Git · main · clean</text>
+<text x="594.0" y="218" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ To-do (3 open)</text>
+<text x="594.0" y="256" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Usage · ctx 42% · 5h 30%</text>
+</g>
+<g class="st s2">
+<text x="594.0" y="104" fill="#e0af68" font-weight="700" xml:space="preserve">● Alerts (1)</text>
+<text x="687.6" y="104" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="703.2" y="104" fill="#737aa2" text-decoration="underline" xml:space="preserve">dismiss all</text>
+<text x="594.0" y="123" fill="#737aa2" xml:space="preserve">14:02</text>
+<text x="633.0" y="123" fill="#c0caf5" xml:space="preserve"> Finished, needs your reply: Merg… </text>
+<text x="906.0" y="123" fill="#737aa2" text-decoration="underline" xml:space="preserve">✓</text>
+<text x="594.0" y="161" fill="#e0af68" font-weight="700" xml:space="preserve">▸ Board (1 need reply)</text>
+<text x="594.0" y="199" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ PRs (2)</text>
+<text x="594.0" y="237" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Git · main · clean</text>
+<text x="594.0" y="275" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ To-do (3 open)</text>
+<text x="594.0" y="313" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Usage · ctx 42% · 5h 30%</text>
+</g>
+<g class="st rm s3">
+<text x="594.0" y="104" fill="#e0af68" font-weight="700" xml:space="preserve">● Alerts (1)</text>
+<text x="687.6" y="104" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="703.2" y="104" fill="#737aa2" text-decoration="underline" xml:space="preserve">dismiss all</text>
+<text x="594.0" y="123" fill="#737aa2" xml:space="preserve">14:02</text>
+<text x="633.0" y="123" fill="#c0caf5" xml:space="preserve"> Finished, needs your reply: Merg… </text>
+<text x="906.0" y="123" fill="#737aa2" text-decoration="underline" xml:space="preserve">✓</text>
+<text x="594.0" y="161" fill="#e0af68" font-weight="700" xml:space="preserve">▾ Board (1 need reply)</text>
+<text x="594.0" y="180" fill="#7aa2f7" font-weight="700" xml:space="preserve">Needs reply (1)</text>
+<text x="594.0" y="199" fill="#c0caf5" xml:space="preserve">1. Merge 0.9.0 into main?</text>
+<text x="594.0" y="218" fill="#c0caf5" xml:space="preserve">   </text>
+<text x="617.4" y="218" fill="#7aa2f7" text-decoration="underline" xml:space="preserve">reply &quot;yes, merge it&quot;</text>
+<text x="781.2" y="218" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="796.8" y="218" fill="#c0caf5" text-decoration="underline" xml:space="preserve">done</text>
+<text x="594.0" y="256" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ PRs (2)</text>
+<text x="594.0" y="294" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Git · main · clean</text>
+</g>
+<g class="st s4">
+<text x="594.0" y="104" fill="#7aa2f7" font-weight="700" xml:space="preserve">▾ Board</text>
+<text x="594.0" y="123" fill="#737aa2" xml:space="preserve">Nothing waiting on you.</text>
+<text x="594.0" y="161" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ PRs (2)</text>
+<text x="594.0" y="199" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Git · main · clean</text>
+<text x="594.0" y="237" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ To-do (3 open)</text>
+<text x="594.0" y="275" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Usage · ctx 42% · 5h 30%</text>
+</g>
+<g class="st s1">
+<text x="24.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">board</text>
+<text x="63.0" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="78.6" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">recall</text>
+<text x="125.4" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="141.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">PRs (2)</text>
+</g>
+<g class="st rm c23">
+<text x="24.0" y="406" fill="#7aa2f7" text-decoration="underline" xml:space="preserve">board (1 need reply)</text>
+<text x="180.0" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="195.6" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">recall</text>
+<text x="242.4" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="258.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">PRs (2)</text>
+<text x="312.6" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="328.2" y="406" fill="#7aa2f7" text-decoration="underline" xml:space="preserve">● 1 alert</text>
+</g>
+<g class="st s4">
+<text x="24.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">board</text>
+<text x="63.0" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="78.6" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">recall</text>
+<text x="125.4" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="141.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">PRs (2)</text>
+</g>
+<g class="st c12">
+<text x="34.0" y="442" fill="#737aa2" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#c0caf5" xml:space="preserve"> ▌</text>
+</g>
+<g class="st rm s3">
+<text x="34.0" y="442" fill="#737aa2" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#c0caf5" xml:space="preserve"> yes, merge it▌</text>
+</g>
+<g class="st s4">
+<text x="34.0" y="442" fill="#737aa2" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#c0caf5" xml:space="preserve"> ▌</text>
+</g>
+<g class="st b23"><rect x="176" y="300" width="380" height="62" rx="12" fill="#2a2e42" stroke="#7aa2f7"/><circle cx="204" cy="331" r="15" fill="#7aa2f7"/><text x="197.0" y="336" fill="#1a1b26" font-weight="700" xml:space="preserve">♪</text><text x="230.0" y="325" fill="#c0caf5" font-weight="700" xml:space="preserve">Claude · claude-mods</text><text x="230.0" y="345" fill="#c0caf5" xml:space="preserve">Finished, needs your reply: Merge 0.9.0…</text></g>
+<g class="st s1">
+<text x="24.0" y="531" fill="#7aa2f7" font-weight="700" font-size="15" xml:space="preserve">1</text>
+<text x="33.0" y="531" fill="#c0caf5" font-size="15" xml:space="preserve">  Claude finishes a turn with a question for you</text><circle cx="870" cy="526" r="5" fill="#7aa2f7"/><circle cx="892" cy="526" r="5" fill="#3b4261"/><circle cx="914" cy="526" r="5" fill="#3b4261"/><circle cx="936" cy="526" r="5" fill="#3b4261"/>
+</g>
+<g class="st s2">
+<text x="24.0" y="531" fill="#7aa2f7" font-weight="700" font-size="15" xml:space="preserve">2</text>
+<text x="33.0" y="531" fill="#c0caf5" font-size="15" xml:space="preserve">  A chime, and a notification named after the folder</text><circle cx="870" cy="526" r="5" fill="#3b4261"/><circle cx="892" cy="526" r="5" fill="#7aa2f7"/><circle cx="914" cy="526" r="5" fill="#3b4261"/><circle cx="936" cy="526" r="5" fill="#3b4261"/>
+</g>
+<g class="st rm s3">
+<text x="24.0" y="531" fill="#7aa2f7" font-weight="700" font-size="15" xml:space="preserve">3</text>
+<text x="33.0" y="531" fill="#c0caf5" font-size="15" xml:space="preserve">  It waits in the pane: reply fills your answer in</text><circle cx="870" cy="526" r="5" fill="#3b4261"/><circle cx="892" cy="526" r="5" fill="#3b4261"/><circle cx="914" cy="526" r="5" fill="#7aa2f7"/><circle cx="936" cy="526" r="5" fill="#3b4261"/>
+</g>
+<g class="st s4">
+<text x="24.0" y="531" fill="#7aa2f7" font-weight="700" font-size="15" xml:space="preserve">4</text>
+<text x="33.0" y="531" fill="#c0caf5" font-size="15" xml:space="preserve">  You answer, and the alert clears itself</text><circle cx="870" cy="526" r="5" fill="#3b4261"/><circle cx="892" cy="526" r="5" fill="#3b4261"/><circle cx="914" cy="526" r="5" fill="#3b4261"/><circle cx="936" cy="526" r="5" fill="#7aa2f7"/>
+</g>
+</svg>

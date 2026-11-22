@@ -9,11 +9,11 @@ Two mods for [Claude Code](https://claude.com/claude-code), published as a plugi
 
 ![How the repo, the two mods and Claude Code fit together](docs/images/overview.svg)
 
-> The pictures in this README are drawn from the mods' render code with sample data. They are illustrations, not screenshots.
+> The pictures and animations in this README are drawn from the mods' render code with sample data. They are illustrations, not screenshots.
 
 ## Requirements
 
-- Claude Code with plugin hooks modules (built and tested on 2.1.323).
+- Claude Code with plugin hooks modules (built on 2.1.323; the GitHub check runs 2.1.330).
 - `git` for the Git section, and the [GitHub CLI](https://cli.github.com) (`gh auth login`) for the PRs section. Everything else works without them.
 - The operator pane docks on the right in Claude Code's fullscreen layout from 110 columns. Below that it sits above the prompt instead.
 
@@ -31,9 +31,22 @@ To check they loaded, type `/operator` (the pane opens) and `/persona` (the pick
 
 ## operator-board
 
+### See it in action
+
+**How an alert works:** Claude finishes with a question, you hear a chime and get a notification named after the folder, the alert waits in the pane, and it clears itself once you answer.
+
+<img src="docs/images/alerts-flow.svg" width="760" alt="Animation: how an operator-board alert works, in four steps">
+
+**From an edit to a merge:** Git shows what Claude changed, the header offers **push** and then **open PR**, and when CI goes green you get an alert and a **merge** button.
+
+<img src="docs/images/dev-flow.svg" width="760" alt="Animation: from an edit to a merge with operator-board, in four steps">
+
 ### The pane
 
-`/operator` opens or closes the pane. The pane's width follows your terminal: Claude Code gives it a share of the window (at most 45%) and resizes it with the window. Drag its edge to pick your own width, and Claude Code keeps it. The pane also opens by itself when a session starts, but Claude Code only shows a pane opened that way on a terminal at least 144 columns wide (110 once you've opened it yourself). On a narrower terminal, a **▸ show operator pane** button appears above the prompt: click it, or type `/operator`. If you leave the pane open, later sessions show it on their own from 110 columns. Every section starts folded, and its header carries a one-line summary, so you can see what needs you without opening anything. Click a header to open it.
+- **Open or close it** with `/operator`. It also opens by itself when a session starts.
+- **Width:** it follows your terminal. Claude Code gives it a share of the window (at most 45%) and resizes it with the window. Drag its edge to pick your own width, and Claude Code keeps it.
+- **Narrow terminals:** Claude Code only shows a pane that opened by itself on a terminal at least 144 columns wide, or 110 once you've opened it yourself and left it open. On a narrower terminal, click **▸ show operator pane** above the prompt, or type `/operator`. In Apple Terminal, a smaller font (Cmd and −) gives you more columns.
+- **Folded headers:** every section starts folded, and its header carries a one-line summary, so you can see what needs you without opening anything. Click a header to open it.
 
 <img src="docs/images/operator-pane.svg" width="480" alt="Illustration: the operator pane with every section folded, each header showing a one-line summary">
 
@@ -66,7 +79,7 @@ Whether a banner appears depends on your Claude Code notification setting (`pref
 
 ### The band
 
-A row above the prompt with shortcuts into the pane: the board (with how many need a reply), recall, PRs (with a red dot when CI fails) and the alert count.
+A row above the prompt with shortcuts into the pane: the board (with how many need a reply), recall, PRs (with a red dot when CI fails) and the alert count. While the pane waits hidden on a narrow terminal, it starts with **▸ show operator pane**.
 
 ![Illustration: the operator-board and persona bands drawn above the Claude Code prompt](docs/images/bands.svg)
 
@@ -76,6 +89,7 @@ A row above the prompt with shortcuts into the pane: the board (with how many ne
 |---|---|
 | `/operator` | Open or close the pane |
 | `/board` · `/prs` · `/sessions` | Open or fold that section (`/prs` also refreshes) |
+| `/recall [words]` | Open Recall, searching for the words if given |
 | `/savepoint` | Save a checkpoint of this session, which Sessions can continue from |
 | `/quick` | Pin a quick prompt |
 | `/alerts [on\|off]` | Turn alerts on or off |
@@ -90,7 +104,18 @@ Type `/persona` and use ↑/↓ to preview, Enter to pick. Your choice is rememb
 
 A persona changes Claude's replies, the tool-row icons, the spinner and footer words, the band, and the terminal's own 16 colours plus background, text and cursor. While Claude works, the band shows an animated scene such as rain, snow or stars. Make your own with `/persona new <name> <bg> [fg] [accent …]`, or ask Claude: "make me a persona that feels like a sunset."
 
+Code blocks in Claude's replies have a **copy** button, and no side border, so selecting the lines copies just the code. `/persona replies off` hands replies back to Claude Code's own drawing.
+
 Every command and setting is in [persona/README.md](persona/README.md).
+
+## Try it
+
+A walkthrough in your own repo. It makes a throwaway branch and PR, which you delete at the end.
+
+1. **What Claude changed.** Ask Claude: *"create a branch try-panel and add a line to notes.md"*. Open **Git**, and you'll see `Claude changed 1 file +1 −0` with **review** and **commit**. Press **commit**, then Enter. The line goes once the change is committed.
+2. **push, then open PR.** The Git header shows **push**. Press it, then Enter. Once the branch is pushed it shows **open PR**: press it, then Enter. `/prs` refreshes the PRs section straight away.
+3. **CI passed, then merge.** When the PR's checks go green, you get the **CI passed** alert, and the PR moves under **Ready** with a **merge** button. Close the PR on GitHub instead, and delete the branch.
+4. **To review** shows up when someone else asks you to review a PR. GitHub doesn't let you request your own review.
 
 ## Update and uninstall
 
@@ -126,7 +151,12 @@ cd ../persona && claude plugin test . && claude plugin validate .
 
 Bump the mod's `version` in its `.claude-plugin/plugin.json` with every change, or `claude plugin update` won't pick the change up. Then run the update commands above.
 
-The README illustrations come from `docs/images/*.svg`. If you change what the pane draws, update them to match.
+The README pictures are SVGs in `docs/images/`, drawn by two scripts. If you change what the pane draws, change the scripts to match and run them again:
+
+```sh
+python3 docs/tools/draw_pictures.py docs/images persona/hooks/themes.ts
+python3 docs/tools/draw_animations.py docs/images
+```
 
 ## Contributing
 
