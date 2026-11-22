@@ -17,6 +17,8 @@ import {
   pruneBoardAlerts,
   gitBody,
   gitSummary,
+  recordScroll,
+  scrollbarColumn,
   quickSummary,
   usageLevel,
   usageSummary,
@@ -360,13 +362,25 @@ const shellQuote = (v: string) => `'${v.replace(/'/g, `'\\''`)}'`
 const isPaneOpen = async ($: $T) => (await $.ui.panes()).some(p => p.id === PANE.id)
 
 async function openPane($: $T) {
-  return $.ui.open({ id: PANE.id, title: PANE.title, columns: DOCK_COLUMNS })
+  const opened = await $.ui.open({ id: PANE.id, title: PANE.title, columns: DOCK_COLUMNS })
+  measurePane($, 'start')
+  return opened
+}
+
+/**
+ * Asks for a scroll that doesn't move, so the engine reports the pane's height for the
+ * scrollbar. Only from a press or an open, never while drawing: a scroll redraws.
+ */
+async function measurePane($: $T, to: 'start' | { key: string }) {
+  await $.ui.scroll({ in: PANE.id, to }).catch(() => undefined)
 }
 
 async function setSection($: $T, key: PaneKey, open: boolean) {
   let next_: Record<PaneKey, boolean> = DEFAULT_OPEN
   await update($, openSections, s => (next_ = { ...s, [key]: open }))
   await $.store.set(STORE_OPEN, next_)
+  // The header just pressed is on screen, so revealing it moves nothing.
+  await measurePane($, { key: `sec-${key}` })
 }
 
 // Band button or command: closed pane -> open it on that section; section showing -> fold it; folded -> unfold it.
@@ -1260,6 +1274,11 @@ export const register: Register = on => {
   })
 
   // ---------- the operator pane: every section in one place ----------
+  on('ui.scroll', { component: 'Pane', requestId: PANE.id }, async ($, e, next) => {
+    await recordScroll($, e.contentRows).catch(() => undefined)
+    return next(e)
+  })
+
   on('ui.render', { component: 'Pane', requestId: PANE.id }, async ($, e) => {
     const { Box, Button, Text } = $.ui.resolve(e)
     const L = await read($, look)
@@ -1308,7 +1327,8 @@ export const register: Register = on => {
       recall: open.recall ? await recallBody($, e) : null,
     }
     return (
-      <Box flexDirection="column" gap={1}>
+      <Box flexDirection="column" gap={1} paddingRight={1}>
+        {await scrollbarColumn($, e, L)}
         {await alertsStrip($, e, L)}
         {keys.map(k => (
           <Box flexDirection="column" key={`section-${k}`}>
