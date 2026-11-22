@@ -88,7 +88,7 @@ test('a reply is drawn in the persona on the terminal', async ($, on) => {
   })
   expect(await ui.find({ type: 'Text', text: /Title/ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /▎ Note/ })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: /╭/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /── ts/ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /const/ })).toBeDefined()
   await ui.unmount()
 })
@@ -320,4 +320,24 @@ test('a wrapped table cell keeps its bold and code', async () => {
   }
   expect(lines[0]!.startsWith('**')).toBe(true)
   expect(lines.some(l => l.includes('`board_update`'))).toBe(true)
+})
+
+test('a code block copies clean: no border on its lines, and a copy button with the exact text', async ($, on) => {
+  mock.store(on)
+  const copied: any[] = []
+  const toasts: string[] = []
+  on('ui.copy', (_: unknown, e: any) => (copied.push(e), { value: { isCopied: true } }))
+  on('ui.toast', (_: unknown, e: any) => (toasts.push(e.text), { value: undefined }))
+  const text = ['Run this:', '', '```sh', 'cd ~/dev/project/claude-mods && git checkout x', 'claude --plugin-dir ./operator-board', '```'].join('\n')
+  const ui = await $.ui.mount({
+    plugin: 'persona', component: 'AssistantMessage', surface: 'terminal',
+    props: { text, isFirstOfReply: true },
+  })
+  const line = (await ui.find({ type: 'Text', text: /^cd ~\/dev/ })) as any
+  expect(line?.text).toBe('cd ~/dev/project/claude-mods && git checkout x')
+  expect(await ui.find({ type: 'Text', text: /[│╭╮╰╯]/ })).toBeUndefined()
+  await ui.press({ key: 'copy-1' })
+  expect(copied.at(-1)?.text).toBe('cd ~/dev/project/claude-mods && git checkout x\nclaude --plugin-dir ./operator-board')
+  expect(toasts.at(-1)).toBe('Copied the code block')
+  await ui.unmount()
 })

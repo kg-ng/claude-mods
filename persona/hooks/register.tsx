@@ -740,14 +740,18 @@ export const register: Register = (on, options) => {
   // Claude's replies: drawn in the persona's colours (headings, code, lists, tables, links).
   on('ui.render', { component: 'AssistantMessage' }, async ($, e, next) => {
     if (e.surface !== 'terminal' || (await read($, isRepliesOff))) return next(e)
-    const { Box, Text } = $.ui.resolve(e)
+    const { Box, Text, Button } = $.ui.resolve(e)
     const p = (await personaFor($, 'chat')).palette
     const columns = (e.viewport?.columns ?? 80) - 2
+    const copy = async (text: string, press: any) => {
+      const r: any = await $.ui.copy({ text, surface: press?.surface }).catch(() => undefined)
+      $.ui.toast(r?.isCopied ? 'Copied the code block' : 'Could not copy the code block')
+    }
     return (
       <Box flexDirection="row" marginTop={1}>
         <Text color={p.web}>{e.props.isFirstOfReply ? '● ' : '  '}</Text>
         <Box flexDirection="column" flexGrow={1} flexShrink={1}>
-          {renderMarkdown({ Box, Text }, p, e.props.text, columns)}
+          {renderMarkdown({ Box, Text, Button }, p, e.props.text, columns, copy)}
         </Box>
       </Box>
     )
