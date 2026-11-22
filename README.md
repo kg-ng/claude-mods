@@ -130,7 +130,7 @@ The README illustrations come from `docs/images/*.svg`. If you change what the p
 
 ## Contributing
 
-Pull requests are welcome. `main` is protected: every change needs a pull request approved by the code owner, [@kg-ng](https://github.com/kg-ng) (see [CODEOWNERS](.github/CODEOWNERS)). Force-pushes and deleting `main` are blocked.
+Pull requests are welcome. `main` is protected: every change needs a pull request approved by the code owner, [@kg-ng](https://github.com/kg-ng) (see [CODEOWNERS](.github/CODEOWNERS)), and the **check** workflow must pass. That workflow validates the marketplace and both mods and runs their tests. Force-pushes and deleting `main` are blocked.
 
 ## License
 
