@@ -495,3 +495,21 @@ test('a turn that ends needing a reply notifies with the folder, shows on the pa
   expect(await ui.find({ type: 'Text', text: /Alerts \(/ })).toBeUndefined()
   await ui.unmount()
 })
+
+test('a section that needs you moves to the top of the pane', async ($, on) => {
+  usageFixture = {
+    startedAt: 1,
+    context: { percent: 40, tokens: 80000, window: 200000 },
+    rateLimits: [{ kind: 'five_hour', percentUsed: 95 }],
+  }
+  engine(on)
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.turn.complete({ answer: 'ok', durationMs: 1, isAborted: false, turnId: 't', reason: 'answer' } as any)
+  const ui = await $.ui.mount({ ...pane('operator', 'operator'), surface: 'terminal' })
+  const tree = JSON.stringify(await ui.find({ type: 'Box' }))
+  expect(tree.indexOf('section-usage')).toBeGreaterThan(-1)
+  expect(tree.indexOf('section-usage')).toBeLessThan(tree.indexOf('section-board'))
+  expect(tree.indexOf('section-board')).toBeLessThan(tree.indexOf('section-todo'))
+  await ui.unmount()
+  usageFixture = null
+})
