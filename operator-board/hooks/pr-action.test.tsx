@@ -1,5 +1,6 @@
 import { expect, test } from 'claude-code/testing'
-import { paneOrder, prAction, prStatusLine } from './register'
+import { prAction, prStatusLine } from './prs'
+import { paneOrder } from './register'
 
 const base = {
   repo: 'o/r', number: 7, title: 't', url: 'https://x/7', isDraft: false, createdAt: '', head: 'abc',
