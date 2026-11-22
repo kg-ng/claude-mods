@@ -4,7 +4,7 @@ Two mods for [Claude Code](https://claude.com/claude-code), published as a plugi
 
 | Mod | Version | What it does |
 |---|---|---|
-| [`operator-board`](operator-board) | 0.10.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
+| [`operator-board`](operator-board) | 0.11.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.6.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 
 ![How the repo, the two mods and Claude Code fit together](docs/images/overview.svg)
@@ -38,6 +38,8 @@ To check they loaded, type `/operator` (the pane opens) and `/persona` (the pick
 <img src="docs/images/operator-pane.svg" width="480" alt="Illustration: the operator pane with every section folded, each header showing a one-line summary">
 
 Header colours: **amber** when something waits on you (a reply, a usage warning) and **red** when something is broken (failing CI, usage past your stop line). Sections that need you move to the top of the pane, and go back to their place once they're handled.
+
+When the pane is taller than its window, a scrollbar on the right shows where you are. Scroll with the mouse wheel, or click the pane and use the arrow and page keys.
 
 | Section | What it shows |
 |---|---|

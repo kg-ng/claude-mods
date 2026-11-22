@@ -169,6 +169,7 @@ declare module 'claude-code' {
       timeFormat: string
       usageLimits: Shaped<UsageLimits>
       limitsDraft: Shaped<{ warn: number; stop: number }>
+      paneScroll: Shaped<{ contentRows: number }>
       sessions: Shaped<SessionsSnapshot>
       boardScope: 'here' | 'all'
       cwd: string

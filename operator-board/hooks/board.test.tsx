@@ -513,3 +513,36 @@ test('a section that needs you moves to the top of the pane', async ($, on) => {
   await ui.unmount()
   usageFixture = null
 })
+
+test('the pane draws a scrollbar pinned to its window once it is taller than the window', async ($, on) => {
+  engine(on)
+  // The engine's part of a scroll: the window moves, nothing to answer.
+  on('ui.scroll', () => ({}))
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  const at = (offset: number, placement = 'dock') =>
+    ({
+      ...pane('operator', 'operator'),
+      surface: 'terminal',
+      props: { ...pane('operator', 'operator').props, placement, scroll: { offset, bodyRows: 40 } },
+    }) as any
+  // Nothing reported yet: no bar.
+  let ui = await $.ui.mount(at(0))
+  expect(await ui.find({ key: 'pane-scrollbar' })).toBeUndefined()
+  await ui.unmount()
+  // A scroll reports 120 rows: the bar shows at the window's top, its thumb a third of it.
+  await ($ as any).ui.scroll({ component: 'Pane', requestId: 'operator', offset: 30, by: 30, bodyRows: 40, contentRows: 120, origin: { kind: 'person' } })
+  ui = await $.ui.mount(at(30))
+  const bar = (await ui.find({ key: 'pane-scrollbar' })) as any
+  expect(bar?.props.top).toBe(30)
+  expect(bar?.text).toBe('│'.repeat(10) + '┃'.repeat(13) + '│'.repeat(17))
+  await ui.unmount()
+  // Not drawn as a desktop widget, where the surface has its own.
+  ui = await $.ui.mount(at(30, 'widget'))
+  expect(await ui.find({ key: 'pane-scrollbar' })).toBeUndefined()
+  await ui.unmount()
+  // Everything fits again: the bar goes.
+  await ($ as any).ui.scroll({ component: 'Pane', requestId: 'operator', offset: 0, by: 0, bodyRows: 40, contentRows: 30, origin: { kind: 'person' } })
+  ui = await $.ui.mount(at(0))
+  expect(await ui.find({ key: 'pane-scrollbar' })).toBeUndefined()
+  await ui.unmount()
+})

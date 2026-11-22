@@ -718,3 +718,49 @@ export async function usageBlockReason($: $T): Promise<string | undefined> {
     if (w && w.pct >= lim.warn) return `${name} usage at ${Math.round(w.pct)}% (warn line ${lim.warn}%)`
   return undefined
 }
+
+// ---------- pane scrollbar ----------
+
+/** The pane's height in rows, as the engine last reported it on a scroll. */
+export const paneScroll = atom({ plugin: 'operator-board', key: 'paneScroll' } as const, { contentRows: 0 }, {
+  shape: 'pane-scroll-1',
+})
+
+/**
+ * Where the thumb sits in a window of `bodyRows` over `contentRows` rows, the window's
+ * top at `offset`. Undefined when everything fits. `top` is the window's top, clamped:
+ * the engine's own clamps (after a fold) don't redraw, so a stale offset can run past the end.
+ */
+export function scrollbar(offset: number, bodyRows: number, contentRows: number) {
+  if (bodyRows < 2 || contentRows <= bodyRows) return undefined
+  const max = contentRows - bodyRows
+  const top = Math.max(0, Math.min(offset, max))
+  const thumb = Math.max(1, Math.min(bodyRows, Math.round((bodyRows * bodyRows) / contentRows)))
+  const start = Math.round(((bodyRows - thumb) * top) / max)
+  return { top, thumb, start }
+}
+
+/** Remembers the pane's height from a scroll; writes only when it changed, so a scroll redraws once. */
+export async function recordScroll($: $T, contentRows: number) {
+  if ((await read($, paneScroll)).contentRows !== contentRows) await update($, paneScroll, () => ({ contentRows }))
+}
+
+/** The bar, pinned to the window's right edge. Terminal only: other surfaces draw their own. */
+export async function scrollbarColumn($: $T, e: any, L: Look) {
+  if (e.surface !== 'terminal' || e.props.placement === 'widget') return null
+  const { offset, bodyRows } = e.props.scroll
+  const bar = scrollbar(offset, bodyRows, (await read($, paneScroll)).contentRows)
+  if (!bar) return null
+  const { Box, Text } = $.ui.resolve(e)
+  return (
+    <Box key="pane-scrollbar" position="absolute" top={bar.top} right={0} height={bodyRows} flexDirection="column">
+      {Array.from({ length: bodyRows }, (_, i) =>
+        i >= bar.start && i < bar.start + bar.thumb ? (
+          <Text key={`sb-${i}`} color={L.accent}>┃</Text>
+        ) : (
+          <Text key={`sb-${i}`} {...dim(L)}>│</Text>
+        ),
+      )}
+    </Box>
+  )
+}
