@@ -1,5 +1,5 @@
 import { atom, read, update } from 'claude-code'
-import type { EngineInterface, Register } from 'claude-code'
+import type { EngineInterface, Register, UiPressArgument } from 'claude-code'
 
 import type { Ask, BoardItem, Pr, PrSnapshot, SessionRow, SessionsSnapshot } from '../types'
 import { BASE_LOOK, dim, watchLook } from './look'
@@ -301,7 +301,8 @@ export function toSessions(text: string, current: string): SessionRow[] {
     if (!id || id === current) continue
     const at = typeof d.timestamp === 'number' ? d.timestamp : 0
     const said = typeof d.display === 'string' ? d.display.trim() : ''
-    const row = byId.get(id) ?? { id, project: '', last: '', at: 0, prompts: 0, name: '', recent: [], said: [] }
+    const row: SessionRow & { said: { at: number; text: string }[] } =
+      byId.get(id) ?? { id, project: '', last: '', at: 0, prompts: 0, name: '', recent: [], said: [] }
     row.prompts += 1
     if (at >= row.at) {
       row.at = at
@@ -852,7 +853,7 @@ async function recallBody($: $T, e: any) {
         placeholder='words, or "a phrase"'
         value={query}
         submitLabel="search"
-        onSubmit={v => {
+        onSubmit={(v: string) => {
           void update($, recallPick, () => null)
           return update($, recallQuery, () => v)
         }}
@@ -966,7 +967,7 @@ async function sessionsBody($: $T, e: any) {
                   plain
                   variant="primary"
                   label="continue"
-                  onPress={async press => {
+                  onPress={async (press: UiPressArgument) => {
                     if (here) return void (await $.prompt.fill({ text: go, mode: 'replace' }))
                     const done = await $.ui.copy({ text: goShell, surface: press.surface })
                     $.ui.toast(done.isCopied ? 'Copied: paste it in a terminal to continue' : `Copy failed: ${done.reason}`)
@@ -977,7 +978,7 @@ async function sessionsBody($: $T, e: any) {
                 key={`copy-${r.id}`}
                 plain
                 label="copy cmd"
-                onPress={async press => {
+                onPress={async (press: UiPressArgument) => {
                   const done = await $.ui.copy({ text: shell, surface: press.surface })
                   $.ui.toast(done.isCopied ? 'Copied: paste it in a terminal to resume' : `Copy failed: ${done.reason}`)
                 }}
@@ -1090,7 +1091,7 @@ export const register: Register = on => {
     const folds = (await $.store.get(STORE_OPEN)) as Record<PaneKey, boolean> | undefined
     if (folds && typeof folds === 'object') await update($, openSections, () => ({ ...DEFAULT_OPEN, ...folds }))
     const opened = await openPane($)
-    if (!opened.isPlaced) $.ui.log(`operator-board: pane not opened: ${opened.reason}`)
+    // Held back on a narrow terminal: the band's "show operator pane" button says so, not a log line.
 
     return next(e)
   })
