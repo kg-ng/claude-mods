@@ -549,6 +549,85 @@ let gitBusy = false
 export const GIT_REVIEW_PROMPT = '/code-review'
 export const GIT_COMMIT_PROMPT = 'Commit the current changes with a clear message (branch first if on main).'
 
+// ---------- what Claude changed this session ----------
+
+/** Paths (relative to the session's folder) of the files Claude edited this session. */
+const claudeEdits = atom({ plugin: 'operator-board', key: 'claudeEdits' } as const, [] as string[], {
+  shape: 'claude-edits-1',
+})
+
+/** Records a file an Edit / Write / MultiEdit / NotebookEdit call changed, then refreshes Git. */
+export async function recordEdit($: $T, path: string) {
+  const cwd = await $.session.cwd()
+  const rel = path.startsWith(`${cwd}/`) ? path.slice(cwd.length + 1) : path.startsWith('/') ? '' : path
+  if (!rel) return // outside this folder: not this repo's change
+  const list = await read($, claudeEdits)
+  if (!list.includes(rel)) await update($, claudeEdits, l => [...l, rel])
+  void refreshGit($)
+}
+
+/** owner/name from a GitHub remote URL (https or ssh), else ''. */
+export function repoFromRemote(url: string): string {
+  const m = /github\.com[:/]([^/\s]+)\/([^/\s]+?)(?:\.git)?\/?$/.exec(url.trim())
+  return m ? `${m[1]}/${m[2]}` : ''
+}
+
+/** Line counts for Claude's files that still differ from HEAD: tracked from numstat, new ones by line. */
+async function claudeChanges($: $T, cwd: string): Promise<GitSnap['claude']> {
+  const paths = await read($, claudeEdits)
+  if (paths.length === 0) return undefined
+  const changed = new Set<string>()
+  let added = 0
+  let removed = 0
+  const diff = await $.process.run(['git', '-C', cwd, 'diff', '--numstat', 'HEAD', '--', ...paths], { timeoutMs: 10000 })
+  if (diff.exitCode === 0)
+    for (const l of diff.stdout.split('\n')) {
+      const [a, r, p] = l.split('\t')
+      if (!p) continue
+      changed.add(p)
+      added += Number(a) || 0
+      removed += Number(r) || 0
+    }
+  const fresh = await $.process.run(['git', '-C', cwd, 'ls-files', '--others', '--exclude-standard', '--', ...paths], {
+    timeoutMs: 10000,
+  })
+  if (fresh.exitCode === 0)
+    for (const p of fresh.stdout.split('\n').filter(Boolean)) {
+      changed.add(p)
+      const text = await $.fs.read(`${cwd}/${p}`).catch(() => '')
+      added += text ? text.split('\n').length - (text.endsWith('\n') ? 1 : 0) : 0
+    }
+  if (changed.size === 0) return undefined
+  return { paths: paths.filter(p => changed.has(p)), added, removed }
+}
+
+/** The one next step for this branch, as a prompt to fill: push it, or open its PR. */
+export function gitNext(
+  g: GitSnap,
+  hasPr: (repo: string, branch: string) => boolean,
+): { label: string; text: string } | undefined {
+  const b = g.branch ?? ''
+  if (!g.updatedAt || g.isRepo === false || !b || b === '(detached)' || /^(main|master|trunk)$/.test(b)) return undefined
+  if (!g.upstream) return { label: 'push', text: `Push the branch ${b} and set its upstream.` }
+  if ((g.ahead ?? 0) > 0) return { label: 'push', text: `Push the ${g.ahead} new commit${g.ahead === 1 ? '' : 's'} on ${b}.` }
+  if (g.repo && !hasPr(g.repo, b))
+    return {
+      label: 'open PR',
+      text: `Open a pull request for the branch ${b}: a short title, and a description that sums up its commits.`,
+    }
+  return undefined
+}
+
+/** owner/name of this folder's GitHub remote, as Git last read it. */
+export async function gitRepo($: $T): Promise<string> {
+  return (await read($, git)).repo ?? ''
+}
+
+/** The Git snapshot, for gitNext. */
+export async function gitSnap($: $T): Promise<GitSnap> {
+  return read($, git)
+}
+
 export async function refreshGit($: $T) {
   if (gitBusy) return
   gitBusy = true
@@ -585,6 +664,8 @@ export async function refreshGit($: $T) {
     const log = await $.process.run(['git', '-C', cwd, 'log', '-1', '--format=%h %s (%cr)'], {
       timeoutMs: 10000,
     })
+    const remote = await $.process.run(['git', '-C', cwd, 'remote', 'get-url', 'origin'], { timeoutMs: 10000 })
+    const claude = await claudeChanges($, cwd).catch(() => undefined)
     await update(
       $,
       git,
@@ -598,6 +679,8 @@ export async function refreshGit($: $T) {
         changed: files.length,
         files: files.slice(0, 6),
         last: log.exitCode === 0 ? line1(log.stdout, 90) : '',
+        repo: remote.exitCode === 0 ? repoFromRemote(remote.stdout) : '',
+        claude,
       }),
     )
   } catch (err) {
@@ -639,6 +722,34 @@ export async function gitBody($: $T, e: any, L: Look) {
       ))}
       {(g.changed ?? 0) > (g.files?.length ?? 0) && (
         <Text {...dim(L)}>  … {(g.changed ?? 0) - (g.files?.length ?? 0)} more</Text>
+      )}
+      {g.claude && (
+        <Box flexDirection="row" gap={2}>
+          <Box flexGrow={1}>
+            <Text wrap="truncate-end">
+              Claude changed {g.claude.paths.length} file{g.claude.paths.length === 1 ? '' : 's'}{' '}
+              <Text color={L.ok}>+{g.claude.added}</Text> <Text color={L.err}>−{g.claude.removed}</Text>
+            </Text>
+          </Box>
+          <Button
+            key="git-claude-review"
+            plain
+            variant="primary"
+            label="review"
+            onPress={() => $.prompt.fill({ text: GIT_REVIEW_PROMPT, mode: 'replace' })}
+          />
+          <Button
+            key="git-claude-commit"
+            plain
+            label="commit"
+            onPress={() =>
+              $.prompt.fill({
+                text: `Commit the files Claude changed this session: ${g.claude!.paths.join(', ')}.`,
+                mode: 'replace',
+              })
+            }
+          />
+        </Box>
       )}
       {g.last && <Text wrap="truncate-end">last: {g.last}</Text>}
       {g.error && <Text color={L.err}>{g.error}</Text>}

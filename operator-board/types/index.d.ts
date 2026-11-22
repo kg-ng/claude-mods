@@ -50,6 +50,8 @@ export type Pr = {
   isDraft: boolean
   createdAt: string
   head: string
+  /** The PR's branch name. */
+  branch?: string
   reviewDecision: string | null
   openThreads: number
   ci: PrCheckSummary
@@ -59,6 +61,8 @@ export type Pr = {
 export type PrSnapshot = {
   updatedAt: number
   items: Pr[]
+  /** Open PRs that ask for your review. */
+  toReview?: Pr[]
   error?: string
 }
 
@@ -110,6 +114,10 @@ export type GitSnap = {
   files?: string[]
   last?: string
   error?: string
+  /** owner/name of the origin remote on GitHub, when it is one. */
+  repo?: string
+  /** The files Claude edited this session that still differ from HEAD, and their line counts. */
+  claude?: { paths: string[]; added: number; removed: number }
 }
 
 /** One to-do item of a project folder's list. */
@@ -170,6 +178,7 @@ declare module 'claude-code' {
       usageLimits: Shaped<UsageLimits>
       limitsDraft: Shaped<{ warn: number; stop: number }>
       paneScroll: Shaped<{ contentRows: number }>
+      claudeEdits: Shaped<string[]>
       sessions: Shaped<SessionsSnapshot>
       boardScope: 'here' | 'all'
       cwd: string

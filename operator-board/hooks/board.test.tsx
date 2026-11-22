@@ -32,6 +32,7 @@ const submitted: string[] = []
 let gitFixture: Record<string, string> | null = null
 let usageFixture: any = null
 let panesFixture: any[] = []
+let ghFixture: ((q: string) => string) | null = null
 const closes: any[] = []
 
 function engine(on: any, opens: any[] = []) {
@@ -70,7 +71,9 @@ function engine(on: any, opens: any[] = []) {
           ? historyFixture
           : e.argv?.[0] === 'git'
             ? (gitFixture?.[e.argv[3]] ?? '')
-            : '{"data":{"search":{"nodes":[]}}}',
+            : ghFixture
+              ? ghFixture(String(e.argv?.find((x: string) => x.startsWith('q=')) ?? ''))
+              : '{"data":{"search":{"nodes":[]}}}',
       stderr: '',
       isStdoutTruncated: false,
       isStderrTruncated: false,
@@ -587,4 +590,61 @@ test('the band offers to show the pane while it waits undrawn, and hides the off
   expect(await ui.find({ key: 'band-board' })).toBeDefined()
   await ui.unmount()
   panesFixture = []
+})
+
+test('Git shows what Claude changed this session, and the branch\'s next step on its header', async ($, on) => {
+  gitFixture = {
+    status: ['# branch.head feat/x', '# branch.upstream origin/feat/x', '# branch.ab +0 -0', '1 .M N... 100644 100644 100644 a b src/a.ts'].join('\n'),
+    log: 'abc1234 Start feat/x (1 hour ago)',
+    remote: 'git@github.com:kg-ng/claude-mods.git\n',
+    diff: '3\t1\tsrc/a.ts\n',
+    'ls-files': '',
+  }
+  const fills: any[] = []
+  engine(on)
+  on('prompt.fill', (_: unknown, e: any) => (fills.push(e), { isFilled: true }))
+  on('tool.call', { tool: 'Edit' }, () => ({ result: 'ok' }))
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.tool.call({ tool: 'Edit', file_path: '/work/app/src/a.ts', old_string: 'a', new_string: 'b' } as any)
+  // A path outside the folder isn't this repo's change.
+  await $.tool.call({ tool: 'Edit', file_path: '/elsewhere/b.ts', old_string: 'a', new_string: 'b' } as any)
+  await $.turn.complete({ answer: 'ok', durationMs: 1, isAborted: false, turnId: 't', reason: 'answer' } as any)
+  const ui = await $.ui.mount({ ...pane('operator', 'operator'), surface: 'terminal' })
+  // Pushed, no PR yet: "open PR" on the folded Git header.
+  await ui.press({ key: 'git-next' })
+  expect(fills.at(-1)?.text).toMatch(/^Open a pull request for the branch feat\/x/)
+  await ui.press({ key: 'sec-git' })
+  expect(await ui.find({ type: 'Text', text: /Claude changed 1 file \+3 −1/ })).toBeDefined()
+  await ui.press({ key: 'git-claude-commit' })
+  expect(fills.at(-1)?.text).toBe('Commit the files Claude changed this session: src/a.ts.')
+  await ui.unmount()
+  gitFixture = null
+})
+
+test('PRs list the ones waiting on your review, counted on the header, with a review button', async ($, on) => {
+  const node = (number: number, title: string, repo: string) => ({
+    number, title, url: `https://github.com/${repo}/pull/${number}`, isDraft: false, createdAt: '2026-11-20T10:00:00Z',
+    repository: { nameWithOwner: repo }, headRefOid: 'abc1234def', headRefName: 'x', reviewDecision: null,
+    reviewThreads: { nodes: [] }, commits: { nodes: [] },
+  })
+  ghFixture = q =>
+    JSON.stringify({ data: { search: { nodes: q.includes('review-requested') ? [node(9, 'Recall search', 'kg-ng/claude-mods'), node(4, 'Fix docs', 'acme/web')] : [] } } })
+  gitFixture = { status: '# branch.head main', log: '', remote: 'https://github.com/kg-ng/claude-mods.git' }
+  const fills: any[] = []
+  engine(on)
+  on('prompt.fill', (_: unknown, e: any) => (fills.push(e), { isFilled: true }))
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.command.run({ command: 'prs', args: '' } as any)
+  await $.turn.complete({ answer: 'ok', durationMs: 1, isAborted: false, turnId: 't', reason: 'answer' } as any)
+  const ui = await $.ui.mount({ ...pane('operator', 'operator'), surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: /PRs \(0 · 2 to review\)/ })).toBeDefined()
+  if (!JSON.stringify(await ui.find({ key: 'sec-prs' })).includes('▾')) await ui.press({ key: 'sec-prs' })
+  expect(await ui.find({ type: 'Text', text: /To review \(2\)/ })).toBeDefined()
+  await ui.press({ key: 'review-kg-ng/claude-mods-9' })
+  expect(fills.at(-1)?.text).toBe('/code-review 9')
+  await ui.press({ key: 'review-acme/web-4' })
+  expect(fills.at(-1)?.text).toBe('Review acme/web#4 (https://github.com/acme/web/pull/4).')
+  await ui.unmount()
+  ghFixture = null
+  gitFixture = null
 })
