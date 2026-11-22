@@ -567,3 +567,24 @@ test('/operator shows a pane that waits undrawn (narrow terminal) instead of clo
   expect(closes.at(-1)?.id).toBe('operator')
   panesFixture = []
 })
+
+test('the band offers to show the pane while it waits undrawn, and hides the offer once drawn', async ($, on) => {
+  const opens: any[] = []
+  engine(on, opens)
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  const band = { plugin: 'operator-board', component: 'AbovePrompt', surface: 'terminal',
+    props: { hasSurvey: false, isCollapsed: false, isWorking: false, maxRows: 10, bodyColumns: 100, scroll: { offset: 0, bodyRows: 10 }, view: {} } } as any
+  panesFixture = [{ id: 'operator', title: 'operator', isPlaced: false }]
+  let ui = await $.ui.mount(band)
+  const before = opens.length
+  await ui.press({ key: 'band-show-pane' })
+  expect(opens.length).toBe(before + 1)
+  expect(opens.at(-1)?.id).toBe('operator')
+  await ui.unmount()
+  panesFixture = [{ id: 'operator', title: 'operator', isPlaced: true }]
+  ui = await $.ui.mount(band)
+  expect(await ui.find({ key: 'band-show-pane' })).toBeUndefined()
+  expect(await ui.find({ key: 'band-board' })).toBeDefined()
+  await ui.unmount()
+  panesFixture = []
+})

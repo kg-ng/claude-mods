@@ -1244,8 +1244,14 @@ export const register: Register = on => {
     const red = snap.items.filter(p => p.status === 'red').length
     const prLabel = `PRs (${snap.items.length}${red ? `, ${red} red` : ''})`
     const alertsN = await alertCount($)
+    // Opened at session start but held back undrawn (terminal under Claude Code's width floor
+    // for a pane opened on its own): one press opens it, since a press is the person asking.
+    const isHeld = (await $.ui.panes()).some(p => p.id === PANE.id && !p.isPlaced)
     return (
       <Box flexDirection="row" gap={2}>
+        {isHeld && (
+          <Button key="band-show-pane" plain variant="primary" label="▸ show operator pane" onPress={() => openPane($)} />
+        )}
         <Button
           key="band-board"
           plain
