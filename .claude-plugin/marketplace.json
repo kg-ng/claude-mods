@@ -1,0 +1,8 @@
+{
+  "name": "claude-mods",
+  "owner": { "name": "local" },
+  "plugins": [
+    { "name": "operator-board", "source": "./operator-board" },
+    { "name": "persona", "source": "./persona" }
+  ]
+}

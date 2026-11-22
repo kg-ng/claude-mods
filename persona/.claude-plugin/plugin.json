@@ -1,0 +1,39 @@
+{
+  "name": "persona",
+  "version": "0.6.1",
+  "description": "Personas for the Claude Code terminal: replies, tool rows, spinner words and terminal colours in an editor theme or one you make. /persona to pick.",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "defaultPersona": {
+      "type": "string",
+      "title": "Default persona",
+      "description": "Persona to start with until you pick one with /persona (a built-in name or one of yours)",
+      "default": "tokyo-night"
+    },
+    "replies": {
+      "type": "boolean",
+      "title": "Draw replies in the persona",
+      "description": "Recolour Claude's replies: headings, code, lists, tables, links",
+      "default": true
+    },
+    "terminalColors": {
+      "type": "boolean",
+      "title": "Paint the Terminal tab",
+      "description": "In Apple Terminal, set this tab's background, text and cursor to the persona (restored with /persona terminal off)",
+      "default": true
+    },
+    "band": {
+      "type": "boolean",
+      "title": "Show the band",
+      "description": "The persona name and swatches above the prompt",
+      "default": true
+    },
+    "personasDir": {
+      "type": "string",
+      "title": "Personas folder",
+      "description": "Folder of persona .json files to load (share them in dotfiles or a team repo). ~ means your home folder",
+      "default": "~/.claude/personas"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "sunset",
+  "label": "Sunset",
+  "palette": {
+    "bg": "#2d1b2f",
+    "fg": "#fbe3b8",
+    "web": "#f2a65a",
+    "read": "#f4b6c2",
+    "write": "#d9603b",
+    "search": "#c3a6ff",
+    "run": "#ffd166",
+    "ok": "#a7c957",
+    "err": "#ff6b6b"
+  },
+  "spinner": ["Glowing", "Fading", "Dusking", "Setting"],
+  "done": ["Set", "Glowed"]
+}
