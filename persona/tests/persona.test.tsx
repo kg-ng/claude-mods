@@ -306,7 +306,7 @@ test('icons, frames and a scene can be set and travel in the JSON', async ($, on
   await run($, 'frames · ∘ ○ ◎')
   await run($, 'scene sparks')
   const out = await run($, 'export sunset')
-  const json = JSON.parse(String((out as any).text).split('\n').pop())
+  const json = JSON.parse(String((out as any).text).split('\n').pop() ?? '')
   expect(json.icons).toEqual({ run: '»', web: '☼' })
   expect(json.frames).toEqual(['·', '∘', '○', '◎'])
   expect(json.scene.preset).toBe('sparks')

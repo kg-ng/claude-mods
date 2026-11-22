@@ -344,14 +344,14 @@ export async function usageBody($: $T, e: any, L: Look) {
             label="warn at"
             options={PCT_OPTIONS}
             value={String(draft.warn)}
-            onSelect={v => void update($, limitsDraft, d => ({ ...d, warn: Number(v) }))}
+            onSelect={(v: string) => void update($, limitsDraft, d => ({ ...d, warn: Number(v) }))}
           />
           <Select
             key="limits-stop"
             label="stop at"
             options={PCT_OPTIONS}
             value={String(draft.stop)}
-            onSelect={v => void update($, limitsDraft, d => ({ ...d, stop: Number(v) }))}
+            onSelect={(v: string) => void update($, limitsDraft, d => ({ ...d, stop: Number(v) }))}
           />
           <Button
             key="limits-save"
@@ -407,7 +407,7 @@ export async function usageBody($: $T, e: any, L: Look) {
         label="Log"
         placeholder="label, e.g. sprint 23 start"
         submitLabel="log reading"
-        onSubmit={async v => {
+        onSubmit={async (v: string) => {
           await refreshUsage($)
           await logUsage($, 'mark', v.trim())
           $.ui.toast(`Logged a usage reading${v.trim() ? `: ${v.trim()}` : ''}`)
@@ -521,7 +521,7 @@ export async function quickBody($: $T, e: any, L: Look) {
         label="Pin"
         placeholder="a prompt you send often"
         submitLabel="pin"
-        onSubmit={v => pinQuick($, v)}
+        onSubmit={(v: string) => pinQuick($, v)}
       />
       {ideas.length > 0 && (
         <Box flexDirection="column" marginTop={1}>

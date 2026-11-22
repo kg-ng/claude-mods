@@ -314,7 +314,7 @@ export async function todoBody($: $T, e: any, L: Look, ctx: PilotContext) {
           key="todo-cap"
           options={CAP_OPTIONS}
           value={String(l.cap)}
-          onSelect={v => void setCap($, ctx.cwd, Number(v))}
+          onSelect={(v: string) => void setCap($, ctx.cwd, Number(v))}
         />
       </Box>
       {l.paused && !l.autopilot && <Text color={L.warn}>paused: {l.paused}</Text>}
@@ -345,7 +345,7 @@ export async function todoBody($: $T, e: any, L: Look, ctx: PilotContext) {
           <Button key={`tdel-${it.id}`} plain label="×" onPress={() => removeItem($, it.id)} />
         </Box>
       ))}
-      <Input key="todo-add" label="Add" placeholder="something to do" submitLabel="add" onSubmit={v => addMine($, ctx.cwd, v)} />
+      <Input key="todo-add" label="Add" placeholder="something to do" submitLabel="add" onSubmit={(v: string) => addMine($, ctx.cwd, v)} />
       {done.slice(0, DONE_SHOWN).map(it => (
         <Text wrap="truncate-end" key={`tdone-row-${it.id}`}>
           <Text color={L.ok}>✓ </Text>
