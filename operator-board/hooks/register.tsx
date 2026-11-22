@@ -12,6 +12,9 @@ import {
   setSuggestions,
   toggleAlerts,
   alert,
+  alertCount,
+  alertsStrip,
+  pruneBoardAlerts,
   gitBody,
   gitSummary,
   quickSummary,
@@ -412,6 +415,7 @@ async function mutateBoard($: $T, fn: (list: BoardItem[]) => BoardItem[]) {
   await $.fs.write(path, JSON.stringify({ v: 1, items: next_ }, null, 1))
   const stat = await $.fs.stat(path).catch(() => undefined)
   if (stat) boardSeen = stat.mtimeMs
+  await pruneAlerts($)
 }
 
 /** Picks up changes other sessions make to the shared board. */
@@ -422,7 +426,10 @@ async function watchBoard($: $T) {
       const stat = await $.fs.stat(path).catch(() => undefined)
       if (!stat || stat.mtimeMs === boardSeen) return
       const list = await readShared($)
-      if (list) await update($, items, () => list)
+      if (list) {
+        await update($, items, () => list)
+        await pruneAlerts($)
+      }
     } catch {
       // A half-written file: the next check reads it whole.
     }
@@ -968,6 +975,21 @@ async function pilotContext($: $T) {
   return { cwd, openReplies, usageBlock: await usageBlockReason($) }
 }
 
+/** Once a turn ends: chime and notify for each needs-reply item this session raised and hasn't alerted. */
+async function alertNeedsYou($: $T) {
+  const cwd = await read($, cwdAtom)
+  const me = await $.session.id()
+  for (const it of await read($, items)) {
+    if (it.kind !== 'reply' || it.session !== me || (it.project && it.project !== cwd)) continue
+    await alert($, `reply-${it.id}`, `Finished, needs your reply: ${oneLine(it.title, 70)}`)
+  }
+}
+
+/** Alerts about board items that no longer exist are dropped. */
+async function pruneAlerts($: $T) {
+  await pruneBoardAlerts($, new Set((await read($, items)).map(i => i.id)))
+}
+
 // ---------- periodic checks ----------
 async function tick($: $T) {
   await loadTodos($)
@@ -1179,6 +1201,7 @@ export const register: Register = on => {
     if ((await $.clock.now()) - (await read($, sessions)).updatedAt > 60000) void refreshSessions($)
     void refreshUsage($)
     void refreshGit($)
+    await alertNeedsYou($)
     await autopilotAfterTurn($, await pilotContext($))
     return done
   })
@@ -1193,6 +1216,7 @@ export const register: Register = on => {
     const snap = await read($, prs)
     const red = snap.items.filter(p => p.status === 'red').length
     const prLabel = `PRs (${snap.items.length}${red ? `, ${red} red` : ''})`
+    const alertsN = await alertCount($)
     return (
       <Box flexDirection="row" gap={2}>
         <Button
@@ -1213,6 +1237,17 @@ export const register: Register = on => {
           }}
         />
         {red > 0 && <Text color={L.err}>●</Text>}
+        {alertsN > 0 && (
+          <Button
+            key="band-alerts"
+            plain
+            variant="primary"
+            label={`● ${alertsN} alert${alertsN > 1 ? 's' : ''}`}
+            onPress={async () => {
+              if (!(await isPaneOpen($))) await openPane($)
+            }}
+          />
+        )}
       </Box>
     )
   })
@@ -1263,6 +1298,7 @@ export const register: Register = on => {
     ]
     return (
       <Box flexDirection="column" gap={1}>
+        {await alertsStrip($, e, L)}
         {keys.map((k, n) => (
           <Box flexDirection="column" key={`section-${k}`}>
             <Button key={`sec-${k}`} plain onPress={() => setSection($, k, !open[k])}>

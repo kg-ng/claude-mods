@@ -135,11 +135,31 @@ export const untilText = (iso: string | undefined, now: number) => {
 
 const alerted = new Set<string>()
 
-/** A toast, plus the alert sound on macOS; each key alerts once per session. */
+export const alertLog = atom({ plugin: 'operator-board', key: 'alertLog' } as const, [], {
+  shape: 'alert-log-1',
+})
+const ALERT_LOG_CAP = 20
+const ALERT_TOAST_MS = 15000
+
+/** Last folder name of the session, so a notification says which session it is. */
+async function folderName($: $T): Promise<string> {
+  const cwd = await $.session.cwd().catch(() => '')
+  return cwd.split('/').filter(Boolean).pop() ?? ''
+}
+
+/**
+ * An alert you can find again: kept on the pane until dismissed, a long toast,
+ * a native notification titled with this session's folder, and (sound) the
+ * alert sound on macOS. Each key alerts once per session.
+ */
 export async function alert($: $T, key: string, text: string, sound = true) {
   if (alerted.has(key) || !(await read($, alertsOn))) return
   alerted.add(key)
-  $.ui.toast(text)
+  const at = await $.clock.now()
+  await update($, alertLog, l => [...l.filter(a => a.key !== key), { key, at, text }].slice(-ALERT_LOG_CAP))
+  $.ui.toast(text, { timeoutMs: ALERT_TOAST_MS })
+  const folder = await folderName($)
+  await $.ui.notify(text, { title: folder ? `Claude · ${folder}` : 'Claude', key }).catch(() => undefined)
   if (!sound) return
   try {
     if ((await $.process.run(['uname'], { timeoutMs: 3000 })).stdout.trim() === 'Darwin')
@@ -147,6 +167,50 @@ export async function alert($: $T, key: string, text: string, sound = true) {
   } catch {
     // No sound player: the toast is enough.
   }
+}
+
+export async function dismissAlert($: $T, key?: string) {
+  await update($, alertLog, l => (key ? l.filter(a => a.key !== key) : []))
+}
+
+/** The strip at the top of the pane, shown whatever is folded, while any alert is undismissed. */
+export async function alertsStrip($: $T, e: any, L: Look) {
+  const { Box, Button, Text } = $.ui.resolve(e)
+  const list = [...(await read($, alertLog))].reverse()
+  if (list.length === 0) return null
+  return (
+    <Box flexDirection="column">
+      <Box flexDirection="row" gap={2}>
+        <Text color={L.warn} bold>
+          ● Alerts ({list.length})
+        </Text>
+        <Button key="alerts-clear" plain label="dismiss all" onPress={() => dismissAlert($)} />
+      </Box>
+      {list.map(a => (
+        <Box flexDirection="row" gap={1} key={`alert-${a.key}`}>
+          <Box flexGrow={1}>
+            <Text wrap="truncate-end">
+              <Text {...dim(L)}>{hhmm(a.at)}</Text> {a.text}
+            </Text>
+          </Box>
+          <Button key={`adis-${a.key}`} plain label="✓" onPress={() => dismissAlert($, a.key)} />
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
+export async function alertCount($: $T): Promise<number> {
+  return (await read($, alertLog)).length
+}
+
+/** Drops reply/wait alerts whose board item is gone (answered or marked done). */
+export async function pruneBoardAlerts($: $T, ids: ReadonlySet<string>) {
+  const gone = (await read($, alertLog)).filter(a => {
+    const m = /^(?:reply|wait)-(.+)$/.exec(a.key)
+    return m && !ids.has(m[1]!)
+  })
+  if (gone.length) await update($, alertLog, l => l.filter(a => !gone.some(g => g.key === a.key)))
 }
 
 export async function restoreAlerts($: $T) {

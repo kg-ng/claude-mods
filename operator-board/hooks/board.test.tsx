@@ -16,6 +16,7 @@ const pane = (id: string, title: string) =>
   }) as const
 
 let historyFixture = ''
+const notified: any[] = []
 
 const SECTION_KEYS = ['board', 'usage', 'git', 'sessions', 'quick', 'prs', 'recall']
 /** Sections start folded: opens each one that is folded (recall stays as the test leaves it). */
@@ -35,6 +36,10 @@ function engine(on: any, opens: any[] = []) {
   on('session.id', () => ({ value: 'me' }))
   on('session.cwd', () => ({ value: '/work/app' }))
   on('ui.toast', () => ({ value: undefined }))
+  on('ui.notify', (_: unknown, e: any) => {
+    notified.push(e)
+    return { value: { isSent: true, channel: 'iterm2' } }
+  })
   on('ui.copy', () => ({ value: { isCopied: true } }))
   on('ui.panes', () => ({ value: [] }))
   on('fs.write', (_: unknown, e: any) => {
@@ -473,5 +478,20 @@ test('needs reply comes before recent asks on the board', async ($, on) => {
   await openAll(ui)
   const tree = JSON.stringify(await ui.find({ key: 'section-board' }))
   expect(tree.indexOf('Needs reply')).toBeLessThan(tree.indexOf('Recent asks'))
+  await ui.unmount()
+})
+
+test('a turn that ends needing a reply notifies with the folder, shows on the pane, and clears when resolved', async ($, on) => {
+  engine(on)
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.tool.call({ tool: 'mcp__operator-board__board_update', action: 'add', kind: 'reply', title: 'Ship it?' } as any)
+  await $.turn.complete({ answer: 'ok', durationMs: 1, isAborted: false, turnId: 't', reason: 'answer' } as any)
+  const n = notified.find(x => /needs your reply: Ship it\?/.test(JSON.stringify(x)))
+  expect(JSON.stringify(n)).toContain('Claude · app')
+  const ui = await $.ui.mount({ ...pane('operator', 'operator'), surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: /Alerts \(1\)/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /needs your reply: Ship it/ })).toBeDefined()
+  await $.tool.call({ tool: 'mcp__operator-board__board_update', action: 'remove', id: 'r1' } as any)
+  expect(await ui.find({ type: 'Text', text: /Alerts \(/ })).toBeUndefined()
   await ui.unmount()
 })

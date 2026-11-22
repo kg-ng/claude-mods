@@ -140,7 +140,10 @@ export type TodoList = {
   paused?: string
 }
 
-export type TodoFile = { v: 1; lists: Record<string, TodoList>; items: Todo[] }
+/** One alert this session raised, kept on the pane until dismissed. */
+export type AlertEntry = { key: string; at: number; text: string }
+
+export type TodoFile ={ v: 1; lists: Record<string, TodoList>; items: Todo[] }
 
 declare module 'claude-code' {
   interface PluginState {
@@ -162,6 +165,7 @@ declare module 'claude-code' {
       quickSuggest: Shaped<string[]>
       git: Shaped<GitSnap>
       alertsOn: boolean
+      alertLog: Shaped<AlertEntry[]>
       timeFormat: string
       usageLimits: Shaped<UsageLimits>
       limitsDraft: Shaped<{ warn: number; stop: number }>
