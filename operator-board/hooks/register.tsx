@@ -714,6 +714,32 @@ export function prAction(p: Pr): { label: string; text: string } | undefined {
   return undefined
 }
 
+/** A PR's second row: what's wrong first, then CI when it's a separate problem, then age. */
+export function prStatusLine(p: Pr, now: number): string {
+  const { passed, failed, running, skipped, failedNames } = p.ci
+  const total = passed + failed + running + skipped
+  const names = failedNames.slice(0, 2).join(', ') + (failedNames.length > 2 ? ` +${failedNames.length - 2}` : '')
+  const ci = failed
+    ? `CI red: ${names || `${failed} failed`}`
+    : running
+      ? `CI ${total - running}/${total}`
+      : total
+        ? 'CI green'
+        : 'no checks'
+  const parts =
+    p.status === 'attention'
+      ? [p.openThreads ? `${p.openThreads} thread${p.openThreads > 1 ? 's' : ''}` : 'changes requested', ci]
+      : p.status === 'draft'
+        ? ['draft', ci]
+        : [ci]
+  return [...parts, age(p.createdAt, now)].filter(Boolean).join(' · ')
+}
+
+/** Section order for the pane: sections that need you first, the rest as listed. */
+export function paneOrder<K extends string>(keys: readonly K[], urgent: ReadonlySet<K>): K[] {
+  return [...keys.filter(k => urgent.has(k)), ...keys.filter(k => !urgent.has(k))]
+}
+
 // ---------- PRs pane ----------
 async function prsBody($: $T, e: any) {
   const { Box, Button, Text } = $.ui.resolve(e)
@@ -722,25 +748,6 @@ async function prsBody($: $T, e: any) {
   const now = await $.clock.now()
   const color = (s: Pr['status']) =>
     s === 'red' ? L.err : s === 'running' || s === 'attention' ? L.warn : L.ok
-  const label = (p: Pr) =>
-    p.status === 'red'
-      ? `CI red (${p.ci.failed})`
-      : p.status === 'running'
-        ? 'CI running'
-        : p.status === 'attention'
-          ? p.openThreads
-            ? `${p.openThreads} open thread${p.openThreads > 1 ? 's' : ''}`
-            : 'changes requested'
-          : p.status === 'draft'
-            ? 'draft'
-            : 'ready'
-  const ciText = (p: Pr) => {
-    const total = p.ci.passed + p.ci.failed + p.ci.running + p.ci.skipped
-    if (total === 0) return 'no checks'
-    if (p.ci.failed) return `${p.ci.failed} failed: ${p.ci.failedNames.slice(0, 3).join(', ')}`
-    if (p.ci.running) return `running (${total - p.ci.running} of ${total} done)`
-    return `green (${p.ci.passed} passed${p.ci.skipped ? `, ${p.ci.skipped} skipped` : ''})`
-  }
   const openUrl = (url: string) => $.process.run(['open', url])
   const full = snap.items.filter(p => p.status !== 'ready')
   const ready = snap.items.filter(p => p.status === 'ready')
@@ -757,38 +764,38 @@ async function prsBody($: $T, e: any) {
       {snap.updatedAt > 0 && snap.items.length === 0 && (
         <Text {...dim(L)}>No open PRs authored by you.</Text>
       )}
-      {full.map(p => (
-        <Box flexDirection="column" key={`pr-${p.repo}-${p.number}`}>
-          <Button key={`open-${p.repo}-${p.number}`} plain onPress={() => openUrl(p.url)}>
-            <Text color={L.accent} bold>
-              #{p.number} {p.title}
-            </Text>
-          </Button>
-          <Text {...dim(L)}>
-            {p.repo} · {age(p.createdAt, now)} · {p.head}
-          </Text>
-          <Text>
-            status: <Text color={color(p.status)}>{label(p)}</Text>
-          </Text>
-          <Text>
-            CI: <Text color={color(p.status)}>{ciText(p)}</Text>
-          </Text>
-          {p.reviewDecision && (
-            <Text {...dim(L)}>review: {p.reviewDecision.toLowerCase().replace(/_/g, ' ')}</Text>
-          )}
-          {prAction(p) && (
-            <Box flexDirection="row" gap={2}>
-              <Button
-                key={`pract-${p.repo}-${p.number}`}
-                plain
-                variant="primary"
-                label={prAction(p)!.label}
-                onPress={() => $.prompt.fill({ text: prAction(p)!.text, mode: 'replace' })}
-              />
+      {full.map(p => {
+        const act = prAction(p)
+        return (
+          <Box flexDirection="column" key={`pr-${p.repo}-${p.number}`}>
+            <Button key={`open-${p.repo}-${p.number}`} plain onPress={() => openUrl(p.url)}>
+              <Text wrap="truncate-end">
+                <Text color={L.accent} bold>
+                  #{p.number} {p.title}
+                </Text>
+                <Text {...dim(L)}> {p.repo.split('/').pop()}</Text>
+              </Text>
+            </Button>
+            <Box flexDirection="row" gap={1}>
+              <Box flexGrow={1}>
+                <Text wrap="truncate-end" color={color(p.status)}>
+                  {'  '}
+                  {prStatusLine(p, now)}
+                </Text>
+              </Box>
+              {act && (
+                <Button
+                  key={`pract-${p.repo}-${p.number}`}
+                  plain
+                  variant="primary"
+                  label={act.label}
+                  onPress={() => $.prompt.fill({ text: act.text, mode: 'replace' })}
+                />
+              )}
             </Box>
-          )}
-        </Box>
-      ))}
+          </Box>
+        )
+      })}
       {ready.length > 0 && (
         <Box flexDirection="column">
           <Text color={L.ok} bold>
@@ -1284,22 +1291,26 @@ export const register: Register = on => {
         : (k === 'board' && replies) || (k === 'usage' && level === 'warn')
           ? L.warn
           : L.accent
-    const keys = Object.keys(SECTIONS) as PaneKey[]
-    // In SECTIONS order.
-    const rendered = [
-      open.board ? await boardBody($, e) : null,
-      open.todo ? await todoBody($, e, L, await pilotContext($)) : null,
-      open.usage ? await usageBody($, e, L) : null,
-      open.git ? await gitBody($, e, L) : null,
-      open.sessions ? await sessionsBody($, e) : null,
-      open.quick ? await quickBody($, e, L) : null,
-      open.prs ? await prsBody($, e) : null,
-      open.recall ? await recallBody($, e) : null,
-    ]
+    // Sections that need you (a reply waiting, red CI, usage at your limits) come first.
+    const urgent = new Set<PaneKey>()
+    if (replies) urgent.add('board')
+    if (red) urgent.add('prs')
+    if (level) urgent.add('usage')
+    const keys = paneOrder(Object.keys(SECTIONS) as PaneKey[], urgent)
+    const rendered: Record<PaneKey, unknown> = {
+      board: open.board ? await boardBody($, e) : null,
+      todo: open.todo ? await todoBody($, e, L, await pilotContext($)) : null,
+      usage: open.usage ? await usageBody($, e, L) : null,
+      git: open.git ? await gitBody($, e, L) : null,
+      sessions: open.sessions ? await sessionsBody($, e) : null,
+      quick: open.quick ? await quickBody($, e, L) : null,
+      prs: open.prs ? await prsBody($, e) : null,
+      recall: open.recall ? await recallBody($, e) : null,
+    }
     return (
       <Box flexDirection="column" gap={1}>
         {await alertsStrip($, e, L)}
-        {keys.map((k, n) => (
+        {keys.map(k => (
           <Box flexDirection="column" key={`section-${k}`}>
             <Button key={`sec-${k}`} plain onPress={() => setSection($, k, !open[k])}>
               <Text wrap="truncate-end" color={headColor(k)} bold>
@@ -1307,7 +1318,7 @@ export const register: Register = on => {
                 {counts[k]}
               </Text>
             </Button>
-            {rendered[n]}
+            {rendered[k] as any}
           </Box>
         ))}
       </Box>
