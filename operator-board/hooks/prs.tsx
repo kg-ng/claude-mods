@@ -19,11 +19,21 @@ const prs = atom(
 /** What the band and the pane header need: how many PRs, how many red, when last fetched. */
 export async function prStats($: $T) {
   const snap = await read($, prs)
-  return { total: snap.items.length, red: snap.items.filter(p => p.status === 'red').length, updatedAt: snap.updatedAt }
+  return {
+    total: snap.items.length,
+    red: snap.items.filter(p => p.status === 'red').length,
+    toReview: snap.toReview?.length ?? 0,
+    updatedAt: snap.updatedAt,
+  }
+}
+
+/** `repo:branch` of each of your open PRs: Git's "open PR" step hides for a branch that has one. */
+export async function openPrKeys($: $T): Promise<Set<string>> {
+  return new Set((await read($, prs)).items.map(p => `${p.repo}:${p.branch ?? ''}`))
 }
 
 const PR_QUERY = `query($q:String!){ search(query:$q, type:ISSUE, first:30){ nodes{ ... on PullRequest {
-  number title url isDraft createdAt repository{nameWithOwner} headRefOid reviewDecision
+  number title url isDraft createdAt repository{nameWithOwner} headRefOid headRefName reviewDecision
   reviewThreads(first:100){nodes{isResolved}}
   commits(last:1){nodes{commit{statusCheckRollup{state contexts(first:100){nodes{
     __typename ... on CheckRun{name status conclusion} ... on StatusContext{context state}
@@ -81,6 +91,7 @@ function toPr(n: any): Pr {
     isDraft: !!n.isDraft,
     createdAt: n.createdAt,
     head: String(n.headRefOid ?? '').slice(0, 7),
+    branch: n.headRefName ?? undefined,
     reviewDecision: n.reviewDecision ?? null,
     openThreads,
     ci,
@@ -96,42 +107,54 @@ const ORDER: Record<Pr['status'], number> = {
   ready: 4,
 }
 
+/** Runs one PR search through gh; the PRs it finds, or the error. */
+async function searchPrs($: $T, q: string): Promise<{ list: Pr[] } | { error: string }> {
+  const out = await $.process.run(['gh', 'api', 'graphql', '-f', `query=${PR_QUERY}`, '-f', `q=${q}`], {
+    timeoutMs: 30000,
+  })
+  if (out.exitCode !== 0) return { error: oneLine(out.stderr || 'gh failed', 160) }
+  const nodes = JSON.parse(out.stdout)?.data?.search?.nodes ?? []
+  return { list: nodes.filter((n: any) => n && n.number).map(toPr) }
+}
+
+/** CI that finished green on the same commit it was running or failing on. */
+export function ciJustPassed(before: Pr | undefined, now: Pr): boolean {
+  if (!before || before.head !== now.head) return false
+  const wasPending = before.ci.running > 0 || before.ci.failed > 0
+  return wasPending && now.ci.running === 0 && now.ci.failed === 0 && now.ci.passed > 0
+}
+
 let refreshing = false
 export async function refreshPrs($: $T) {
   if (refreshing) return
   refreshing = true
   try {
-    const out = await $.process.run(
-      [
-        'gh',
-        'api',
-        'graphql',
-        '-f',
-        `query=${PR_QUERY}`,
-        '-f',
-        'q=is:pr is:open author:@me archived:false',
-      ],
-      { timeoutMs: 30000 },
-    )
+    const mine = await searchPrs($, 'is:pr is:open author:@me archived:false')
     const now = await $.clock.now()
-    if (out.exitCode !== 0) {
-      const error = oneLine(out.stderr || 'gh failed', 160)
-      await update($, prs, p => ({ ...p, error }))
+    if ('error' in mine) {
+      const error = mine.error
+      await update($, prs, p => ({ ...p, error })).catch(() => undefined)
       return
     }
-    const nodes = JSON.parse(out.stdout)?.data?.search?.nodes ?? []
-    const list: Pr[] = nodes
-      .filter((n: any) => n && n.number)
-      .map(toPr)
-      .sort((a: Pr, b: Pr) => ORDER[a.status] - ORDER[b.status])
+    const list = mine.list.sort((a: Pr, b: Pr) => ORDER[a.status] - ORDER[b.status])
+    // Asked for your review: a separate search; a failure here leaves your own PRs showing.
+    const asked = await searchPrs($, 'is:pr is:open review-requested:@me archived:false').catch(() => ({ list: [] }))
+    const toReview = 'list' in asked ? asked.list.sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt)) : []
     const before = await read($, prs)
-    await update($, prs, (): PrSnapshot => ({ updatedAt: now, items: list }))
-    if (before.updatedAt > 0)
+    await update($, prs, (): PrSnapshot => ({ updatedAt: now, items: list, toReview }))
+    if (before.updatedAt > 0) {
       for (const pr of list.filter(x => x.status === 'red'))
         await alert($, `pr-red-${pr.repo}-${pr.number}-${pr.head}`, `CI failed: #${pr.number} ${oneLine(pr.title, 50)}`)
+      for (const pr of list) {
+        const was = before.items.find(b => b.repo === pr.repo && b.number === pr.number)
+        if (ciJustPassed(was, pr))
+          await alert($, `ci-pass-${pr.repo}-${pr.number}-${pr.head}`, `CI passed: #${pr.number} ${oneLine(pr.title, 50)}`)
+      }
+    }
   } catch (err) {
     const error = oneLine(String(err), 160)
-    await update($, prs, p => ({ ...p, error }))
+    // The session may be gone by now (a refresh outliving it): nothing left to tell.
+    await update($, prs, p => ({ ...p, error })).catch(() => undefined)
   } finally {
     refreshing = false
   }
@@ -177,7 +200,12 @@ export function prStatusLine(p: Pr, now: number): string {
 }
 
 // ---------- the section ----------
-export async function prsBody($: $T, e: any, L: Look) {
+/** The prompt a review button fills: /code-review for this repo's PRs, a request naming another repo's. */
+export function reviewPrompt(p: Pr, currentRepo: string): string {
+  return p.repo === currentRepo ? `/code-review ${p.number}` : `Review ${p.repo}#${p.number} (${p.url}).`
+}
+
+export async function prsBody($: $T, e: any, L: Look, currentRepo: string) {
   const { Box, Button, Text } = $.ui.resolve(e)
   const snap = await read($, prs)
   const now = await $.clock.now()
@@ -186,6 +214,7 @@ export async function prsBody($: $T, e: any, L: Look) {
   const openUrl = (url: string) => $.process.run(['open', url])
   const full = snap.items.filter(p => p.status !== 'ready')
   const ready = snap.items.filter(p => p.status === 'ready')
+  const toReview = snap.toReview ?? []
 
   return (
     <Box flexDirection="column" gap={1}>
@@ -237,10 +266,53 @@ export async function prsBody($: $T, e: any, L: Look) {
             Ready ({ready.length})
           </Text>
           {ready.map(p => (
-            <Button key={`ready-${p.repo}-${p.number}`} plain onPress={() => openUrl(p.url)}>
-              <Text color={L.ok}>✓</Text> #{p.number} {oneLine(p.title, 60)}{' '}
-              <Text {...dim(L)}>{p.repo}</Text>
-            </Button>
+            <Box flexDirection="row" gap={1} key={`ready-row-${p.repo}-${p.number}`}>
+              <Box flexGrow={1}>
+                <Button key={`ready-${p.repo}-${p.number}`} plain onPress={() => openUrl(p.url)}>
+                  <Text wrap="truncate-end">
+                    <Text color={L.ok}>✓</Text> #{p.number} {oneLine(p.title, 60)}{' '}
+                    <Text {...dim(L)}>{p.repo.split('/').pop()}</Text>
+                  </Text>
+                </Button>
+              </Box>
+              <Button
+                key={`merge-${p.repo}-${p.number}`}
+                plain
+                variant="primary"
+                label="merge"
+                onPress={() =>
+                  $.prompt.fill({ text: `Merge ${p.repo}#${p.number} (${p.url}).`, mode: 'replace' })
+                }
+              />
+            </Box>
+          ))}
+        </Box>
+      )}
+      {toReview.length > 0 && (
+        <Box flexDirection="column">
+          <Text color={L.accent} bold>
+            To review ({toReview.length})
+          </Text>
+          {toReview.map(p => (
+            <Box flexDirection="row" gap={1} key={`rev-row-${p.repo}-${p.number}`}>
+              <Box flexGrow={1}>
+                <Button key={`rev-${p.repo}-${p.number}`} plain onPress={() => openUrl(p.url)}>
+                  <Text wrap="truncate-end">
+                    #{p.number} {oneLine(p.title, 60)}{' '}
+                    <Text {...dim(L)}>
+                      {p.repo.split('/').pop()} · {age(p.createdAt, now)}
+                    </Text>
+                  </Text>
+                </Button>
+              </Box>
+              <Button
+                key={`review-${p.repo}-${p.number}`}
+                plain
+                variant="primary"
+                label="review"
+                onPress={() => $.prompt.fill({ text: reviewPrompt(p, currentRepo), mode: 'replace' })}
+              />
+            </Box>
           ))}
         </Box>
       )}

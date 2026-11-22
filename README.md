@@ -4,7 +4,7 @@ Two mods for [Claude Code](https://claude.com/claude-code), published as a plugi
 
 | Mod | Version | What it does |
 |---|---|---|
-| [`operator-board`](operator-board) | 0.13.2 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
+| [`operator-board`](operator-board) | 0.14.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 
 ![How the repo, the two mods and Claude Code fit together](docs/images/overview.svg)
@@ -46,17 +46,17 @@ When the pane is taller than its window, a scrollbar on the right shows where yo
 | **Board** | *Needs reply*: questions Claude asked you, each with a button that fills your answer into the prompt. *Pending*: open work grouped by section (CI, follow-ups, your action). *Recent asks* from this and other sessions. Switch between "this folder" and "all sessions". |
 | **To-do** | A to-do list for the folder, shared by every session in it. Claude proposes items, you approve them. Turn on **autopilot** and Claude starts the next item when it finishes one. It stops at a cap, or when usage reaches your warn line. |
 | **Usage** | Context used, 5-hour and weekly limits, and session cost. |
-| **Git** | Branch, changed files, ahead and behind, and buttons that fill in `/code-review` or a commit request. |
+| **Git** | Branch, changed files, ahead and behind, and buttons that fill in `/code-review` or a commit request. When Claude has edited files this session, one line shows them, `Claude changed 4 files +120 −30`, with **review** and **commit**, until they're committed. The header offers the branch's next step: **push** (not pushed, or new commits) or **open PR** (pushed, no PR yet). |
 | **Sessions** | Earlier sessions with **resume**, **continue** and **copy cmd**, plus checkpoints saved with `/savepoint`. |
 | **Quick prompts** | Prompts you pin with `/quick` and send with one click. |
-| **PRs** | Your open PRs, two lines each: the title, then what's wrong, CI and age (`CI red: lint, e2e · 2d`). A PR that needs work gets a button on that line that fills the prompt: **fix CI**, **address threads** or **address review**. Nothing is sent until you press Enter. PRs that are ready collapse to one line each. |
+| **PRs** | Your open PRs, two lines each: the title, then what's wrong, CI and age (`CI red: lint, e2e · 2d`). A PR that needs work gets a button on that line that fills the prompt: **fix CI**, **address threads** or **address review**. Nothing is sent until you press Enter. PRs that are ready collapse to one line each, with a **merge** button. **To review** lists PRs where someone asked for your review, each with a **review** button (`/code-review <number>` for this repo), and the folded header counts them: `PRs (2, 1 red · 3 to review)`. |
 | **Recall** | Search earlier questions and answers. |
 
 <img src="docs/images/board-and-prs.svg" width="480" alt="Illustration: Board and PRs sections open, with one-click reply and fix CI buttons">
 
 ### Alerts
 
-When a turn ends with a question for you, a PR's CI fails, or usage crosses your limits, operator-board:
+When a turn ends with a question for you, a PR's CI fails or passes, or usage crosses your limits, operator-board:
 
 1. chimes and sends a system notification titled `Claude · <folder>`, so you know which session it came from;
 2. adds the alert to the **● Alerts** strip at the top of the pane, where it stays until you tick it ✓ or **dismiss all**;

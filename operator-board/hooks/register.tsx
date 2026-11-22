@@ -28,7 +28,11 @@ import {
   alertCount,
   alertsStrip,
   gitBody,
+  gitNext,
+  gitRepo,
+  gitSnap,
   gitSummary,
+  recordEdit,
   recordScroll,
   scrollbarColumn,
   quickSummary,
@@ -45,7 +49,7 @@ import {
   usageBody,
 } from './extras'
 import { BASE_LOOK, watchLook } from './look'
-import { PR_EVERY_MS, prStats, prsBody, refreshPrs } from './prs'
+import { PR_EVERY_MS, openPrKeys, prStats, prsBody, refreshPrs } from './prs'
 import { loadRecall, recallBody, recallCount, saveRecall, setRecallQuery } from './recall'
 import { refreshSessions, sessionRows, sessionsBody, sessionsUpdatedAt } from './sessions'
 import {
@@ -225,6 +229,15 @@ export const register: Register = on => {
     return { result: text }
   })
 
+  // Files Claude edits: Git shows them as "Claude changed N files" until they're committed.
+  on('tool.call', { tool: /^(Edit|Write|MultiEdit|NotebookEdit)$/ }, async ($, e, next) => {
+    const done = await next(e)
+    const path = (e as { file_path?: unknown; notebook_path?: unknown }).file_path ?? (e as { notebook_path?: unknown }).notebook_path
+    if (typeof path === 'string' && !('deny' in done) && !(done as { isError?: boolean }).isError)
+      await recordEdit($, path).catch(() => undefined)
+    return done
+  })
+
   // Commands.
   on('command.run', { command: 'operator' }, async $ => {
     if (await isPaneOpen($)) {
@@ -388,7 +401,7 @@ export const register: Register = on => {
     const L = await read($, look)
     const open = await read($, openSections)
     const { replies, pending: pendingN } = await boardStats($)
-    const { total, red } = await prStats($)
+    const { total, red, toReview } = await prStats($)
     const sessN = (await sessionRows($)).length
     const recallN = await recallCount($)
     const level = await usageLevel($)
@@ -402,9 +415,12 @@ export const register: Register = on => {
       git: await gitSummary($),
       sessions: sessN ? ` (${sessN})` : '',
       quick: await quickSummary($),
-      prs: ` (${total}${red ? `, ${red} red` : ''})`,
+      prs: ` (${total}${red ? `, ${red} red` : ''}${toReview ? ` · ${toReview} to review` : ''})`,
       recall: recallN ? ` (${recallN} saved)` : '',
     }
+    // The branch's next step (push / open PR), a button on the Git header itself.
+    const prKeys = await openPrKeys($)
+    const nextStep = gitNext(await gitSnap($), (repo, branch) => prKeys.has(`${repo}:${branch}`))
     const headColor = (k: PaneKey) =>
       (k === 'prs' && red) || (k === 'usage' && level === 'stop')
         ? L.err
@@ -424,7 +440,7 @@ export const register: Register = on => {
       git: open.git ? await gitBody($, e, L) : null,
       sessions: open.sessions ? await sessionsBody($, e, L) : null,
       quick: open.quick ? await quickBody($, e, L) : null,
-      prs: open.prs ? await prsBody($, e, L) : null,
+      prs: open.prs ? await prsBody($, e, L, await gitRepo($)) : null,
       recall: open.recall ? await recallBody($, e, L) : null,
     }
     return (
@@ -433,12 +449,25 @@ export const register: Register = on => {
         {await alertsStrip($, e, L)}
         {keys.map(k => (
           <Box flexDirection="column" key={`section-${k}`}>
-            <Button key={`sec-${k}`} plain onPress={() => setSection($, k, !open[k])}>
-              <Text wrap="truncate-end" color={headColor(k)} bold>
-                {open[k] ? '▾' : '▸'} {SECTIONS[k]}
-                {counts[k]}
-              </Text>
-            </Button>
+            <Box flexDirection="row" gap={1}>
+              <Box flexGrow={1} flexShrink={1}>
+                <Button key={`sec-${k}`} plain onPress={() => setSection($, k, !open[k])}>
+                  <Text wrap="truncate-end" color={headColor(k)} bold>
+                    {open[k] ? '▾' : '▸'} {SECTIONS[k]}
+                    {counts[k]}
+                  </Text>
+                </Button>
+              </Box>
+              {k === 'git' && nextStep && (
+                <Button
+                  key="git-next"
+                  plain
+                  variant="primary"
+                  label={nextStep.label}
+                  onPress={() => $.prompt.fill({ text: nextStep.text, mode: 'replace' })}
+                />
+              )}
+            </Box>
             {rendered[k] as any}
           </Box>
         ))}
