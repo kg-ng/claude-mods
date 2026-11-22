@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560" role="img" aria-label="Animation: from an edit to a merge with operator-board, in four steps" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13">
+<title>Animation: from an edit to a merge with operator-board, in four steps</title>
+<style>
+@keyframes k1{0%{opacity:1}0.00%{opacity:1}1.50%{opacity:1}23.50%{opacity:1}25.00%{opacity:0}100%{opacity:0}}
+@keyframes k2{0%{opacity:0}24.99%{opacity:0}26.50%{opacity:1}48.50%{opacity:1}50.00%{opacity:0}100%{opacity:0}}
+@keyframes k3{0%{opacity:0}49.99%{opacity:0}51.50%{opacity:1}73.50%{opacity:1}75.00%{opacity:0}100%{opacity:0}}
+@keyframes k4{0%{opacity:0}74.99%{opacity:0}76.50%{opacity:1}98.50%{opacity:1}100.00%{opacity:0}100%{opacity:0}}
+.s1{animation:k1 16s linear infinite}
+.s2{animation:k2 16s linear infinite}
+.s3{animation:k3 16s linear infinite}
+.s4{animation:k4 16s linear infinite}
+@keyframes c12{0%{opacity:1}0.00%{opacity:1}1.50%{opacity:1}48.50%{opacity:1}50.00%{opacity:0}100%{opacity:0}}
+.c12{animation:c12 16s linear infinite}
+@keyframes c23{0%{opacity:0}24.99%{opacity:0}26.50%{opacity:1}73.50%{opacity:1}75.00%{opacity:0}100%{opacity:0}}
+.c23{animation:c23 16s linear infinite}
+@keyframes b4{0%,75.00%{transform:translateX(420px);opacity:0}78.00%{transform:translateX(0);opacity:1}98.00%{transform:translateX(0);opacity:1}100.00%,100%{transform:translateX(420px);opacity:0}}.b4{animation:b4 16s ease-out infinite}
+.st{opacity:0}
+@media (prefers-reduced-motion: reduce){.st{animation:none!important;opacity:0;transform:none!important}.rm{opacity:1}}
+</style>
+<rect width="980" height="560" rx="14" fill="#1a1b26"/>
+<rect x="0.5" y="0.5" width="979" height="559" rx="14" fill="none" stroke="#3b4261"/>
+<circle cx="22" cy="20" r="6" fill="#f7768e"/><circle cx="40" cy="20" r="6" fill="#e0af68"/><circle cx="58" cy="20" r="6" fill="#9ece6a"/>
+<text x="392.5" y="25" fill="#737aa2" xml:space="preserve">claude-mods — Claude Code</text>
+<line x1="0" y1="38" x2="980" y2="38" stroke="#3b4261"/>
+<rect x="580" y="52" width="380" height="422" rx="8" fill="#16161e" stroke="#3b4261"/>
+<text x="594.0" y="72" fill="#737aa2" font-weight="700" xml:space="preserve">operator</text>
+<line x1="580" y1="82" x2="960" y2="82" stroke="#3b4261"/>
+<rect x="20" y="420" width="540" height="34" rx="6" fill="none" stroke="#3b4261"/>
+<line x1="0" y1="492" x2="980" y2="492" stroke="#3b4261"/>
+<g class="st c12">
+<text x="24.0" y="72" fill="#737aa2" xml:space="preserve">&gt; add a line to notes.md on a new branch, try-panel</text>
+<text x="24.0" y="110" fill="run" xml:space="preserve">❯</text>
+<text x="31.8" y="110" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="110" fill="#c0caf5" xml:space="preserve">git switch -c try-panel</text>
+<text x="24.0" y="148" fill="#ff9e64" xml:space="preserve">✎</text>
+<text x="31.8" y="148" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#c0caf5" xml:space="preserve">Edit notes.md</text>
+<text x="141.0" y="148" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="156.6" y="148" fill="#9ece6a" xml:space="preserve">+1</text>
+<text x="24.0" y="186" fill="#7aa2f7" xml:space="preserve">●</text>
+<text x="31.8" y="186" fill="#c0caf5" xml:space="preserve"> Added the line on try-panel.</text>
+</g>
+<g class="st rm s3">
+<text x="24.0" y="72" fill="#737aa2" xml:space="preserve">&gt; add a line to notes.md on a new branch, try-panel</text>
+<text x="24.0" y="110" fill="run" xml:space="preserve">❯</text>
+<text x="31.8" y="110" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="110" fill="#c0caf5" xml:space="preserve">git switch -c try-panel</text>
+<text x="24.0" y="148" fill="#ff9e64" xml:space="preserve">✎</text>
+<text x="31.8" y="148" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#c0caf5" xml:space="preserve">Edit notes.md</text>
+<text x="141.0" y="148" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="156.6" y="148" fill="#9ece6a" xml:space="preserve">+1</text>
+<text x="24.0" y="186" fill="run" xml:space="preserve">❯</text>
+<text x="31.8" y="186" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="186" fill="#c0caf5" xml:space="preserve">git push -u origin try-panel</text>
+<text x="24.0" y="224" fill="run" xml:space="preserve">❯</text>
+<text x="31.8" y="224" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="224" fill="#c0caf5" xml:space="preserve">gh pr create</text>
+<text x="24.0" y="262" fill="#7aa2f7" xml:space="preserve">●</text>
+<text x="31.8" y="262" fill="#c0caf5" xml:space="preserve"> Opened #11, CI is running.</text>
+</g>
+<g class="st s4">
+<text x="24.0" y="72" fill="#737aa2" xml:space="preserve">&gt; add a line to notes.md on a new branch, try-panel</text>
+<text x="24.0" y="110" fill="run" xml:space="preserve">❯</text>
+<text x="31.8" y="110" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="110" fill="#c0caf5" xml:space="preserve">git switch -c try-panel</text>
+<text x="24.0" y="148" fill="#ff9e64" xml:space="preserve">✎</text>
+<text x="31.8" y="148" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#c0caf5" xml:space="preserve">Edit notes.md</text>
+<text x="141.0" y="148" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="156.6" y="148" fill="#9ece6a" xml:space="preserve">+1</text>
+<text x="24.0" y="186" fill="run" xml:space="preserve">❯</text>
+<text x="31.8" y="186" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="186" fill="#c0caf5" xml:space="preserve">git push -u origin try-panel</text>
+<text x="24.0" y="224" fill="run" xml:space="preserve">❯</text>
+<text x="31.8" y="224" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="39.6" y="224" fill="#c0caf5" xml:space="preserve">gh pr create</text>
+<text x="24.0" y="262" fill="#7aa2f7" xml:space="preserve">●</text>
+<text x="31.8" y="262" fill="#c0caf5" xml:space="preserve"> Opened #11, CI is running.</text>
+</g>
+<g class="st c12">
+<text x="594.0" y="104" fill="#7aa2f7" font-weight="700" xml:space="preserve">▾ Git · try-panel · 1 changed</text>
+<text x="820.2" y="104" fill="#c0caf5" xml:space="preserve">        </text>
+<text x="882.6" y="104" fill="#7aa2f7" text-decoration="underline" xml:space="preserve">push</text>
+<text x="594.0" y="123" fill="#7aa2f7" font-weight="700" xml:space="preserve">try-panel</text>
+<text x="664.2" y="123" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="672.0" y="123" fill="#737aa2" xml:space="preserve">· not pushed</text>
+<text x="765.6" y="123" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="773.4" y="123" fill="#e0af68" xml:space="preserve">· 1 changed</text>
+<text x="594.0" y="142" fill="#737aa2" xml:space="preserve">  M notes.md</text>
+<text x="594.0" y="161" fill="#c0caf5" xml:space="preserve">Claude changed 1 file </text>
+<text x="765.6" y="161" fill="#9ece6a" xml:space="preserve">+1</text>
+<text x="781.2" y="161" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="789.0" y="161" fill="#f7768e" xml:space="preserve">−0</text>
+<text x="804.6" y="161" fill="#c0caf5" xml:space="preserve">   </text>
+<text x="828.0" y="161" fill="#7aa2f7" text-decoration="underline" xml:space="preserve">review</text>
+<text x="874.8" y="161" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="890.4" y="161" fill="#c0caf5" text-decoration="underline" xml:space="preserve">commit</text>
+<text x="594.0" y="199" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ PRs (0)</text>
+<text x="594.0" y="237" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Board</text>
+</g>
+<g class="st rm s3">
+<text x="594.0" y="104" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Git · try-panel · clean</text>
+<text x="594.0" y="142" fill="#e0af68" font-weight="700" xml:space="preserve">▾ PRs (1)</text>
+<text x="594.0" y="161" fill="#737aa2" xml:space="preserve">updated 14:20</text>
+<text x="695.4" y="161" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="711.0" y="161" fill="#c0caf5" text-decoration="underline" xml:space="preserve">refresh</text>
+<text x="594.0" y="199" fill="#7aa2f7" font-weight="700" xml:space="preserve">#11 Try the panel</text>
+<text x="726.6" y="199" fill="#c0caf5" xml:space="preserve"> </text>
+<text x="734.4" y="199" fill="#737aa2" xml:space="preserve">claude-mods</text>
+<text x="594.0" y="218" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="609.6" y="218" fill="#e0af68" xml:space="preserve">CI 2/5 · 1m</text>
+<text x="594.0" y="256" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Board</text>
+</g>
+<g class="st s4">
+<text x="594.0" y="104" fill="#e0af68" font-weight="700" xml:space="preserve">● Alerts (1)</text>
+<text x="687.6" y="104" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="703.2" y="104" fill="#737aa2" text-decoration="underline" xml:space="preserve">dismiss all</text>
+<text x="594.0" y="123" fill="#737aa2" xml:space="preserve">14:21</text>
+<text x="633.0" y="123" fill="#c0caf5" xml:space="preserve"> CI passed: #11 Try the panel       </text>
+<text x="913.8" y="123" fill="#737aa2" text-decoration="underline" xml:space="preserve">✓</text>
+<text x="594.0" y="161" fill="#7aa2f7" font-weight="700" xml:space="preserve">▸ Git · try-panel · clean</text>
+<text x="594.0" y="199" fill="#7aa2f7" font-weight="700" xml:space="preserve">▾ PRs (1)</text>
+<text x="594.0" y="218" fill="#737aa2" xml:space="preserve">updated 14:21</text>
+<text x="695.4" y="218" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="711.0" y="218" fill="#c0caf5" text-decoration="underline" xml:space="preserve">refresh</text>
+<text x="594.0" y="256" fill="#9ece6a" font-weight="700" xml:space="preserve">Ready (1)</text>
+<text x="594.0" y="275" fill="#9ece6a" xml:space="preserve">✓</text>
+<text x="601.8" y="275" fill="#c0caf5" xml:space="preserve"> #11 Try the panel </text>
+<text x="750.0" y="275" fill="#737aa2" xml:space="preserve">claude-mods</text>
+<text x="835.8" y="275" fill="#c0caf5" xml:space="preserve">      </text>
+<text x="882.6" y="275" fill="#7aa2f7" text-decoration="underline" xml:space="preserve">merge</text>
+</g>
+<g class="st s1">
+<text x="34.0" y="442" fill="#737aa2" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#c0caf5" xml:space="preserve"> ▌</text>
+</g>
+<g class="st s2">
+<text x="34.0" y="442" fill="#737aa2" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#c0caf5" xml:space="preserve"> Push the branch try-panel and set its upstream.▌</text>
+</g>
+<g class="st rm s3">
+<text x="34.0" y="442" fill="#737aa2" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#c0caf5" xml:space="preserve"> ▌</text>
+</g>
+<g class="st s4">
+<text x="34.0" y="442" fill="#737aa2" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#c0caf5" xml:space="preserve"> Merge kg-ng/claude-mods#11 (https://github.com/…)▌</text>
+</g>
+<g class="st s1">
+<text x="24.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">board</text>
+<text x="63.0" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="78.6" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">recall</text>
+<text x="125.4" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="141.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">PRs (0)</text>
+</g>
+<g class="st rm c23">
+<text x="24.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">board</text>
+<text x="63.0" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="78.6" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">recall</text>
+<text x="125.4" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="141.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">PRs (1)</text>
+</g>
+<g class="st s4">
+<text x="24.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">board</text>
+<text x="63.0" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="78.6" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">recall</text>
+<text x="125.4" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="141.0" y="406" fill="#c0caf5" text-decoration="underline" xml:space="preserve">PRs (1)</text>
+<text x="195.6" y="406" fill="#c0caf5" xml:space="preserve">  </text>
+<text x="211.2" y="406" fill="#7aa2f7" text-decoration="underline" xml:space="preserve">● 1 alert</text>
+</g>
+<g class="st b4"><rect x="176" y="300" width="380" height="62" rx="12" fill="#2a2e42" stroke="#7aa2f7"/><circle cx="204" cy="331" r="15" fill="#7aa2f7"/><text x="197.0" y="336" fill="#1a1b26" font-weight="700" xml:space="preserve">♪</text><text x="230.0" y="325" fill="#c0caf5" font-weight="700" xml:space="preserve">Claude · claude-mods</text><text x="230.0" y="345" fill="#c0caf5" xml:space="preserve">CI passed: #11 Try the panel</text></g>
+<g class="st s1">
+<text x="24.0" y="531" fill="#7aa2f7" font-weight="700" font-size="15" xml:space="preserve">1</text>
+<text x="33.0" y="531" fill="#c0caf5" font-size="15" xml:space="preserve">  Claude edits a file: Git shows what it changed</text><circle cx="870" cy="526" r="5" fill="#7aa2f7"/><circle cx="892" cy="526" r="5" fill="#3b4261"/><circle cx="914" cy="526" r="5" fill="#3b4261"/><circle cx="936" cy="526" r="5" fill="#3b4261"/>
+</g>
+<g class="st s2">
+<text x="24.0" y="531" fill="#7aa2f7" font-weight="700" font-size="15" xml:space="preserve">2</text>
+<text x="33.0" y="531" fill="#c0caf5" font-size="15" xml:space="preserve">  push fills the prompt; Enter runs it</text><circle cx="870" cy="526" r="5" fill="#3b4261"/><circle cx="892" cy="526" r="5" fill="#7aa2f7"/><circle cx="914" cy="526" r="5" fill="#3b4261"/><circle cx="936" cy="526" r="5" fill="#3b4261"/>
+</g>
+<g class="st rm s3">
+<text x="24.0" y="531" fill="#7aa2f7" font-weight="700" font-size="15" xml:space="preserve">3</text>
+<text x="33.0" y="531" fill="#c0caf5" font-size="15" xml:space="preserve">  open PR the same way: CI starts on it</text><circle cx="870" cy="526" r="5" fill="#3b4261"/><circle cx="892" cy="526" r="5" fill="#3b4261"/><circle cx="914" cy="526" r="5" fill="#7aa2f7"/><circle cx="936" cy="526" r="5" fill="#3b4261"/>
+</g>
+<g class="st s4">
+<text x="24.0" y="531" fill="#7aa2f7" font-weight="700" font-size="15" xml:space="preserve">4</text>
+<text x="33.0" y="531" fill="#c0caf5" font-size="15" xml:space="preserve">  CI goes green: an alert, and a merge button</text><circle cx="870" cy="526" r="5" fill="#3b4261"/><circle cx="892" cy="526" r="5" fill="#3b4261"/><circle cx="914" cy="526" r="5" fill="#3b4261"/><circle cx="936" cy="526" r="5" fill="#7aa2f7"/>
+</g>
+</svg>
