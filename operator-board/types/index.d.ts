@@ -184,6 +184,11 @@ declare module 'claude-code' {
       paneScroll: Shaped<{ contentRows: number; bodyRows: number }>
       claudeEdits: Shaped<string[]>
       advisorCalls: Shaped<{ count: number; lastAt: number; lastMs: number }>
+      modelUsage: Shaped<{
+        current: string
+        label: string
+        byModel: Record<string, { input: number; output: number; cacheRead: number; cacheWrite: number; steps: number }>
+      }>
       sessions: Shaped<SessionsSnapshot>
       boardScope: 'here' | 'all'
       cwd: string

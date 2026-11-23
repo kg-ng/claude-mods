@@ -10,6 +10,11 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 ## operator-board
 
+### 0.17.0
+
+- **Model** in Usage: the model Claude is answering with (as `/model` shows it) and the main thread's tokens on it this session: input (cached and not), output, and how much the prompt cache served. Other models the main thread used this session are listed under it. A **/model** button puts `/model ` in the prompt box.
+- README pictures for Usage and Quick prompts show the advisor, model and /btw rows.
+
 ### 0.16.0
 
 - **/btw** in Quick prompts: puts `/btw ` in the prompt box, for a side question answered without interrupting Claude.

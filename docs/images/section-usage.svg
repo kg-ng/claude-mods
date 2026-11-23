@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="479" height="354" viewBox="0 0 479 354" role="img" aria-label="Illustration: Usage: context, 5-hour and weekly limits, cost (persona: Kanagawa)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="14">
-<title>Illustration: Usage: context, 5-hour and weekly limits, cost (persona: Kanagawa)</title>
-<rect width="479" height="354" rx="12" fill="#1f1f28"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="479" height="417" viewBox="0 0 479 417" role="img" aria-label="Illustration: Usage: context, 5-hour and weekly limits, cost, advisor calls, tokens by model (persona: Kanagawa)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="14">
+<title>Illustration: Usage: context, 5-hour and weekly limits, cost, advisor calls, tokens by model (persona: Kanagawa)</title>
+<rect width="479" height="417" rx="12" fill="#1f1f28"/>
 <g transform="translate(20,20)">
-<rect x="0.5" y="0.5" width="438" height="313" rx="10" fill="#26252d" stroke="#494748"/>
+<rect x="0.5" y="0.5" width="438" height="376" rx="10" fill="#26252d" stroke="#494748"/>
 <line x1="0" y1="32" x2="439" y2="32" stroke="#494748"/>
 <text x="18.0" y="22" fill="#727169" font-weight="700" xml:space="preserve">operator</text>
 <text x="421" y="22" fill="#727169" font-size="12" text-anchor="end">persona: Kanagawa</text>
@@ -17,19 +17,29 @@
 <text x="85.2" y="121" fill="#98bb6c" xml:space="preserve">███░░░░░░░ 31%</text>
 <text x="202.8" y="121" fill="#727169" xml:space="preserve"> · resets Mon 09:00</text>
 <text x="18.0" y="142" fill="#727169" xml:space="preserve">cost this session $1.20</text>
-<text x="18.0" y="184" fill="#727169" xml:space="preserve">updated 14:05</text>
-<text x="127.2" y="184" fill="#dcd7ba" xml:space="preserve">  </text>
-<text x="144.0" y="184" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">refresh</text>
-<text x="202.8" y="184" fill="#dcd7ba" xml:space="preserve">  </text>
-<text x="219.6" y="184" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">time: 24h</text>
-<text x="18.0" y="205" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">limits 75/90%</text>
-<text x="127.2" y="205" fill="#dcd7ba" xml:space="preserve">  </text>
-<text x="144.0" y="205" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">alerts: on</text>
-<text x="18.0" y="247" fill="#727169" xml:space="preserve">Log  </text>
-<text x="60.0" y="247" fill="#494748" xml:space="preserve">[</text>
-<text x="68.4" y="247" fill="#727169" xml:space="preserve"> label, e.g. sprint 23 start  </text>
-<text x="320.4" y="247" fill="#494748" xml:space="preserve">]</text>
-<text x="18.0" y="268" fill="#727169" xml:space="preserve">Readings are logged at session start and end</text>
-<text x="18.0" y="289" fill="#727169" xml:space="preserve">to ~/.claude/operator-board/usage-log.jsonl.</text>
+<text x="18.0" y="163" fill="#dcd7ba" xml:space="preserve">advisor </text>
+<text x="85.2" y="163" fill="#727169" xml:space="preserve">2 calls this session · la…</text>
+<text x="303.6" y="163" fill="#dcd7ba" xml:space="preserve">  </text>
+<text x="320.4" y="163" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">/advisor</text>
+<text x="18.0" y="184" fill="#dcd7ba" xml:space="preserve">model   </text>
+<text x="85.2" y="184" fill="#7e9cd8" xml:space="preserve">Opus 5.5</text>
+<text x="152.4" y="184" fill="#727169" xml:space="preserve"> · 1.2M in · 48k out</text>
+<text x="320.4" y="184" fill="#dcd7ba" xml:space="preserve">  </text>
+<text x="337.2" y="184" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">/model</text>
+<text x="18.0" y="205" fill="#727169" xml:space="preserve">        also haiku-5-5 12k in</text>
+<text x="18.0" y="247" fill="#727169" xml:space="preserve">updated 14:05</text>
+<text x="127.2" y="247" fill="#dcd7ba" xml:space="preserve">  </text>
+<text x="144.0" y="247" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">refresh</text>
+<text x="202.8" y="247" fill="#dcd7ba" xml:space="preserve">  </text>
+<text x="219.6" y="247" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">time: 24h</text>
+<text x="18.0" y="268" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">limits 75/90%</text>
+<text x="127.2" y="268" fill="#dcd7ba" xml:space="preserve">  </text>
+<text x="144.0" y="268" fill="#dcd7ba" text-decoration="underline" xml:space="preserve">alerts: on</text>
+<text x="18.0" y="310" fill="#727169" xml:space="preserve">Log  </text>
+<text x="60.0" y="310" fill="#494748" xml:space="preserve">[</text>
+<text x="68.4" y="310" fill="#727169" xml:space="preserve"> label, e.g. sprint 23 start  </text>
+<text x="320.4" y="310" fill="#494748" xml:space="preserve">]</text>
+<text x="18.0" y="331" fill="#727169" xml:space="preserve">Readings are logged at session start and end</text>
+<text x="18.0" y="352" fill="#727169" xml:space="preserve">to ~/.claude/operator-board/usage-log.jsonl.</text>
 </g>
 </svg>

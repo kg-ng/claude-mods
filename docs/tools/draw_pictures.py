@@ -217,12 +217,15 @@ SECTIONS = {
         '{muted:question, your usage warn line, or after the}',
         '{muted:set number in a row.}',
     ]),
-    'usage': ('kanagawa', 'Usage: context, 5-hour and weekly limits, cost', [
+    'usage': ('kanagawa', 'Usage: context, 5-hour and weekly limits, cost, advisor calls, tokens by model', [
         '{warn|b:▾ Usage · ctx 42% · 5h 78% · wk 31% · $1.20}',
         'context {ok:████░░░░░░ 42%}{muted: · of 200k}',
         '5-hour  {warn:████████░░ 78%}{muted: · resets in 2h (17:00)}',
         'weekly  {ok:███░░░░░░░ 31%}{muted: · resets Mon 09:00}',
         '{muted:cost this session $1.20}',
+        'advisor {muted:2 calls this session · la…}  {fg|u:/advisor}',
+        'model   {accent:Opus 5.5}{muted: · 1.2M in · 48k out}  {fg|u:/model}',
+        '{muted:        also haiku-5-5 12k in}',
         '',
         '{muted:updated 14:05}  {fg|u:refresh}  {fg|u:time: 24h}',
         '{fg|u:limits 75/90%}  {fg|u:alerts: on}',
@@ -261,8 +264,9 @@ SECTIONS = {
         '{muted:fresh from its checkpoint; copy cmd works}',
         '{muted:from any folder.}',
     ]),
-    'quick': ('night-owl', 'Quick prompts: pinned prompts, one click to send', [
+    'quick': ('night-owl', 'Quick prompts: /btw for a side question, pinned prompts, one click to send', [
         '{accent|b:▾ Quick prompts (3)}',
+        '{accent:▸ /btw} {muted:a side question, answered without interr…}',
         '{accent:run the tests and fix what fails}         {muted|u:×}',
         '{accent:/code-review}                             {muted|u:×}',
         '{accent:summarise what changed today}             {muted|u:×}',
