@@ -1,0 +1,8 @@
+{
+  "id": "diff-cards",
+  "name": "diff-cards",
+  "version": "0.1.0",
+  "type": "pane",
+  "description": "Visual cards for diffs.",
+  "entryPoint": "src/index.ts"
+}

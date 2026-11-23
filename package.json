@@ -1,0 +1,22 @@
+{
+  "name": "claude-mods",
+  "version": "1.0.0",
+  "description": "A collection of Claude Code mods",
+  "main": "index.js",
+  "scripts": {
+    "test": "node scripts/clean-workspace.ts && vitest run",
+    "test:mod": "vitest run --filter <mod-name>",
+    "build": "tsc",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "register": "ts-node scripts/register-mods.ts",
+    "clean": "node scripts/clean-workspace.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "eslint": "^8.0.0",
+    "ts-node": "^10.0.0",
+    "tsx": "^4.0.0"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "id": "turn-meter",
+  "name": "turn-meter",
+  "version": "0.1.0",
+  "type": "status-line",
+  "description": "Track tokens and cost per turn.",
+  "entryPoint": "src/index.ts"
+}

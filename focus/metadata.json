@@ -1,0 +1,8 @@
+{
+  "id": "focus",
+  "name": "focus",
+  "version": "0.1.0",
+  "type": "status-line",
+  "description": "Focus timer for the terminal.",
+  "entryPoint": "src/index.ts"
+}
