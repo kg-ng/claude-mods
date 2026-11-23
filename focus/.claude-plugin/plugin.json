@@ -1,0 +1,26 @@
+{
+  "name": "focus",
+  "version": "0.1.0",
+  "description": "A focus timer in the status line. /focus-timer 25 holds other mods' notifications and sounds until the break, then gives you what you missed in one summary.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "minutes": {
+      "type": "number",
+      "title": "Default length (minutes)",
+      "description": "How long /focus-timer runs when you don't say",
+      "default": 25
+    },
+    "holdSounds": {
+      "type": "boolean",
+      "title": "Hold sounds too",
+      "description": "Mute other mods' sounds (chimes) while focusing",
+      "default": true
+    }
+  }
+}

@@ -1,13 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="614" viewBox="0 0 920 614" role="img" aria-label="How the repo, the two mods, the Copilot CLI port and Claude Code fit together" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="14">
-<title>How the repo, the two mods, the Copilot CLI port and Claude Code fit together</title>
-<rect width="920" height="614" rx="12" fill="#1a1b26"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="660" viewBox="0 0 920 660" role="img" aria-label="How the repo, its mods, the Copilot CLI port and Claude Code fit together" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="14">
+<title>How the repo, its mods, the Copilot CLI port and Claude Code fit together</title>
+<rect width="920" height="660" rx="12" fill="#1a1b26"/>
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#737aa2"/></marker></defs>
 <rect x="310" y="20" width="300" height="76" rx="8" fill="#20212d" stroke="#7aa2f7"/>
 <text x="324" y="44" fill="#7aa2f7" font-weight="700">kg-ng/claude-mods</text>
 <text x="324" y="68" fill="#c0caf5" font-size="13">GitHub repo = plugin marketplace</text>
 <text x="324" y="88" fill="#c0caf5" font-size="13">.claude-plugin/marketplace.json</text>
 <rect x="40" y="150" width="390" height="150" rx="8" fill="#20212d" stroke="#e0af68"/>
-<text x="54" y="174" fill="#e0af68" font-weight="700">operator-board  0.18.0</text>
+<text x="54" y="174" fill="#e0af68" font-weight="700">operator-board  0.18.1</text>
 <text x="54" y="198" fill="#c0caf5" font-size="13">pane  /operator  (docked, sized to terminal)</text>
 <text x="54" y="218" fill="#c0caf5" font-size="13">band  board · recall · PRs · alerts · crew</text>
 <text x="54" y="238" fill="#c0caf5" font-size="13">tools  board_update · todo_update</text>
@@ -37,4 +37,12 @@
 <text x="100" y="398" fill="#737aa2" font-size="12">shares</text>
 <text x="100" y="414" fill="#737aa2" font-size="12">~/.claude/</text>
 <text x="100" y="430" fill="#737aa2" font-size="12">operator-board/</text>
+<rect x="540" y="490" width="350" height="150" rx="8" fill="#20212d" stroke="#7aa2f7"/>
+<text x="554" y="514" fill="#7aa2f7" font-weight="700">and five smaller mods  0.1.0</text>
+<text x="554" y="538" fill="#c0caf5" font-size="13">guard · a seatbelt for shell commands</text>
+<text x="554" y="558" fill="#c0caf5" font-size="13">diff-cards · each edit&#x27;s diff on one line</text>
+<text x="554" y="578" fill="#c0caf5" font-size="13">turn-meter · tokens and cost per turn</text>
+<text x="554" y="598" fill="#c0caf5" font-size="13">chimes · sounds for done, needs you, CI</text>
+<text x="554" y="618" fill="#c0caf5" font-size="13">focus · a timer that holds alerts</text>
+<line x1="700" y1="488" x2="620" y2="452" stroke="#737aa2" stroke-width="1.5" marker-end="url(#a)"/>
 </svg>

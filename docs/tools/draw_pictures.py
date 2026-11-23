@@ -383,7 +383,7 @@ def arrow(x1, y1, x2, y2):
 d = [f'<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">'
      f'<path d="M0,0 L10,5 L0,10 z" fill="{T["muted"]}"/></marker></defs>']
 d.append(box(310, 20, 300, 76, 'kg-ng/claude-mods', ['GitHub repo = plugin marketplace', '.claude-plugin/marketplace.json'], T['accent']))
-d.append(box(40, 150, 390, 150, 'operator-board  0.18.0', [
+d.append(box(40, 150, 390, 150, 'operator-board  0.18.1', [
     'pane  /operator  (docked, sized to terminal)',
     'band  board · recall · PRs · alerts · crew',
     'tools  board_update · todo_update',
@@ -407,7 +407,14 @@ d.append(f'<line x1="90" y1="300" x2="90" y2="488" stroke="{T["muted"]}" stroke-
 d.append(f'<text x="100" y="398" fill="{T["muted"]}" font-size="12">shares</text>')
 d.append(f'<text x="100" y="414" fill="{T["muted"]}" font-size="12">~/.claude/</text>')
 d.append(f'<text x="100" y="430" fill="{T["muted"]}" font-size="12">operator-board/</text>')
-save('overview.svg', 920, 614, '\n'.join(d), 'How the repo, the two mods, the Copilot CLI port and Claude Code fit together')
+d.append(box(540, 490, 350, 150, 'and five smaller mods  0.1.0', [
+    'guard · a seatbelt for shell commands',
+    'diff-cards · each edit\'s diff on one line',
+    'turn-meter · tokens and cost per turn',
+    'chimes · sounds for done, needs you, CI',
+    'focus · a timer that holds alerts'], T['accent']))
+d.append(arrow(700, 488, 620, 452))
+save('overview.svg', 920, 660, '\n'.join(d), 'How the repo, its mods, the Copilot CLI port and Claude Code fit together')
 # ---------- 6. the smaller mods, each in a Claude Code window ----------
 
 def save_term(name, persona, rows, label, cols=64):
@@ -481,5 +488,21 @@ save_term('chimes.svg', 'rose-pine', [
     '',
     '{muted:quiet while you type · together, the most urgent plays}',
 ], 'Illustration: the four chimes and what plays each')
+
+save_term('focus.svg', 'nord', [
+    '{muted:> /focus-timer 25}',
+    '{muted:  Focusing for 25m. Other mods\' notifications and}',
+    '{muted:  sounds wait until the break; permission prompts still show.}',
+    '',
+    '{accent:⏺} Splitting register.tsx into sections…',
+    '',
+    '{border:─────────────────────────────────────────────────────────}',
+    '{accent:◉ focus · 18m left · 2 held}',
+    '',
+    '{muted:… 18 minutes later, a notification:}',
+    '{fg|b:Focus done: 25m}',
+    '  • CI failed: #14 Hotkeys in the pane{muted: (Claude · app)}',
+    '  • Finished, needs your reply: Merge 0.9.0?{muted: (Claude · app)}',
+], 'Illustration: the focus timer in the status line, then the break summary')
 
 print('ok', sorted(p.name for p in OUT.glob('*.svg')))

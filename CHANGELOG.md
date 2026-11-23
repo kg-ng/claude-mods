@@ -129,6 +129,12 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 - **First version.** Soft sounds (made by `tools/make_sounds.py`): **finished** after a main-thread turn of 20 seconds or more, **needs you** on Claude Code's own notification (a permission prompt, waiting for input), and **passed**, **failed** or **needs you** for any mod's desktop notification, picked from its words. Sounds within 0.4 seconds play once, the most urgent. Quiet within 5 seconds of typing in the prompt. `/chimes`, `/chimes test`, `/chimes on|off`. macOS.
 
+## focus
+
+### 0.1.0
+
+- **First version.** `/focus-timer [25|90m|1h|stop]` runs a timer in the status line (`◉ focus · 18m left · 2 held`). While it runs, every other mod's desktop notification is held, and their sounds too (a setting). At the break, one notification lists what came in. Claude Code's own permission prompts are never held. (Claude Code ships `/focus`, hence `/focus-timer`.)
+
 ## copilot/operator-board
 
 ### 0.1.0
