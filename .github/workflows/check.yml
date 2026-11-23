@@ -48,3 +48,9 @@ jobs:
         run: |
           claude plugin validate .
           claude plugin test .
+
+      # The Copilot CLI port: plain Node, no Copilot needed to test its storage.
+      - name: copilot/operator-board
+        run: |
+          node --check copilot/operator-board/extension.mjs
+          node --test copilot/operator-board/store.test.mjs
