@@ -99,6 +99,14 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 - First release in this repo: 24 built-in personas for replies, tool icons, spinner words, the band and the terminal's own colours.
 
+## guard
+
+### 0.1.0
+
+- **First version.** Before Claude runs a shell command, guard checks it: pushes and force-pushes onto protected branches (`main`, `master`, or your list), deleting them, `push --mirror`/`--all`, and `rm -rf` on `/`, `~`, a variable, `..` or a path outside the project are stopped, with a reason Claude can act on. Each part of a chained command is checked; quoted text and heredocs aren't.
+- **Co-author lines** (`Co-Authored-By: Claude`, "Generated with Claude Code") come out of commit messages and PR bodies.
+- `/guard`, `/guard on`, `/guard off`.
+
 ## copilot/operator-board
 
 ### 0.1.0

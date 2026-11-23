@@ -1,6 +1,6 @@
 name: check
 
-# Validates the marketplace and both mods and runs their tests on every pull
+# Validates the marketplace and every mod and runs their tests on every pull
 # request and every push to main. The "check" job is required to merge into main.
 on:
   pull_request:
@@ -37,17 +37,18 @@ jobs:
       - name: Validate marketplace
         run: claude plugin validate .
 
-      - name: operator-board
-        working-directory: operator-board
+      # Every mod in the marketplace, so a new mod needs no change here. Validation must be
+      # clean: "passed with warnings" covers type errors, and those fail the check too.
+      - name: Mods
         run: |
-          claude plugin validate .
-          claude plugin test .
-
-      - name: persona
-        working-directory: persona
-        run: |
-          claude plugin validate .
-          claude plugin test .
+          for mod in $(python3 -c "import json; print(' '.join(p['source'].lstrip('./') for p in json.load(open('.claude-plugin/marketplace.json'))['plugins']))"); do
+            echo "::group::$mod"
+            out=$(claude plugin validate "$mod" 2>&1) || { echo "$out"; exit 1; }
+            echo "$out"
+            if echo "$out" | grep -q "passed with warnings"; then echo "::error::$mod: validation has warnings"; exit 1; fi
+            (cd "$mod" && claude plugin test .)
+            echo "::endgroup::"
+          done
 
       # The Copilot CLI port: plain Node, no Copilot needed to test its storage.
       - name: copilot/operator-board

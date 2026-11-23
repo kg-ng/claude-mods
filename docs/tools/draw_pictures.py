@@ -408,4 +408,29 @@ d.append(f'<text x="100" y="398" fill="{T["muted"]}" font-size="12">shares</text
 d.append(f'<text x="100" y="414" fill="{T["muted"]}" font-size="12">~/.claude/</text>')
 d.append(f'<text x="100" y="430" fill="{T["muted"]}" font-size="12">operator-board/</text>')
 save('overview.svg', 920, 614, '\n'.join(d), 'How the repo, the two mods, the Copilot CLI port and Claude Code fit together')
+# ---------- 6. the smaller mods, each in a Claude Code window ----------
+
+def save_term(name, persona, rows, label, cols=64):
+    use(persona)
+    w, h, inner = pane(rows, cols, title='Claude Code')
+    save(name, w + 40, h + 40, offset(inner, 20, 20), f'{label} (persona: {LABEL[0]})')
+
+
+save_term('guard.svg', 'tokyo-night', [
+    '{run:▶} {fg:Bash} {muted:git push origin main}',
+    '  {err:✗ guard: `main` is protected: push a branch of your}',
+    '  {err:  own and open a PR (git switch -c <name> …).}',
+    '',
+    '{run:▶} {fg:Bash} {muted:git switch -c fix/login && git push -u origin fix/login}',
+    "  {ok:✓} {muted:branch 'fix/login' set up to track 'origin/fix/login'}",
+    '',
+    '{run:▶} {fg:Bash} {muted:rm -rf "$OUT_DIR"/}',
+    '  {err:✗ guard: rm -rf on a path from a variable ($OUT_DIR),}',
+    '  {err:  which could be empty or anything.}',
+    '',
+    '{run:▶} {fg:Bash} {muted:git commit -m "Fix the login redirect"}',
+    '  {ok:✓} {muted:[fix/login 3e1f0a2] Fix the login redirect}',
+    '{muted:  guard removed the Claude co-author line}',
+], 'Illustration: guard stopping a push to main and an rm -rf on a variable, letting a new branch through')
+
 print('ok', sorted(p.name for p in OUT.glob('*.svg')))

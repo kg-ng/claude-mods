@@ -2,12 +2,13 @@
 
 <img src="docs/images/hero.svg" width="900" alt="Illustration: Claude Code at work with the operator pane docked beside it">
 
-Two mods for [Claude Code](https://claude.com/claude-code), published as a plugin marketplace. What changed in each version: [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/kg-ng/claude-mods/releases).
+Mods for [Claude Code](https://claude.com/claude-code), published as a plugin marketplace. What changed in each version: [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/kg-ng/claude-mods/releases).
 
 | Mod | Version | What it does |
 |---|---|---|
 | [`operator-board`](operator-board) | 0.18.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
+| [`guard`](guard) | 0.1.0 | A seatbelt for Claude's shell commands: stops pushes onto protected branches and `rm -rf` outside the project, and strips Claude co-author lines from commits and PRs. |
 
 **Also for GitHub Copilot CLI:** [`copilot/operator-board`](copilot/operator-board) brings the board, to-do and checkpoint tools to Copilot CLI extensions, sharing the same files, so both tools see one list. No pane: Copilot extensions don't have one.
 
@@ -46,6 +47,7 @@ Earlier versions: [CHANGELOG.md](CHANGELOG.md).
 claude plugin marketplace add kg-ng/claude-mods
 claude plugin install operator-board@claude-mods
 claude plugin install persona@claude-mods
+claude plugin install guard@claude-mods
 ```
 
 You can install either mod on its own. **Restart Claude Code** afterwards to load them.
@@ -137,6 +139,14 @@ Code blocks in Claude's replies have a **copy** button, and no side border, so s
 
 Every command and setting is in [persona/README.md](persona/README.md).
 
+## guard
+
+Before Claude runs a shell command, guard reads it and stops the common slips: a push or force-push onto `main`, deleting a protected branch, or `rm -rf` on `/`, `~`, a `$VARIABLE` or anything outside the project. Claude gets a reason it can act on ("push a branch of your own and open a PR"), and you get a toast. It also takes `Co-Authored-By: Claude` and "Generated with Claude Code" lines out of commits and PR bodies.
+
+<img src="docs/images/guard.svg" width="620" alt="Illustration: guard stopping a push to main, then a push of a new branch going through">
+
+`/guard` shows what it stopped, and `/guard off` turns it off. It's a seatbelt, not a sandbox. Every rule and setting is in [guard/README.md](guard/README.md).
+
 ## Try it
 
 A walkthrough in your own repo. It makes a throwaway branch and PR, which you delete at the end.
@@ -152,12 +162,14 @@ A walkthrough in your own repo. It makes a throwaway branch and PR, which you de
 ```sh
 claude plugin marketplace update claude-mods
 claude plugin update operator-board@claude-mods
-claude plugin update persona@claude-mods        # then restart Claude Code
+claude plugin update persona@claude-mods
+claude plugin update guard@claude-mods          # then restart Claude Code
 ```
 
 ```sh
 claude plugin uninstall operator-board@claude-mods
 claude plugin uninstall persona@claude-mods
+claude plugin uninstall guard@claude-mods
 claude plugin marketplace remove claude-mods
 ```
 
@@ -170,6 +182,7 @@ git clone https://github.com/kg-ng/claude-mods.git
 claude plugin marketplace add ./claude-mods
 claude plugin install operator-board@claude-mods
 claude plugin install persona@claude-mods
+claude plugin install guard@claude-mods
 ```
 
 Test and validate before you open a PR:
@@ -198,7 +211,7 @@ python3 docs/tools/draw_animations.py docs/images persona/hooks/themes.ts
 
 ## Contributing
 
-Pull requests are welcome. `main` is protected: every change needs a pull request approved by the code owner, [@kg-ng](https://github.com/kg-ng) (see [CODEOWNERS](.github/CODEOWNERS)), and the **check** workflow must pass. That workflow validates the marketplace and both mods and runs their tests. Force-pushes and deleting `main` are blocked.
+Pull requests are welcome. `main` is protected: every change needs a pull request approved by the code owner, [@kg-ng](https://github.com/kg-ng) (see [CODEOWNERS](.github/CODEOWNERS)), and the **check** workflow must pass. That workflow validates the marketplace and every mod, with no warnings allowed, and runs their tests. Force-pushes and deleting `main` are blocked.
 
 ## License
 
