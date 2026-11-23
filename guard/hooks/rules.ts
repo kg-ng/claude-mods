@@ -45,7 +45,8 @@ export function segments(cmd: string): string[][] {
       word += src[++i]
       has = true
     } else if (c === ' ' || c === '\t') endWord()
-    else if (c === '\n' || c === ';' || c === '|' || c === '&') endSeg()
+    // ( and ) open and close subshells and $(…), so what's inside is a command of its own.
+    else if (c === '\n' || c === ';' || c === '|' || c === '&' || c === '(' || c === ')') endSeg()
     else {
       word += c
       has = true
@@ -55,11 +56,49 @@ export function segments(cmd: string): string[][] {
   return out
 }
 
-/** Leading `VAR=x`, `sudo`, `command`, `exec`, `env` and `time` don't change what runs. */
+// Words in front of a command that still run it. Each maps to its options that take a value.
+const WRAPPERS: Record<string, string[]> = {
+  sudo: ['-u', '-g', '-h', '-p', '-C', '-U', '-r', '-t', '-D'],
+  env: ['-u', '-C', '-S'],
+  xargs: ['-n', '-I', '-L', '-P', '-d', '-s', '-E', '-a'],
+  command: [],
+  exec: [],
+  time: [],
+  nohup: [],
+  '{': [],
+  '!': [],
+}
+
+const base = (w: string) => w.slice(w.lastIndexOf('/') + 1)
+
+/**
+ * The command that really runs: past `VAR=x`, `sudo -u bob`, `env -i`, `xargs -n1`, `time`, `{`
+ * and the like, and with `/bin/rm` read as `rm`.
+ */
 function head(words: string[]): string[] {
   let i = 0
-  while (i < words.length && (/^\w+=/.test(words[i]!) || ['sudo', 'command', 'exec', 'env', 'time', 'nohup'].includes(words[i]!))) i++
-  return words.slice(i)
+  while (i < words.length) {
+    const w = words[i]!
+    if (/^\w+=/.test(w)) i++
+    else if (base(w) in WRAPPERS) {
+      const takesValue = WRAPPERS[base(w)]!
+      i++
+      while (i < words.length && words[i]!.startsWith('-')) i += takesValue.includes(words[i]!) ? 2 : 1
+    } else break
+  }
+  const rest = words.slice(i)
+  return rest.length ? [base(rest[0]!), ...rest.slice(1)] : rest
+}
+
+const SHELLS = ['sh', 'bash', 'zsh', 'dash', 'ksh']
+
+/** The script `bash -c '…'` or `eval …` runs, which is checked like a command of its own. */
+function inner(words: string[]): string | undefined {
+  const w = head(words)
+  if (w[0] === 'eval') return w.slice(1).join(' ')
+  if (!SHELLS.includes(w[0] ?? '')) return
+  const at = w.findIndex((a, n) => n > 0 && /^-[a-zA-Z]*c[a-zA-Z]*$/.test(a))
+  return at > 0 ? w[at + 1] : undefined
 }
 
 const shortFlags = (w: string) => (/^-[a-zA-Z]+$/.test(w) ? w.slice(1) : '')
@@ -147,7 +186,11 @@ export function checkRm(words: string[], cwd: string): Verdict | undefined {
 /** The first rule the command breaks, checking each of its simple commands. */
 export function check(cmd: string, opts: { protectedBranches: string[]; cwd: string; currentBranch?: string }): Verdict | undefined {
   for (const seg of segments(cmd)) {
-    const v = checkPush(seg, opts.protectedBranches, opts.currentBranch) ?? checkRm(seg, opts.cwd)
+    const script = inner(seg)
+    const v =
+      (script !== undefined ? check(script, opts) : undefined) ??
+      checkPush(seg, opts.protectedBranches, opts.currentBranch) ??
+      checkRm(seg, opts.cwd)
     if (v) return v
   }
 }

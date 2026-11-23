@@ -54,6 +54,46 @@ test('commands that are stopped, with the rule that stops them', () => {
   for (const [cmd, rule] of cases) expect([cmd, check(cmd, OPTS)?.rule]).toEqual([cmd, rule])
 })
 
+test('a command wrapped in a shell, eval, a subshell, sudo, env, xargs or a full path is still checked', () => {
+  const cases: [string, string][] = [
+    ['bash -c "git push -f origin main"', 'force-protected'],
+    ["sh -c 'rm -rf /'", 'rm-outside'],
+    ['zsh -lc "rm -rf ~"', 'rm-outside'],
+    ['bash -c "cd x && bash -c \'git push origin main\'"', 'push-protected'],
+    ['eval "git push origin main"', 'push-protected'],
+    ['/bin/rm -rf /', 'rm-outside'],
+    ['/usr/bin/git push origin main', 'push-protected'],
+    ['sudo -u bob rm -rf /', 'rm-outside'],
+    ['env -i PATH=/bin git push origin main', 'push-protected'],
+    ['xargs -n 1 rm -rf ~', 'rm-outside'],
+    ['(git push origin main)', 'push-protected'],
+    ['cd x && (rm -rf ~)', 'rm-outside'],
+    ['echo $(rm -rf /)', 'rm-outside'],
+    ['{ git push origin main; }', 'push-protected'],
+    ['git --no-pager push origin main --force', 'force-protected'],
+    ['GIT_TRACE=1 git -c a=b push -uf origin main', 'force-protected'],
+    ['rm -r -f --no-preserve-root /', 'rm-outside'],
+    ['rm -rf src/../..', 'rm-outside'],
+    ['rm -rf /work/apple', 'rm-outside'],
+    ['rm -rf /work/app', 'rm-outside'],
+  ]
+  for (const [cmd, rule] of cases) expect([cmd, check(cmd, OPTS)?.rule]).toEqual([cmd, rule])
+  for (const cmd of [
+    'bash -c "npm test"',
+    'sh -c "rm -rf dist"',
+    'bash script.sh',
+    'eval "$(ssh-agent -s)"',
+    'echo "(rm -rf /)"',
+    'git log --format="(%h)"',
+    'find . -name "*.tmp" \\( -type f \\) -delete',
+    'sudo -u bob rm -rf /work/app/tmp',
+    'git push origin feature/main',
+    'git push origin master:feat/y',
+    'git push origin :feat/old',
+  ])
+    expect([cmd, check(cmd, OPTS)]).toEqual([cmd, undefined])
+})
+
 test('a plain push from a protected branch is stopped; from a feature branch it passes', () => {
   expect(check('git push', { ...OPTS, currentBranch: 'main' })?.rule).toBe('push-protected')
   expect(check('git push -u origin HEAD', { ...OPTS, currentBranch: 'main' })?.rule).toBe('push-protected')

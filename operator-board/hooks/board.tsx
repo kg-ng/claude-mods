@@ -109,8 +109,18 @@ async function readShared($: $T): Promise<BoardItem[] | undefined> {
   return asList(JSON.parse(await $.fs.read(path)))
 }
 
+// This session's board changes, one at a time: Claude can send several board_update calls at
+// once, and each must read the board after the one before it has written.
+let boardQueue: Promise<unknown> = Promise.resolve()
+
 /** Read the shared board fresh, change it, write it back, and show the result here. */
-export async function mutateBoard($: $T, fn: (list: BoardItem[]) => BoardItem[]) {
+export function mutateBoard($: $T, fn: (list: BoardItem[]) => BoardItem[]): Promise<void> {
+  const run = boardQueue.then(() => mutateBoardNow($, fn))
+  boardQueue = run.catch(() => undefined)
+  return run
+}
+
+async function mutateBoardNow($: $T, fn: (list: BoardItem[]) => BoardItem[]) {
   let fresh: BoardItem[] | undefined
   try {
     fresh = await readShared($)

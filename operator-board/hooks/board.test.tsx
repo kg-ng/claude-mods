@@ -254,6 +254,73 @@ test('the board is shared: items are written to the shared file, tagged with the
   expect(saved.items[0].project).toBe('/work/app')
 })
 
+/**
+ * The shared board file in memory: reads see the last write, or what another session wrote
+ * since (`otherSession`), and every write moves its mtime on.
+ */
+function sharedFile(on: any) {
+  const file = { text: '', mtime: 0, seen: 0 }
+  const isBoard = (e: any) => String(e.path).endsWith('.claude/operator-board/board.json')
+  // Takes in this session's writes made since the last look.
+  const sync = () => {
+    const mine = written.filter(isBoard)
+    if (mine.length === file.seen) return
+    file.seen = mine.length
+    file.text = mine[mine.length - 1].text
+    file.mtime += 1
+  }
+  on('env.get', () => ({ value: '/home/me' }))
+  on('fs.stat', (_: unknown, e: any) => {
+    sync()
+    return isBoard(e) && file.text
+      ? { value: { kind: 'file', size: file.text.length, mtimeMs: file.mtime, isLink: false } }
+      : { deny: 'ENOENT: missing' }
+  })
+  on('fs.read', (_: unknown, e: any) => {
+    sync()
+    return isBoard(e) && file.text ? { value: file.text } : { deny: 'ENOENT: missing' }
+  })
+  return {
+    items: () => (sync(), file.text ? JSON.parse(file.text).items : []),
+    otherSession(items: any[]) {
+      sync()
+      file.text = JSON.stringify({ v: 1, items })
+      file.mtime += 1000
+    },
+  }
+}
+
+const add = (title: string, kind = 'pending') =>
+  ({ tool: 'mcp__operator-board__board_update', action: 'add', kind, section: 'CI', title }) as any
+
+test('board updates that run at once all land, each with its own id', async ($, on) => {
+  written.length = 0
+  engine(on)
+  const board = sharedFile(on)
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  // Claude can send several tool calls in one turn; they run together.
+  await Promise.all([add('first'), add('second'), add('third'), add('ask?', 'reply')].map(c => $.tool.call(c)))
+  const saved = board.items()
+  expect(saved.map((i: any) => i.title).sort()).toEqual(['ask?', 'first', 'second', 'third'])
+  expect(new Set(saved.map((i: any) => i.id)).size).toBe(4)
+})
+
+test('an add keeps what another session wrote to the board since the last poll', async ($, on) => {
+  written.length = 0
+  engine(on)
+  const board = sharedFile(on)
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.tool.call(add('mine'))
+  const mine = board.items()
+  board.otherSession([
+    ...mine,
+    { id: 'p9', kind: 'pending', section: 'CI', title: 'theirs', createdAt: 1, updatedAt: 1, project: '/work/other' },
+  ])
+  await $.tool.call(add('mine again'))
+  await $.tool.call({ tool: 'mcp__operator-board__board_update', action: 'remove', id: mine[0].id } as any)
+  expect(board.items().map((i: any) => i.title).sort()).toEqual(['mine again', 'theirs'])
+})
+
 test('the folder filter hides other folders until "all sessions" is picked', async ($, on) => {
   const shared = {
     v: 1,

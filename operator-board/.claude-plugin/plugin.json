@@ -1,6 +1,6 @@
 {
   "name": "operator-board",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Session board (recent asks, needs reply, pending), live PR status and searchable recall of past questions and answers.",
   "author": {
     "name": "kg-ng",
