@@ -2,12 +2,21 @@
 
 <img src="docs/images/hero.svg" width="900" alt="Illustration: Claude Code at work with the operator pane docked beside it">
 
-Two mods for [Claude Code](https://claude.com/claude-code), published as a plugin marketplace. What changed in each version: [CHANGELOG.md](CHANGELOG.md).
+Two mods for [Claude Code](https://claude.com/claude-code), published as a plugin marketplace. What changed in each version: [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/kg-ng/claude-mods/releases).
 
 | Mod | Version | What it does |
 |---|---|---|
 | [`operator-board`](operator-board) | 0.15.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
+
+### What's new in operator-board 0.15.0
+
+- **Hotkeys:** click the pane, then `1`–`8` open or fold its sections.
+- **Run buttons** in Git: **test**, **lint**, **typecheck** and **build**, from your `package.json` scripts or Makefile.
+- **CI on a pushed branch** shows before there's a PR, in Git and on its folded header.
+- **The scrollbar** keeps its size right when the pane grows by itself.
+
+Earlier versions: [CHANGELOG.md](CHANGELOG.md).
 
 ### Before and after
 
@@ -100,6 +109,7 @@ A row above the prompt with shortcuts into the pane: the board (with how many ne
 | `/savepoint` | Save a checkpoint of this session, which Sessions can continue from |
 | `/quick` | Pin a quick prompt |
 | `/alerts [on\|off]` | Turn alerts on or off |
+| `1`–`8` | With the pane focused (click it, or ctrl+x tab): open or fold Board, To-do, Usage, Git, Sessions, Quick prompts, PRs, Recall |
 
 Claude also gets three tools, `board_update`, `todo_update` and `checkpoint_save`. Claude uses them to post questions and pending work to the board, keep the to-do list and save checkpoints. You don't call these yourself.
 
@@ -125,6 +135,7 @@ A walkthrough in your own repo. It makes a throwaway branch and PR, which you de
 2. **push, then open PR.** The Git header shows **push**. Press it, then Enter. Once the branch is pushed it shows **open PR**: press it, then Enter. `/prs` refreshes the PRs section straight away.
 3. **CI passed, then merge.** When the PR's checks go green, you get the **CI passed** alert, and the PR moves under **Ready** with a **merge** button. Close the PR on GitHub instead, and delete the branch.
 4. **To review** shows up when someone else asks you to review a PR. GitHub doesn't let you request your own review.
+5. **Run buttons and hotkeys.** In a project with a `package.json` (scripts like `test` or `lint`) or a Makefile, open **Git** and press **test**: the prompt fills with the right command. Click the pane and press `4` to fold Git again.
 
 ## Update and uninstall
 
@@ -158,7 +169,15 @@ cd operator-board && claude plugin test . && claude plugin validate .
 cd ../persona && claude plugin test . && claude plugin validate .
 ```
 
-Bump the mod's `version` in its `.claude-plugin/plugin.json` with every change, or `claude plugin update` won't pick the change up, and add an entry for it to [CHANGELOG.md](CHANGELOG.md). The GitHub check fails a PR that changes a mod without doing both. Then run the update commands above.
+Bump the mod's `version` in its `.claude-plugin/plugin.json` with every change, or `claude plugin update` won't pick the change up, and add an entry for it to [CHANGELOG.md](CHANGELOG.md). The GitHub check fails a PR that changes a mod without doing both (changes to tests and READMEs need neither). Then run the update commands above.
+
+Once a version is merged, tag it and publish its release, with the notes from its CHANGELOG entry:
+
+```sh
+git tag -a operator-board-v0.15.0 <commit> -m "operator-board 0.15.0"
+git push origin operator-board-v0.15.0
+gh release create operator-board-v0.15.0 --verify-tag --title "operator-board 0.15.0" --notes "…"
+```
 
 The README pictures are SVGs in `docs/images/`, drawn by two scripts. If you change what the pane draws, change the scripts to match and run them again:
 
