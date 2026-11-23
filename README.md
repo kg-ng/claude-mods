@@ -16,7 +16,17 @@ Mods for [Claude Code](https://claude.com/claude-code), published as a plugin ma
 
 **Also for GitHub Copilot CLI:** [`copilot/operator-board`](copilot/operator-board) brings the board, to-do and checkpoint tools to Copilot CLI extensions, sharing the same files, so both tools see one list. No pane: Copilot extensions don't have one.
 
-### What's new in operator-board 0.18.0
+### What's new
+
+**Five new mods**, each its own install:
+
+- [**guard**](#guard): stops pushes onto `main` and `rm -rf` outside the project, and strips Claude co-author lines.
+- [**diff-cards**](#diff-cards): each edit's diff folds to one line, `+12 −18 · 2 hunks`.
+- [**turn-meter**](#turn-meter): each turn's tokens and cost on its closing line.
+- [**chimes**](#chimes): soft sounds for finished, needs you, CI passed and failed.
+- [**focus**](#focus): a focus timer that holds alerts until the break.
+
+**operator-board 0.18.1** adds an **Alert sound** setting, so chimes can play your sounds instead. 0.18.0 added:
 
 - **Crew** in the band: your running subagents live above the prompt, with what each is doing, its time and tokens, and **view**, **msg** and **stop**.
 

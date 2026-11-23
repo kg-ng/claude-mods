@@ -10,6 +10,7 @@ A focus timer in the status line. While it runs, other mods' notifications and s
 - `/focus-timer stop` ends it early, and still gives you what was held.
 - **Held:** every mod's desktop notification (operator-board's CI, needs-reply and usage alerts) and, with **Hold sounds too** on, their sounds (chimes). They don't need to know about focus: it holds them on the way out.
 - **Not held:** Claude Code's own permission prompts and questions. They show in the terminal as always, so Claude never waits on you without you seeing it.
+- **operator-board's own alert sound** plays through the system (`afplay`), not through Claude Code, so focus can't hold it. Turn off operator-board's **Alert sound** setting and let chimes play your sounds; focus holds those.
 
 (Claude Code has its own `/focus` command, so this one is `/focus-timer`.)
 
