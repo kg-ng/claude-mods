@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="613" height="333" viewBox="0 0 613 333" role="img" aria-label="Illustration: three turns&#x27; closing lines with their tokens and cost, one in amber (persona: Kanagawa)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="14">
+<title>Illustration: three turns&#x27; closing lines with their tokens and cost, one in amber (persona: Kanagawa)</title>
+<rect width="613" height="333" rx="12" fill="#1f1f28"/>
+<g transform="translate(20,20)">
+<rect x="0.5" y="0.5" width="572" height="292" rx="10" fill="#26252d" stroke="#494748"/>
+<line x1="0" y1="32" x2="573" y2="32" stroke="#494748"/>
+<text x="18.0" y="22" fill="#727169" font-weight="700" xml:space="preserve">Claude Code</text>
+<text x="555" y="22" fill="#727169" font-size="12" text-anchor="end">persona: Kanagawa</text>
+<text x="18.0" y="58" fill="#727169" xml:space="preserve">&gt; make the PR rows shorter</text>
+<text x="18.0" y="79" fill="#7e9cd8" xml:space="preserve">⏺</text>
+<text x="26.4" y="79" fill="#dcd7ba" xml:space="preserve"> Each PR now takes two lines.</text>
+<text x="18.0" y="100" fill="#727169" xml:space="preserve">✻ Baked for 42s · 180k in · 3.1k out · $0.41</text>
+<text x="18.0" y="142" fill="#727169" xml:space="preserve">&gt; now add a test for it</text>
+<text x="18.0" y="163" fill="#7e9cd8" xml:space="preserve">⏺</text>
+<text x="26.4" y="163" fill="#dcd7ba" xml:space="preserve"> Added prs.test.tsx; 41 pass.</text>
+<text x="18.0" y="184" fill="#727169" xml:space="preserve">✻ Simmered for 1m 12s</text>
+<text x="194.4" y="184" fill="#e6c384" xml:space="preserve"> · 1.4M in · 9.8k out · $1.92</text>
+<text x="18.0" y="226" fill="#727169" xml:space="preserve">&gt; commit it</text>
+<text x="18.0" y="247" fill="#7e9cd8" xml:space="preserve">⏺</text>
+<text x="26.4" y="247" fill="#dcd7ba" xml:space="preserve"> Committed 3e1f0a2.</text>
+<text x="18.0" y="268" fill="#727169" xml:space="preserve">✻ Brewed for 6s · 41k in · 220 out · $0.04</text>
+</g>
+</svg>

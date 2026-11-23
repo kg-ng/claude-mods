@@ -113,6 +113,12 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 - **First version.** Each Edit, Write and MultiEdit diff in the transcript folds to one line (`+12 −18 · 2 hunks`, or `new file · +40`) with **show diff** / **hide diff** to unfold Claude Code's own diff in place. Diffs of 6 changed lines or fewer (a setting), the ctrl+o transcript, failed edits and edits held for review are drawn as before.
 
+## turn-meter
+
+### 0.1.0
+
+- **First version.** Each main-thread turn's closing line (`Baked for 42s`) gets ` · 180k in · 3.1k out · $0.41`: input tokens (cached included), output tokens, and how much the session's cost rose during the turn. Turns at or over $0.50 (a setting) are drawn in amber. The ctrl+o transcript keeps the plain line.
+
 ## copilot/operator-board
 
 ### 0.1.0

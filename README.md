@@ -10,6 +10,7 @@ Mods for [Claude Code](https://claude.com/claude-code), published as a plugin ma
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 | [`guard`](guard) | 0.1.0 | A seatbelt for Claude's shell commands: stops pushes onto protected branches and `rm -rf` outside the project, and strips Claude co-author lines from commits and PRs. |
 | [`diff-cards`](diff-cards) | 0.1.0 | Folds each edit's diff in the transcript to one line, `+12 −18 · 2 hunks`, with **show diff** to unfold it. |
+| [`turn-meter`](turn-meter) | 0.1.0 | Each turn's tokens and cost on its closing line, `Baked for 42s · 180k in · 3.1k out · $0.41`, expensive turns in amber. |
 
 **Also for GitHub Copilot CLI:** [`copilot/operator-board`](copilot/operator-board) brings the board, to-do and checkpoint tools to Copilot CLI extensions, sharing the same files, so both tools see one list. No pane: Copilot extensions don't have one.
 
@@ -50,7 +51,9 @@ claude plugin install operator-board@claude-mods
 claude plugin install persona@claude-mods
 claude plugin install guard@claude-mods
 claude plugin install diff-cards@claude-mods
+claude plugin install turn-meter@claude-mods
 claude plugin install diff-cards@claude-mods
+claude plugin install turn-meter@claude-mods
 ```
 
 You can install either mod on its own. **Restart Claude Code** afterwards to load them.
@@ -156,6 +159,12 @@ Each edit's diff folds to one line, `+12 −18 · 2 hunks`, so a long session do
 
 <img src="docs/images/diff-cards.svg" width="620" alt="Illustration: two edits folded to one line each, and one unfolded to its diff">
 
+## turn-meter
+
+Each turn's closing line gets its tokens and cost: `Baked for 42s · 180k in · 3.1k out · $0.41`. A turn of $0.50 or more is drawn in amber, so the expensive ones stand out when you scroll back. The cost is how much the session's total rose during the turn, so subagents and advisor calls in it count. See [turn-meter/README.md](turn-meter/README.md).
+
+<img src="docs/images/turn-meter.svg" width="620" alt="Illustration: three turns' closing lines with their tokens and cost, one in amber">
+
 ## Try it
 
 A walkthrough in your own repo. It makes a throwaway branch and PR, which you delete at the end.
@@ -173,7 +182,8 @@ claude plugin marketplace update claude-mods
 claude plugin update operator-board@claude-mods
 claude plugin update persona@claude-mods
 claude plugin update guard@claude-mods
-claude plugin update diff-cards@claude-mods     # then restart Claude Code
+claude plugin update diff-cards@claude-mods
+claude plugin update turn-meter@claude-mods     # then restart Claude Code
 ```
 
 ```sh
@@ -181,6 +191,7 @@ claude plugin uninstall operator-board@claude-mods
 claude plugin uninstall persona@claude-mods
 claude plugin uninstall guard@claude-mods
 claude plugin uninstall diff-cards@claude-mods
+claude plugin uninstall turn-meter@claude-mods
 claude plugin marketplace remove claude-mods
 ```
 

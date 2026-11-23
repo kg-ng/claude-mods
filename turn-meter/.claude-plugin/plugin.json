@@ -1,0 +1,20 @@
+{
+  "name": "turn-meter",
+  "version": "0.1.0",
+  "description": "Puts each turn's tokens and cost on its closing line: Baked for 42s · 180k in · 3.1k out · $0.41, with expensive turns in amber.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "costlyAt": {
+      "type": "number",
+      "title": "Expensive turn (USD)",
+      "description": "A turn that cost this much or more is drawn in amber; 0 turns it off",
+      "default": 0.5
+    }
+  }
+}
