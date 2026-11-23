@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560" role="img" aria-label="Animation: picking a persona with /persona: Dracula, Nord, then Gruvbox, the whole window recolouring" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13">
 <title>Animation: picking a persona with /persona: Dracula, Nord, then Gruvbox, the whole window recolouring</title>
 <style>
-@keyframes p0{0%,30.33%{opacity:1}33.33%,97.00%{opacity:0}100%{opacity:1}}.p0{animation:p0 12s linear infinite}
-@keyframes p1{0%,30.33%{opacity:0}33.33%,63.67%{opacity:1}66.67%,100%{opacity:0}}.p1{animation:p1 12s linear infinite}
-@keyframes p2{0%,63.67%{opacity:0}66.67%,100%{opacity:1}}.p2{animation:p2 12s linear infinite}
+@keyframes p0{0%,30.33%{opacity:1}33.33%,97.00%{opacity:0}100%{opacity:1}}.p0{animation:p0 8.0s linear infinite}
+@keyframes p1{0%,30.33%{opacity:0}33.33%,63.67%{opacity:1}66.67%,100%{opacity:0}}.p1{animation:p1 8.0s linear infinite}
+@keyframes p2{0%,63.67%{opacity:0}66.67%,100%{opacity:1}}.p2{animation:p2 8.0s linear infinite}
 .st{opacity:0}
 @media (prefers-reduced-motion: reduce){.st{animation:none!important;opacity:0}.rm{opacity:1}}
 </style>

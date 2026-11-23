@@ -321,14 +321,28 @@ y = 30
 pal = ['read', 'write', 'run', 'search', 'accent', 'mcp', 'ok', 'warn', 'err']
 persona_line = [(f'◆ {LABEL[0]} ', T['accent'], 'b')] + [('●', T[k], '') for k in pal] + \
     [(' /persona to switch', T['muted'], '')]
+crew = [
+    '{accent|bu:▾ crew 2 running · 1 done}',
+    '{accent:●} hunt flaky test{muted: · Explore · haiku · 42s…}  {fg|u:view} {fg|u:msg} {fg|u:stop}',
+    '{muted:  ↳ Grep retry in src/**/*.test.ts}',
+    '{accent:●} write release notes{muted: · general-purpose · opu…}  {fg|u:view} {fg|u:msg} {fg|u:stop}',
+    '{muted:  ↳ Read CHANGELOG.md}',
+    '{ok:✓} check CI config{muted: · Explore · 18s · 9k in 1k out}  {fg|u:view}',
+    '{muted:  ↳ done}',
+]
 rows = [
-    span_svg(PAD, y, [('operator-board band', T['muted'], '')]),
+    span_svg(PAD, y, [('operator-board band + crew', T['muted'], '')]),
     span_svg(PAD, y + LH, truncate(parse(
         '{accent|u:board (1 need reply)}  {fg|u:recall}  {fg|u:PRs (3, 1 red)}  {err:●}  {accent|u:● 2 alerts}'), cols)),
-    span_svg(PAD, y + LH * 2.6, [('persona band', T['muted'], '')]),
-    span_svg(PAD, y + LH * 3.6, persona_line),
 ]
-py = y + LH * 4.6
+for i, line in enumerate(crew):
+    rows.append(span_svg(PAD, y + LH * (2 + i), truncate(parse(line), cols)))
+cy = y + LH * (2 + len(crew))
+rows += [
+    span_svg(PAD, cy + LH * 0.6, [('persona band', T['muted'], '')]),
+    span_svg(PAD, cy + LH * 1.6, persona_line),
+]
+py = cy + LH * 2.6
 rows.append(f'<rect x="{PAD-6}" y="{py}" width="{bw - 2*PAD + 12}" height="34" rx="6" fill="none" stroke="{T["border"]}"/>')
 rows.append(span_svg(PAD + 4, py + 22, [('> ', T['muted'], ''), ('▌', T['fg'], '')]))
 rows.append(f'<text x="{bw - PAD}" y="{y}" fill="{T["muted"]}" font-size="12" text-anchor="end">{escape(tag())}</text>')
@@ -369,9 +383,9 @@ def arrow(x1, y1, x2, y2):
 d = [f'<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">'
      f'<path d="M0,0 L10,5 L0,10 z" fill="{T["muted"]}"/></marker></defs>']
 d.append(box(310, 20, 300, 76, 'kg-ng/claude-mods', ['GitHub repo = plugin marketplace', '.claude-plugin/marketplace.json'], T['accent']))
-d.append(box(40, 150, 390, 150, 'operator-board  0.14.0', [
+d.append(box(40, 150, 390, 150, 'operator-board  0.18.0', [
     'pane  /operator  (docked, sized to terminal)',
-    'band  board · recall · PRs · alerts',
+    'band  board · recall · PRs · alerts · crew',
     'tools  board_update · todo_update',
     '       checkpoint_save',
     'cmds  /board /prs /sessions /quick ...'], T['warn']))
@@ -385,5 +399,13 @@ d.append(box(240, 360, 440, 90, 'Claude Code', [
     'claude plugin marketplace add kg-ng/claude-mods',
     'claude plugin install <mod>@claude-mods'], T['ok']))
 d += [arrow(420, 96, 235, 148), arrow(500, 96, 685, 148), arrow(235, 300, 390, 358), arrow(685, 300, 530, 358)]
-save('overview.svg', 920, 470, '\n'.join(d), 'How the repo, the two mods and Claude Code fit together')
+d.append(box(40, 490, 470, 104, 'copilot/operator-board', [
+    'GitHub Copilot CLI extension (no pane)',
+    'tools  board_update · todo_update · checkpoint_save',
+    'cmds  /board /todo /savepoint · status line'], T['mcp']))
+d.append(f'<line x1="90" y1="300" x2="90" y2="488" stroke="{T["muted"]}" stroke-width="1.5" stroke-dasharray="5 4"/>')
+d.append(f'<text x="100" y="398" fill="{T["muted"]}" font-size="12">shares</text>')
+d.append(f'<text x="100" y="414" fill="{T["muted"]}" font-size="12">~/.claude/</text>')
+d.append(f'<text x="100" y="430" fill="{T["muted"]}" font-size="12">operator-board/</text>')
+save('overview.svg', 920, 614, '\n'.join(d), 'How the repo, the two mods, the Copilot CLI port and Claude Code fit together')
 print('ok', sorted(p.name for p in OUT.glob('*.svg')))

@@ -65,7 +65,8 @@ FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monosp
 FS = 13
 CW = FS * 0.6
 LH = 19
-CYCLE = 16  # seconds for the four steps
+SPEED = 1.5  # play speed against the first cut (16s and 12s cycles): 1.5 is 50% faster
+CYCLE = round(16 / SPEED, 2)  # seconds for the four steps
 
 W, H = 980, 560
 CHAT_X, CHAT_W = 20, 540
@@ -365,7 +366,7 @@ def persona_band(label):
 # ---------- 3. picking a persona: the whole window recolours ----------
 PICKS = ['dracula', 'nord', 'gruvbox']
 LIST = list(PERSONAS)[:10]  # the picker lists the built-ins in this order
-PCYCLE = 12
+PCYCLE = round(12 / SPEED, 2)
 
 
 def picker_scene(name, k):
@@ -423,7 +424,10 @@ use('catppuccin')
 HH = 470
 hero = [frame('claude-mods — Claude Code', h=HH, has_caption=False)]
 hero.append(chat_rows(work_chat('catppuccin')))
-hero.append(text(CHAT_X + 4, PROMPT_Y - 34, '{accent|u:board (1 need reply)}  {fg|u:recall}  {fg|u:PRs (2, 1 red)}  {err:●}  {accent|u:● 1 alert}'))
+hero.append(text(CHAT_X + 4, PROMPT_Y - 94, '{accent|u:board (1 need reply)}  {fg|u:recall}  {fg|u:PRs (2, 1 red)}  {err:●}  {accent|u:● 1 alert}'))
+hero.append(text(CHAT_X + 4, PROMPT_Y - 74, '{accent|bu:▾ crew 1 running}'))
+hero.append(text(CHAT_X + 4, PROMPT_Y - 54, '{accent:●} hunt flaky test{muted: · Explore · haiku · 42s}  {fg|u:view} {fg|u:msg} {fg|u:stop}'))
+hero.append(text(CHAT_X + 4, PROMPT_Y - 34, '{muted:  ↳ Grep retry in src/**/*.test.ts}'))
 hero.append(text(CHAT_X + 4, PROMPT_Y - 14, persona_band(LABEL[0])))
 hero.append(prompt('{muted:>} ▌'))
 hero.append(pane_rows([
@@ -516,7 +520,7 @@ ba.append(window(495, 'Claude Code', [
     '{accent|b:▸ To-do (3 open)}',
     '',
     '{accent|b:▸ Usage · 42%}',
-], band_rows=['{accent|u:board (1)}  {fg|u:PRs (2)}  {accent|u:● 1}', '{accent|b:◆ Dracula} {read:●}{write:●}{run:●}{search:●}{accent:●}{ok:●}{err:●}'],
+], band_rows=['{accent|u:board (1)}  {fg|u:PRs (2)}  {accent|bu:crew 1}', '{accent|b:◆ Dracula} {read:●}{write:●}{run:●}{search:●}{accent:●}{ok:●}{err:●}'],
     tag='persona: Dracula'))
 (OUT / 'before-after.svg').write_text(wrap_svg(
     BW, BH, 'Illustration: the same Claude Code session without the mods, and with operator-board and persona (Dracula)', '\n'.join(ba)))

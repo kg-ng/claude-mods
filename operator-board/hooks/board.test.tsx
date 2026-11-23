@@ -52,7 +52,7 @@ function engine(on: any, opens: any[] = []) {
     return { value: undefined }
   })
   on('command.run', () => ({ text: '' }))
-  mock.clock(on, { now: 1_790_000_000_000 })
+  const clock = mock.clock(on, { now: 1_790_000_000_000 })
   mock.store(on)
   on('command.register', () => ({ value: { command: 'x' } }))
   on('tool.register', () => ({ value: {} }))
@@ -87,6 +87,7 @@ function engine(on: any, opens: any[] = []) {
     return { text: e.text }
   })
   on('turn.complete', (_: unknown, e: any) => ({ text: e.answer }))
+  return clock
 }
 
 test('Claude adds a needs-reply item and the board shows it', async ($, on) => {
@@ -761,4 +762,91 @@ test('Usage shows the main thread\'s tokens on the current model, and the others
   await ui.press({ key: 'usage-model' })
   expect(fills.at(-1)).toMatchObject({ text: '/model ', mode: 'replace' })
   await ui.unmount()
+})
+
+test('the crew band shows a subagent live: its step, model, tokens; view, msg and stop reach it', async ($, on) => {
+  const views: any[] = []
+  const sends: any[] = []
+  const stops: any[] = []
+  let listed: any[] = [{ id: 'a1', status: 'running' }]
+  engine(on)
+  on('agent.spawn', () => ({ model: 'claude-haiku-5-5', agentId: 'a1' }))
+  on('agent.list', () => ({ value: listed }))
+  on('ui.view', (_: unknown, e: any) => (views.push(e), { value: {} }))
+  on('session.send', (_: unknown, e: any) => (sends.push(e), { isDelivered: true }))
+  on('tool.call', (_: unknown, e: any) => {
+    if (e.tool === 'TaskStop') stops.push(e)
+    return { result: 'ok' }
+  })
+  let nextStep: any
+  on('turn.step', async function* () {
+    return nextStep
+  })
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.agent.spawn({ prompt: 'Find the flaky test', description: 'hunt flaky test', subagentType: 'Explore' } as any)
+  await $.tool.call({ tool: 'Grep', pattern: 'retry\\(', agentId: 'a1' } as any)
+  nextStep = {
+    turnId: 't', index: 0, answer: '', toolUses: [], serverToolUses: [], stopReason: 'tool_use',
+    usage: { model: 'claude-haiku-5-5', input_tokens: 2_000, output_tokens: 1_500, cache_read_input_tokens: 10_000, cache_creation_input_tokens: 0 },
+  }
+  const s = $.turn.step({ turnId: 't', index: 0, model: 'haiku', messageCount: 1, agentId: 'a1' } as any)
+  for await (const _ of s) void _
+  await s.result
+  const band = { plugin: 'operator-board', component: 'AbovePrompt', surface: 'terminal',
+    props: { hasSurvey: false, isCollapsed: false, isWorking: true, maxRows: 10, bodyColumns: 100, scroll: { offset: 0, bodyRows: 10 }, view: {} } } as any
+  let ui = await $.ui.mount(band)
+  expect(await ui.find({ key: 'crew-fold', text: /crew 1 running/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /hunt flaky test · Explore · haiku-5-5 · 0s · 12k in 2k out/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /↳ Grep retry\\\(/ })).toBeDefined()
+  await ui.press({ key: 'crew-view-a1' })
+  expect(views.at(-1)).toMatchObject({ agentId: 'a1' })
+  await ui.press({ key: 'crew-msg-a1' })
+  await ui.input({ key: 'crew-input-a1', text: 'skip the e2e suite' })
+  expect(sends.at(-1)).toMatchObject({ to: 'a1', text: 'skip the e2e suite' })
+  await ui.press({ key: 'crew-stop-a1' })
+  expect(stops.at(-1)).toMatchObject({ task_id: 'a1' })
+  await ui.unmount()
+  // Once the engine no longer lists it running, the tick marks it done; folded, it is one line.
+  listed = [{ id: 'a1', status: 'completed' }]
+  await $.turn.complete({ ...TURN, agentId: 'a1' } as any)
+  ui = await $.ui.mount(band)
+  expect(await ui.find({ key: 'crew-fold', text: /crew 0 running · 1 done/ })).toBeDefined()
+  await ui.press({ key: 'crew-fold' })
+  expect(await ui.find({ key: 'crew-view-a1' })).toBeUndefined()
+  await ui.unmount()
+})
+
+test('the crew tick: a failed list or a workflow agent stays running; listed then gone is done; done drops after a minute', async ($, on) => {
+  const clock = engine(on)
+  let listed: any = () => [{ id: 'a1', status: 'running' }]
+  let spawnId = 'a1'
+  on('agent.spawn', () => ({ model: 'claude-haiku-5-5', agentId: spawnId }))
+  on('agent.list', () => {
+    const l = listed()
+    return { value: l }
+  })
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.agent.spawn({ prompt: 'p', description: 'listed agent', subagentType: 'Explore' } as any)
+  spawnId = 'w1'
+  await $.agent.spawn({ prompt: 'p', description: 'workflow agent', subagentType: 'general-purpose' } as any)
+  const band = { plugin: 'operator-board', component: 'AbovePrompt', surface: 'terminal',
+    props: { hasSurvey: false, isCollapsed: false, isWorking: true, maxRows: 10, bodyColumns: 100, scroll: { offset: 0, bodyRows: 10 }, view: {} } } as any
+  const header = async () => {
+    const ui = await $.ui.mount(band)
+    const t = (await ui.find({ key: 'crew-fold' }))?.props?.label ?? ''
+    await ui.unmount()
+    return t
+  }
+  await clock.advance(5_000) // a1 is listed, w1 (a workflow's) never is
+  expect(await header()).toMatch(/crew 2 running$/)
+  listed = () => {
+    throw new Error('list failed')
+  }
+  await clock.advance(5_000)
+  expect(await header()).toMatch(/crew 2 running$/)
+  listed = () => []
+  await clock.advance(5_000) // a1 left the list: done; w1 was never in it: still running
+  expect(await header()).toMatch(/crew 1 running · 1 done/)
+  await clock.advance(65_000)
+  expect(await header()).toMatch(/crew 1 running$/)
 })

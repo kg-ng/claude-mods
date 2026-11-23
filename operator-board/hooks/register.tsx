@@ -51,6 +51,7 @@ import {
   recordAdvisor,
   recordModelUsage,
 } from './extras'
+import { CREW_TICK_MS, crewBand, crewDone, crewSpawned, crewStep, crewTick, crewTokens } from './crew'
 import { BASE_LOOK, dim, watchLook } from './look'
 import { PR_EVERY_MS, openPrKeys, prStats, prsBody, refreshPrs } from './prs'
 import { loadRecall, recallBody, recallCount, saveRecall, setRecallQuery } from './recall'
@@ -236,6 +237,7 @@ export const register: Register = on => {
     await $.command.register({ name: 'quick', description: 'Pin a quick prompt', argumentHint: '<prompt text>' })
     await $.command.register({ name: 'alerts', description: 'Turn operator alerts on or off', argumentHint: '[on|off]' })
     $.clock.every(TICK_MS, () => void tick($))
+    $.clock.every(CREW_TICK_MS, () => void crewTick($))
     $.clock.every(REMEASURE_MS, () => void remeasure($))
     void refreshUsage($)
     void refreshGit($)
@@ -363,13 +365,26 @@ export const register: Register = on => {
     if (!e.agentId) {
       await recordAdvisor($, r.serverToolUses)
       await recordModelUsage($, r.usage)
-    }
+    } else await crewTokens($, e.agentId, r.usage)
     return r
+  })
+
+  // ---------- crew: the session's subagents, live in the band ----------
+  on('agent.spawn', async ($, e, next) => {
+    const r = await next(e)
+    if (!r.deny) await crewSpawned($, e, r)
+    return r
+  })
+  // Any subagent's tool call moves its step; the main thread's pass through untouched.
+  on('tool.call', async ($, e, next) => {
+    if (e.agentId) await crewStep($, e.agentId, e.tool, e).catch(() => undefined)
+    return next(e)
   })
 
   // Pair the main thread's answer with the question, and save it for recall.
   on('turn.complete', async ($, e, next) => {
     const done = await next(e)
+    if (e.agentId) await crewDone($, e.agentId, e.isAborted)
     if (e.agentId || e.isAborted || !e.answer.trim()) return done
     const paired = await pairAnswer($, e.answer.trim())
     if (paired) await saveRecall($, paired)
@@ -394,7 +409,8 @@ export const register: Register = on => {
     // Opened at session start but held back undrawn (terminal under Claude Code's width floor
     // for a pane opened on its own): one press opens it, since a press is the person asking.
     const isHeld = (await $.ui.panes()).some(p => p.id === PANE.id && !p.isPlaced)
-    return (
+    const crewRows = await crewBand($, e, L)
+    const buttons = (
       <Box flexDirection="row" gap={2}>
         {isHeld && (
           <Button key="band-show-pane" plain variant="primary" label="▸ show operator pane" onPress={() => openPane($)} />
@@ -428,6 +444,13 @@ export const register: Register = on => {
             }}
           />
         )}
+      </Box>
+    )
+    if (!crewRows) return buttons
+    return (
+      <Box flexDirection="column">
+        {buttons}
+        {crewRows}
       </Box>
     )
   })
