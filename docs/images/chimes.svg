@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="613" height="417" viewBox="0 0 613 417" role="img" aria-label="Illustration: the four chimes and what plays each (persona: Rosé Pine)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="14">
+<title>Illustration: the four chimes and what plays each (persona: Rosé Pine)</title>
+<rect width="613" height="417" rx="12" fill="#191724"/>
+<g transform="translate(20,20)">
+<rect x="0.5" y="0.5" width="572" height="376" rx="10" fill="#201e2b" stroke="#454352"/>
+<line x1="0" y1="32" x2="573" y2="32" stroke="#454352"/>
+<text x="18.0" y="22" fill="#6e6a86" font-weight="700" xml:space="preserve">Claude Code</text>
+<text x="555" y="22" fill="#6e6a86" font-size="12" text-anchor="end">persona: Rosé Pine</text>
+<text x="18.0" y="58" fill="#6e6a86" xml:space="preserve">/chimes test</text>
+<text x="18.0" y="100" fill="#9ccfd8" font-weight="700" xml:space="preserve">♪ finished</text>
+<text x="102.0" y="100" fill="#e0def4" xml:space="preserve">   </text>
+<text x="127.2" y="100" fill="#6e6a86" xml:space="preserve">two notes up</text>
+<text x="18.0" y="121" fill="#e0def4" xml:space="preserve">  </text>
+<text x="34.8" y="121" fill="#6e6a86" xml:space="preserve">Claude finished a turn of 20s or more</text>
+<text x="18.0" y="163" fill="#3e8fb0" font-weight="700" xml:space="preserve">♪ needs you</text>
+<text x="110.4" y="163" fill="#e0def4" xml:space="preserve">  </text>
+<text x="127.2" y="163" fill="#6e6a86" xml:space="preserve">two taps</text>
+<text x="18.0" y="184" fill="#e0def4" xml:space="preserve">  </text>
+<text x="34.8" y="184" fill="#6e6a86" xml:space="preserve">a permission prompt, or Claude waiting on you</text>
+<text x="18.0" y="226" fill="#9ccfd8" font-weight="700" xml:space="preserve">♪ passed</text>
+<text x="85.2" y="226" fill="#e0def4" xml:space="preserve">     </text>
+<text x="127.2" y="226" fill="#6e6a86" xml:space="preserve">three notes up</text>
+<text x="18.0" y="247" fill="#e0def4" xml:space="preserve">  </text>
+<text x="34.8" y="247" fill="#6e6a86" xml:space="preserve">CI passed: #12 Shorter PR rows</text>
+<text x="18.0" y="289" fill="#eb6f92" font-weight="700" xml:space="preserve">♪ failed</text>
+<text x="85.2" y="289" fill="#e0def4" xml:space="preserve">     </text>
+<text x="127.2" y="289" fill="#6e6a86" xml:space="preserve">two notes down</text>
+<text x="18.0" y="310" fill="#e0def4" xml:space="preserve">  </text>
+<text x="34.8" y="310" fill="#6e6a86" xml:space="preserve">CI failed: #14 Hotkeys in the pane</text>
+<text x="18.0" y="352" fill="#6e6a86" xml:space="preserve">quiet while you type · together, the most urgent plays</text>
+</g>
+</svg>

@@ -6,11 +6,12 @@ Mods for [Claude Code](https://claude.com/claude-code), published as a plugin ma
 
 | Mod | Version | What it does |
 |---|---|---|
-| [`operator-board`](operator-board) | 0.18.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
+| [`operator-board`](operator-board) | 0.18.1 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 | [`guard`](guard) | 0.1.0 | A seatbelt for Claude's shell commands: stops pushes onto protected branches and `rm -rf` outside the project, and strips Claude co-author lines from commits and PRs. |
 | [`diff-cards`](diff-cards) | 0.1.0 | Folds each edit's diff in the transcript to one line, `+12 −18 · 2 hunks`, with **show diff** to unfold it. |
 | [`turn-meter`](turn-meter) | 0.1.0 | Each turn's tokens and cost on its closing line, `Baked for 42s · 180k in · 3.1k out · $0.41`, expensive turns in amber. |
+| [`chimes`](chimes) | 0.1.0 | Soft sounds for when Claude finishes, needs you, or a mod reports CI passed or failed. Quiet while you type. macOS. |
 
 **Also for GitHub Copilot CLI:** [`copilot/operator-board`](copilot/operator-board) brings the board, to-do and checkpoint tools to Copilot CLI extensions, sharing the same files, so both tools see one list. No pane: Copilot extensions don't have one.
 
@@ -52,8 +53,10 @@ claude plugin install persona@claude-mods
 claude plugin install guard@claude-mods
 claude plugin install diff-cards@claude-mods
 claude plugin install turn-meter@claude-mods
+claude plugin install chimes@claude-mods
 claude plugin install diff-cards@claude-mods
 claude plugin install turn-meter@claude-mods
+claude plugin install chimes@claude-mods
 ```
 
 You can install either mod on its own. **Restart Claude Code** afterwards to load them.
@@ -165,6 +168,12 @@ Each turn's closing line gets its tokens and cost: `Baked for 42s · 180k in · 
 
 <img src="docs/images/turn-meter.svg" width="620" alt="Illustration: three turns' closing lines with their tokens and cost, one in amber">
 
+## chimes
+
+Soft sounds, so you can look away while Claude works: **finished** after a turn of 20 seconds or more, **needs you** for a permission prompt, and **passed** or **failed** when a mod's notification says so (operator-board's CI alerts). Sounds that land together play once, the most urgent, and nothing plays while you're typing. `/chimes test` plays all four. With operator-board, turn off its **Alert sound** setting so you hear only chimes. See [chimes/README.md](chimes/README.md).
+
+<img src="docs/images/chimes.svg" width="620" alt="Illustration: the four chimes and what plays each">
+
 ## Try it
 
 A walkthrough in your own repo. It makes a throwaway branch and PR, which you delete at the end.
@@ -183,7 +192,8 @@ claude plugin update operator-board@claude-mods
 claude plugin update persona@claude-mods
 claude plugin update guard@claude-mods
 claude plugin update diff-cards@claude-mods
-claude plugin update turn-meter@claude-mods     # then restart Claude Code
+claude plugin update turn-meter@claude-mods
+claude plugin update chimes@claude-mods         # then restart Claude Code
 ```
 
 ```sh
@@ -192,6 +202,7 @@ claude plugin uninstall persona@claude-mods
 claude plugin uninstall guard@claude-mods
 claude plugin uninstall diff-cards@claude-mods
 claude plugin uninstall turn-meter@claude-mods
+claude plugin uninstall chimes@claude-mods
 claude plugin marketplace remove claude-mods
 ```
 

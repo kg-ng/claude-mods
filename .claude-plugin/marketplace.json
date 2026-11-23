@@ -25,6 +25,10 @@
     {
       "name": "turn-meter",
       "source": "./turn-meter"
+    },
+    {
+      "name": "chimes",
+      "source": "./chimes"
     }
   ]
 }

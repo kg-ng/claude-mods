@@ -17,6 +17,7 @@ const pane = (id: string, title: string) =>
 
 let historyFixture = ''
 const notified: any[] = []
+const ranArgv: string[][] = []
 
 const SECTION_KEYS = ['board', 'usage', 'git', 'sessions', 'quick', 'prs', 'recall']
 /** Sections start folded: opens each one that is folded (recall stays as the test leaves it). */
@@ -64,7 +65,7 @@ function engine(on: any, opens: any[] = []) {
   on('session.usage', () =>
     usageFixture ? { value: usageFixture } : { deny: 'no usage in this test' },
   )
-  on('process.run', (_: unknown, e: any) => ({
+  on('process.run', (_: unknown, e: any) => (ranArgv.push(e.argv ?? []), {
     value: {
       exitCode: e.argv?.[0] === 'git' ? (gitFixture ? 0 : 128) : 0,
       stdout:
@@ -850,3 +851,14 @@ test('the crew tick: a failed list or a workflow agent stays running; listed the
   await clock.advance(65_000)
   expect(await header()).toMatch(/crew 1 running$/)
 })
+
+for (const alertSound of [true, false])
+  test(`an alert ${alertSound ? 'plays' : "doesn't play"} the alert sound with Alert sound ${alertSound ? 'on' : 'off'}`, { options: { alertSound } }, async ($, on) => {
+    engine(on)
+    await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+    ranArgv.length = 0
+    await $.tool.call({ tool: 'mcp__operator-board__board_update', action: 'add', kind: 'reply', title: 'Ship it?' } as any)
+    await $.turn.complete({ answer: 'ok', durationMs: 1, isAborted: false, turnId: 't', reason: 'answer' } as any)
+    expect(notified.some(x => /needs your reply: Ship it\?/.test(JSON.stringify(x)))).toBe(true)
+    expect(ranArgv.some(a => a[0] === 'uname')).toBe(alertSound)
+  })

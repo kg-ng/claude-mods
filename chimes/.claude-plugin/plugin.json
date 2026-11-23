@@ -1,0 +1,50 @@
+{
+  "name": "chimes",
+  "version": "0.1.0",
+  "description": "Soft sounds for when Claude finishes, needs you, or a mod reports CI passed or failed. Quiet while you type. macOS.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "done": {
+      "type": "boolean",
+      "title": "Chime when Claude finishes",
+      "description": "After a turn that took at least the time below",
+      "default": true
+    },
+    "minTurnSeconds": {
+      "type": "number",
+      "title": "Only for turns this long (seconds)",
+      "description": "Quick turns finish while you're watching; no chime for them",
+      "default": 20
+    },
+    "needsYou": {
+      "type": "boolean",
+      "title": "Chime when Claude needs you",
+      "description": "A permission prompt, or Claude waiting for your input",
+      "default": true
+    },
+    "notifications": {
+      "type": "boolean",
+      "title": "Chime for other mods' notifications",
+      "description": "operator-board's CI passed or failed, needs-reply and usage alerts, each with its own sound",
+      "default": true
+    },
+    "quietWhileTyping": {
+      "type": "boolean",
+      "title": "Quiet while you type",
+      "description": "No chime within 5 seconds of a keystroke in the prompt",
+      "default": true
+    },
+    "volume": {
+      "type": "number",
+      "title": "Volume",
+      "description": "0 to 1",
+      "default": 0.7
+    }
+  }
+}

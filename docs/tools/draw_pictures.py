@@ -464,4 +464,22 @@ save_term('turn-meter.svg', 'kanagawa', [
     '{muted:✻ Brewed for 6s · 41k in · 220 out · $0.04}',
 ], 'Illustration: three turns\' closing lines with their tokens and cost, one in amber')
 
+save_term('chimes.svg', 'rose-pine', [
+    '{muted:/chimes test}',
+    '',
+    '{ok|b:♪ finished}   {muted:two notes up}',
+    '  {muted:Claude finished a turn of 20s or more}',
+    '',
+    '{accent|b:♪ needs you}  {muted:two taps}',
+    '  {muted:a permission prompt, or Claude waiting on you}',
+    '',
+    '{ok|b:♪ passed}     {muted:three notes up}',
+    '  {muted:CI passed: #12 Shorter PR rows}',
+    '',
+    '{err|b:♪ failed}     {muted:two notes down}',
+    '  {muted:CI failed: #14 Hotkeys in the pane}',
+    '',
+    '{muted:quiet while you type · together, the most urgent plays}',
+], 'Illustration: the four chimes and what plays each')
+
 print('ok', sorted(p.name for p in OUT.glob('*.svg')))
