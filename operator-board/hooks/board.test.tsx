@@ -52,7 +52,7 @@ function engine(on: any, opens: any[] = []) {
     return { value: undefined }
   })
   on('command.run', () => ({ text: '' }))
-  mock.clock(on, { now: 1_790_000_000_000 })
+  const clock = mock.clock(on, { now: 1_790_000_000_000 })
   mock.store(on)
   on('command.register', () => ({ value: { command: 'x' } }))
   on('tool.register', () => ({ value: {} }))
@@ -87,6 +87,7 @@ function engine(on: any, opens: any[] = []) {
     return { text: e.text }
   })
   on('turn.complete', (_: unknown, e: any) => ({ text: e.answer }))
+  return clock
 }
 
 test('Claude adds a needs-reply item and the board shows it', async ($, on) => {
@@ -813,4 +814,39 @@ test('the crew band shows a subagent live: its step, model, tokens; view, msg an
   await ui.press({ key: 'crew-fold' })
   expect(await ui.find({ key: 'crew-view-a1' })).toBeUndefined()
   await ui.unmount()
+})
+
+test('the crew tick: a failed list or a workflow agent stays running; listed then gone is done; done drops after a minute', async ($, on) => {
+  const clock = engine(on)
+  let listed: any = () => [{ id: 'a1', status: 'running' }]
+  let spawnId = 'a1'
+  on('agent.spawn', () => ({ model: 'claude-haiku-5-5', agentId: spawnId }))
+  on('agent.list', () => {
+    const l = listed()
+    return { value: l }
+  })
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.agent.spawn({ prompt: 'p', description: 'listed agent', subagentType: 'Explore' } as any)
+  spawnId = 'w1'
+  await $.agent.spawn({ prompt: 'p', description: 'workflow agent', subagentType: 'general-purpose' } as any)
+  const band = { plugin: 'operator-board', component: 'AbovePrompt', surface: 'terminal',
+    props: { hasSurvey: false, isCollapsed: false, isWorking: true, maxRows: 10, bodyColumns: 100, scroll: { offset: 0, bodyRows: 10 }, view: {} } } as any
+  const header = async () => {
+    const ui = await $.ui.mount(band)
+    const t = (await ui.find({ key: 'crew-fold' }))?.props?.label ?? ''
+    await ui.unmount()
+    return t
+  }
+  await clock.advance(5_000) // a1 is listed, w1 (a workflow's) never is
+  expect(await header()).toMatch(/crew 2 running$/)
+  listed = () => {
+    throw new Error('list failed')
+  }
+  await clock.advance(5_000)
+  expect(await header()).toMatch(/crew 2 running$/)
+  listed = () => []
+  await clock.advance(5_000) // a1 left the list: done; w1 was never in it: still running
+  expect(await header()).toMatch(/crew 1 running · 1 done/)
+  await clock.advance(65_000)
+  expect(await header()).toMatch(/crew 1 running$/)
 })

@@ -107,6 +107,12 @@ export type CrewAgent = {
   status: 'pending' | 'running' | 'waiting' | 'idle' | 'completed' | 'failed' | 'killed'
   startedAt: number
   endedAt?: number
+  /** Its last tool call or response. */
+  lastAt: number
+  /** Seen in `$.agent.list()` at least once: leaving the list then means it ended. */
+  listed?: boolean
+  /** A teammate idles between messages instead of finishing. */
+  isTeammate?: boolean
   /** What it is doing now: its last tool call, shortened. */
   step: string
   tokensIn: number

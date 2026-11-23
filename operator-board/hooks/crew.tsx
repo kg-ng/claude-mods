@@ -14,6 +14,8 @@ export const CREW_LINGER_MS = 60 * 1000
 export const CREW_TICK_MS = 5 * 1000
 /** Rows the band shows before "+N more". */
 export const CREW_ROWS = 4
+/** An agent the engine never listed (a workflow's) and silent this long is dropped. */
+export const CREW_SILENT_MS = 30 * 60 * 1000
 
 export const crew = atom({ plugin: 'operator-board', key: 'crew' } as const, {}, { shape: 'crew-1' })
 /** Folded to one line; which agent's message box is open. */
@@ -23,7 +25,9 @@ export const crewUi = atom({ plugin: 'operator-board', key: 'crewUi' } as const,
 /** Written by the tick while an agent runs, so elapsed times move between its tool calls. */
 export const crewNow = atom({ plugin: 'operator-board', key: 'crewNow' } as const, 0)
 
-const isLive = (a: CrewAgent) => a.status === 'running' || a.status === 'pending' || a.status === 'waiting'
+// A teammate idles between messages and is still on the crew.
+const LIVE = ['pending', 'running', 'waiting', 'idle']
+const isLive = (a: CrewAgent) => LIVE.includes(a.status)
 
 async function patch($: $T, id: string, fn: (a: CrewAgent) => CrewAgent) {
   await update($, crew, c => (c[id] ? { ...c, [id]: fn(c[id]!) } : c))
@@ -33,7 +37,7 @@ async function patch($: $T, id: string, fn: (a: CrewAgent) => CrewAgent) {
 export async function crewSpawned(
   $: $T,
   e: { description: string; subagentType: string },
-  r: { agentId?: string; model?: string },
+  r: { agentId?: string; model?: string; teammateId?: string },
 ) {
   if (!r.agentId) return
   const now = await $.clock.now()
@@ -44,9 +48,11 @@ export async function crewSpawned(
     model: r.model ?? '',
     status: 'running',
     startedAt: now,
+    lastAt: now,
     step: 'starting',
     tokensIn: 0,
     tokensOut: 0,
+    ...(r.teammateId ? { isTeammate: true } : {}),
   }
   await update($, crew, c => ({ ...c, [a.id]: a }))
 }
@@ -65,7 +71,8 @@ export async function crewStep($: $T, agentId: string, tool: string, input: unkn
   const text = stepText(tool, input)
   const cur = (await read($, crew))[agentId]
   if (!cur || cur.step === text) return
-  await patch($, agentId, a => ({ ...a, step: text }))
+  const now = await $.clock.now()
+  await patch($, agentId, a => ({ ...a, step: text, lastAt: now }))
 }
 
 /** A subagent's response: its tokens add up. */
@@ -75,41 +82,59 @@ export async function crewTokens(
   u: { input_tokens: number; output_tokens: number; cache_read_input_tokens: number; cache_creation_input_tokens: number; model?: string } | null | undefined,
 ) {
   if (!u) return
+  const now = await $.clock.now()
   await patch($, agentId, a => ({
     ...a,
+    lastAt: now,
     model: a.model || u.model || '',
     tokensIn: a.tokensIn + u.input_tokens + u.cache_read_input_tokens + u.cache_creation_input_tokens,
     tokensOut: a.tokensOut + u.output_tokens,
   }))
 }
 
-/** A subagent's turn ended: done, or stopped when it was aborted. */
+/** A subagent's turn ended: done, or stopped when it was aborted. A teammate takes many turns, so it stays. */
 export async function crewDone($: $T, agentId: string, isAborted: boolean) {
   const now = await $.clock.now()
-  await patch($, agentId, a => ({ ...a, status: isAborted ? 'killed' : 'completed', endedAt: a.endedAt ?? now }))
+  await patch($, agentId, a =>
+    a.isTeammate && !isAborted ? { ...a, status: 'idle', lastAt: now } : { ...a, status: isAborted ? 'killed' : 'completed', endedAt: a.endedAt ?? now },
+  )
 }
 
 /**
- * Every few seconds: take each agent's status from the engine (failed, killed, an agent a
- * reload or resume left behind), drop finished agents past their linger, and move the clock
- * the elapsed times read while one is running.
+ * Every few seconds: take each agent's status from the engine's list (failed, killed, or gone
+ * after a reload or resume), drop finished agents past their linger, and move the clock the
+ * elapsed times read while one is running. An agent the list never had (a workflow's) is left
+ * to its `turn.complete`, and a list that fails is skipped, never read as "all gone".
  */
 export async function crewTick($: $T) {
   const c = await read($, crew)
   const ids = Object.keys(c)
   if (!ids.length) return
   const now = await $.clock.now()
-  const listed = new Map((await $.agent.list().catch(() => [])).map(a => [a.id, a]))
+  const listed = await $.agent
+    .list()
+    .then(l => new Map(l.map(a => [a.id, a])))
+    .catch(() => null)
   const next: Record<string, CrewAgent> = {}
   let changed = false
   for (const id of ids) {
     let a = c[id]!
-    const l = listed.get(id)
-    if (isLive(a) && (!l || !['pending', 'running', 'waiting'].includes(l.status))) {
-      a = { ...a, status: l?.status ?? 'completed', endedAt: now }
-      changed = true
+    const l = listed?.get(id)
+    if (isLive(a) && listed) {
+      if (l && !a.listed) {
+        a = { ...a, listed: true }
+        changed = true
+      }
+      if (l && !LIVE.includes(l.status)) {
+        a = { ...a, status: l.status, endedAt: now }
+        changed = true
+      } else if (!l && a.listed) {
+        a = { ...a, status: 'completed', endedAt: now }
+        changed = true
+      }
     }
-    if (!isLive(a) && now - (a.endedAt ?? now) > CREW_LINGER_MS) {
+    const isGone = isLive(a) ? !a.listed && now - a.lastAt > CREW_SILENT_MS : now - (a.endedAt ?? now) > CREW_LINGER_MS
+    if (isGone) {
       changed = true
       continue
     }
@@ -135,14 +160,15 @@ export function crewSummary(list: CrewAgent[]) {
   return `crew ${live} running${done ? ` · ${done} done` : ''}`
 }
 
+/** Asks the engine to stop it; the agent's own end (or the tick) marks it stopped. */
 async function stop($: $T, a: CrewAgent) {
   const r: any = await $.tool.call({ tool: 'TaskStop', task_id: a.id } as any).catch((err: unknown) => ({ deny: String(err) }))
-  if (r?.deny) {
+  if (r?.deny || r?.isError) {
     await $.prompt.fill({ text: `Stop the subagent ${a.id} (${a.desc}).`, mode: 'replace' })
-    $.ui.toast('Stopping needs your OK: press Enter to ask Claude to stop it.')
+    $.ui.toast("Couldn't stop it from here: press Enter to ask Claude to stop it.")
     return
   }
-  await crewDone($, a.id, true)
+  $.ui.toast(`Stop sent to ${a.desc}`)
 }
 
 /** The crew's rows for the band, or null when there are no subagents. */
