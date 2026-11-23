@@ -7,9 +7,9 @@
 <text x="324" y="68" fill="#c0caf5" font-size="13">GitHub repo = plugin marketplace</text>
 <text x="324" y="88" fill="#c0caf5" font-size="13">.claude-plugin/marketplace.json</text>
 <rect x="40" y="150" width="390" height="150" rx="8" fill="#20212d" stroke="#e0af68"/>
-<text x="54" y="174" fill="#e0af68" font-weight="700">operator-board  0.14.0</text>
+<text x="54" y="174" fill="#e0af68" font-weight="700">operator-board  0.18.0</text>
 <text x="54" y="198" fill="#c0caf5" font-size="13">pane  /operator  (docked, sized to terminal)</text>
-<text x="54" y="218" fill="#c0caf5" font-size="13">band  board · recall · PRs · alerts</text>
+<text x="54" y="218" fill="#c0caf5" font-size="13">band  board · recall · PRs · alerts · crew</text>
 <text x="54" y="238" fill="#c0caf5" font-size="13">tools  board_update · todo_update</text>
 <text x="54" y="258" fill="#c0caf5" font-size="13">       checkpoint_save</text>
 <text x="54" y="278" fill="#c0caf5" font-size="13">cmds  /board /prs /sessions /quick ...</text>

@@ -5,15 +5,15 @@
 @keyframes k2{0%{opacity:0}24.99%{opacity:0}26.50%{opacity:1}48.50%{opacity:1}50.00%{opacity:0}100%{opacity:0}}
 @keyframes k3{0%{opacity:0}49.99%{opacity:0}51.50%{opacity:1}73.50%{opacity:1}75.00%{opacity:0}100%{opacity:0}}
 @keyframes k4{0%{opacity:0}74.99%{opacity:0}76.50%{opacity:1}98.50%{opacity:1}100.00%{opacity:0}100%{opacity:0}}
-.s1{animation:k1 16s linear infinite}
-.s2{animation:k2 16s linear infinite}
-.s3{animation:k3 16s linear infinite}
-.s4{animation:k4 16s linear infinite}
+.s1{animation:k1 10.67s linear infinite}
+.s2{animation:k2 10.67s linear infinite}
+.s3{animation:k3 10.67s linear infinite}
+.s4{animation:k4 10.67s linear infinite}
 @keyframes c12{0%{opacity:1}0.00%{opacity:1}1.50%{opacity:1}48.50%{opacity:1}50.00%{opacity:0}100%{opacity:0}}
-.c12{animation:c12 16s linear infinite}
+.c12{animation:c12 10.67s linear infinite}
 @keyframes c23{0%{opacity:0}24.99%{opacity:0}26.50%{opacity:1}73.50%{opacity:1}75.00%{opacity:0}100%{opacity:0}}
-.c23{animation:c23 16s linear infinite}
-@keyframes b4{0%,75.00%{transform:translateX(420px);opacity:0}78.00%{transform:translateX(0);opacity:1}98.00%{transform:translateX(0);opacity:1}100.00%,100%{transform:translateX(420px);opacity:0}}.b4{animation:b4 16s ease-out infinite}
+.c23{animation:c23 10.67s linear infinite}
+@keyframes b4{0%,75.00%{transform:translateX(420px);opacity:0}78.00%{transform:translateX(0);opacity:1}98.00%{transform:translateX(0);opacity:1}100.00%,100%{transform:translateX(420px);opacity:0}}.b4{animation:b4 10.67s ease-out infinite}
 .st{opacity:0}
 @media (prefers-reduced-motion: reduce){.st{animation:none!important;opacity:0;transform:none!important}.rm{opacity:1}}
 </style>

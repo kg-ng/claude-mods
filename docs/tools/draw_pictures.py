@@ -383,9 +383,9 @@ def arrow(x1, y1, x2, y2):
 d = [f'<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">'
      f'<path d="M0,0 L10,5 L0,10 z" fill="{T["muted"]}"/></marker></defs>']
 d.append(box(310, 20, 300, 76, 'kg-ng/claude-mods', ['GitHub repo = plugin marketplace', '.claude-plugin/marketplace.json'], T['accent']))
-d.append(box(40, 150, 390, 150, 'operator-board  0.14.0', [
+d.append(box(40, 150, 390, 150, 'operator-board  0.18.0', [
     'pane  /operator  (docked, sized to terminal)',
-    'band  board · recall · PRs · alerts',
+    'band  board · recall · PRs · alerts · crew',
     'tools  board_update · todo_update',
     '       checkpoint_save',
     'cmds  /board /prs /sessions /quick ...'], T['warn']))

@@ -56,7 +56,7 @@
 <text x="577.2" y="328" fill="#f8f8f2" xml:space="preserve">  </text>
 <text x="592.8" y="328" fill="#f8f8f2" text-decoration="underline" xml:space="preserve">PRs (2)</text>
 <text x="647.4" y="328" fill="#f8f8f2" xml:space="preserve">  </text>
-<text x="663.0" y="328" fill="#ff79c6" text-decoration="underline" xml:space="preserve">● 1</text>
+<text x="663.0" y="328" fill="#ff79c6" font-weight="700" text-decoration="underline" xml:space="preserve">crew 1</text>
 <text x="507.0" y="347" fill="#ff79c6" font-weight="700" xml:space="preserve">◆ Dracula</text>
 <text x="577.2" y="347" fill="#f8f8f2" xml:space="preserve"> </text>
 <text x="585.0" y="347" fill="#8be9fd" xml:space="preserve">●</text>
