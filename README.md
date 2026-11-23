@@ -64,6 +64,10 @@ To check they loaded, type `/operator` (the pane opens) and `/persona` (the pick
 
 <img src="docs/images/dev-flow.svg" width="760" alt="Animation: from an edit to a merge with operator-board, in four steps">
 
+**The to-do list with autopilot:** Claude proposes an item and it waits for you to **approve**. Turn on **autopilot**, and when Claude finishes one item it starts the next, marking each done with how it knows.
+
+<img src="docs/images/todo-flow.svg" width="760" alt="Animation: the operator-board to-do list with autopilot, in four steps">
+
 ### The pane
 
 - **Open or close it** with `/operator`. It also opens by itself when a session starts.

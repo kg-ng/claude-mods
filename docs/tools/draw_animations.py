@@ -331,6 +331,51 @@ parts += [caption(1, 'Claude edits a file: Git shows what it changed'),
 (OUT / 'dev-flow.svg').write_text(svg('claude-mods — Claude Code', 'Animation: from an edit to a merge with operator-board, in four steps', parts, extra, combos))
 
 
+# ---------- 2b. the to-do list with autopilot ----------
+use('everforest')
+parts, combos, extra = [], set(), ''
+todo_head = '{accent|b:▾ To-do (2 open)}'
+items = ['{accent:○} Write the try-it walkthrough {muted|u:▶} {muted|u:✓} {muted|u:×}',
+         '{accent:○} Shorter PR rows{muted: · by Claude} {muted|u:▶} {muted|u:✓} {muted|u:×}']
+propose_chat = ['{muted:> the PR rows are too tall, and register.tsx is huge}', '',
+                '{accent:●} Shortened the PR rows to two lines.', '',
+                '{mcp:⬢} {fg:todo_update}  {muted:add "Split register.tsx"}', '',
+                '{accent:●} I added a to-do to split register.tsx',
+                '  {accent:for later. Approve it in the pane.}']
+g, c = multi((1, 2), chat_rows(propose_chat)); parts.append(g); combos.add(c)
+work_chat_rows = ['{muted:[to-do] Work on item t3: "Split register.tsx"}', '',
+                  '{read:◇} {fg:Read} {muted:operator-board/hooks/register.tsx}',
+                  '{write:✎} {fg:Write} {muted:operator-board/hooks/crew.tsx}  {ok:+236}',
+                  '{run:▶} {fg:Bash} {muted:claude plugin test .}  {ok:48 pass}']
+parts.append(rm(step(3, chat_rows(work_chat_rows))))
+parts.append(step(4, chat_rows(work_chat_rows + ['', '{mcp:⬢} {fg:todo_update}  {muted:done t3 "48 tests pass"}', '',
+                                                 '{muted:[to-do] Work on item t1: "Write the try-it…"}',
+                                                 '{read:◇} {fg:Read} {muted:README.md}'])))
+# pane
+parts.append(step(1, pane_rows([todo_head, '{fg|u:autopilot: off}', ''] + items +
+                               ['', '{muted:Proposed by Claude:}',
+                                '{muted:?} Split register.tsx           {accent|u:approve} {muted|u:×}'])))
+parts.append(step(2, pane_rows(['{accent|b:▾ To-do (3 open) · autopilot on}', '{accent|u:autopilot: on}  {fg|u:stop after 3 ▾}', ''] + items +
+                               ['{accent:○} Split register.tsx       {muted|u:▶} {muted|u:✓} {muted|u:×}'])))
+parts.append(rm(step(3, pane_rows(['{accent|b:▾ To-do (3 open) · autopilot on}', '{accent|u:autopilot: on}  {fg|u:stop after 3 ▾}', '',
+                                   '{warn:◐} Split register.tsx{muted: · doing}', ''] + items))))
+parts.append(step(4, pane_rows(['{accent|b:▾ To-do (2 open) · autopilot on}', '{accent|u:autopilot: on}  {fg|u:stop after 3 ▾}', '',
+                                '{warn:◐} Write the try-it walkthrough{muted: · doing}',
+                                items[1], '',
+                                '{ok:✓ }{muted:Split register.tsx · 48 tests pass}'])))
+parts.append(step(1, prompt('{muted:>} ▌')))
+parts.append(step(2, prompt('{muted:>} ▌')))
+parts.append(rm(step(3, prompt('{muted:>} ▌'))))
+parts.append(step(4, prompt('{muted:>} ▌')))
+parts.append(step(1, band('{fg|u:board}  {fg|u:recall}  {fg|u:PRs (1)}')))
+g, c = multi((2, 3, 4), band('{fg|u:board}  {fg|u:recall}  {fg|u:PRs (1)}  {accent:autopilot ▶}')); parts.append(rm(g)); combos.add(c)
+parts += [caption(1, 'Claude proposes a to-do; it waits for your approve'),
+          caption(2, 'Approve it, and turn autopilot on'),
+          rm(caption(3, 'Autopilot starts the next item: Claude works on it')),
+          caption(4, 'Done with how Claude knows; the next one starts')]
+(OUT / 'todo-flow.svg').write_text(svg('claude-mods — Claude Code', 'Animation: the operator-board to-do list with autopilot, in four steps', parts, extra, combos))
+
+
 def wrap_svg(w, h, label, body, style=''):
     css_block = f'<style>\n{style}\n</style>\n' if style else ''
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" '
