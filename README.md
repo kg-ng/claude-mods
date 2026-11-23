@@ -6,12 +6,16 @@ Two mods for [Claude Code](https://claude.com/claude-code), published as a plugi
 
 | Mod | Version | What it does |
 |---|---|---|
-| [`operator-board`](operator-board) | 0.17.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
+| [`operator-board`](operator-board) | 0.18.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 
 **Also for GitHub Copilot CLI:** [`copilot/operator-board`](copilot/operator-board) brings the board, to-do and checkpoint tools to Copilot CLI extensions, sharing the same files, so both tools see one list. No pane: Copilot extensions don't have one.
 
-### What's new in operator-board 0.17.0
+### What's new in operator-board 0.18.0
+
+- **Crew** in the band: your running subagents live above the prompt, with what each is doing, its time and tokens, and **view**, **msg** and **stop**.
+
+From 0.17.0:
 
 - **Model** in Usage: the model Claude is using, its tokens this session (in, out, % cached), and a **/model** button.
 
@@ -101,7 +105,9 @@ Whether a banner appears depends on your Claude Code notification setting (`pref
 
 A row above the prompt with shortcuts into the pane: the board (with how many need a reply), recall, PRs (with a red dot when CI fails) and the alert count. While the pane waits hidden on a narrow terminal, it starts with **▸ show operator pane**.
 
-![Illustration: the operator-board and persona bands drawn above the Claude Code prompt](docs/images/bands.svg)
+While subagents run, the **crew** shows under it: one row per agent with what it's on now, its type, model, time and tokens. **view** opens the agent's transcript, **msg** opens a box to send it a message, and **stop** stops it. Finished agents stay a minute, then drop off. Click **crew** to fold it to one line.
+
+![Illustration: the operator-board band with the crew of running subagents, and the persona band, above the Claude Code prompt](docs/images/bands.svg)
 
 ### Commands
 

@@ -321,14 +321,28 @@ y = 30
 pal = ['read', 'write', 'run', 'search', 'accent', 'mcp', 'ok', 'warn', 'err']
 persona_line = [(f'◆ {LABEL[0]} ', T['accent'], 'b')] + [('●', T[k], '') for k in pal] + \
     [(' /persona to switch', T['muted'], '')]
+crew = [
+    '{accent|bu:▾ crew 2 running · 1 done}',
+    '{accent:●} hunt flaky test{muted: · Explore · haiku · 42s…}  {fg|u:view} {fg|u:msg} {fg|u:stop}',
+    '{muted:  ↳ Grep retry in src/**/*.test.ts}',
+    '{accent:●} write release notes{muted: · general-purpose · opu…}  {fg|u:view} {fg|u:msg} {fg|u:stop}',
+    '{muted:  ↳ Read CHANGELOG.md}',
+    '{ok:✓} check CI config{muted: · Explore · 18s · 9k in 1k out}  {fg|u:view}',
+    '{muted:  ↳ done}',
+]
 rows = [
-    span_svg(PAD, y, [('operator-board band', T['muted'], '')]),
+    span_svg(PAD, y, [('operator-board band + crew', T['muted'], '')]),
     span_svg(PAD, y + LH, truncate(parse(
         '{accent|u:board (1 need reply)}  {fg|u:recall}  {fg|u:PRs (3, 1 red)}  {err:●}  {accent|u:● 2 alerts}'), cols)),
-    span_svg(PAD, y + LH * 2.6, [('persona band', T['muted'], '')]),
-    span_svg(PAD, y + LH * 3.6, persona_line),
 ]
-py = y + LH * 4.6
+for i, line in enumerate(crew):
+    rows.append(span_svg(PAD, y + LH * (2 + i), truncate(parse(line), cols)))
+cy = y + LH * (2 + len(crew))
+rows += [
+    span_svg(PAD, cy + LH * 0.6, [('persona band', T['muted'], '')]),
+    span_svg(PAD, cy + LH * 1.6, persona_line),
+]
+py = cy + LH * 2.6
 rows.append(f'<rect x="{PAD-6}" y="{py}" width="{bw - 2*PAD + 12}" height="34" rx="6" fill="none" stroke="{T["border"]}"/>')
 rows.append(span_svg(PAD + 4, py + 22, [('> ', T['muted'], ''), ('▌', T['fg'], '')]))
 rows.append(f'<text x="{bw - PAD}" y="{y}" fill="{T["muted"]}" font-size="12" text-anchor="end">{escape(tag())}</text>')

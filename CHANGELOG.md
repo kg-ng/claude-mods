@@ -10,6 +10,10 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 ## operator-board
 
+### 0.18.0
+
+- **Crew** in the band: while subagents run, the band above the prompt lists them, one row each: what it's on now (its last tool call), type, model, time and tokens. **view** opens its transcript, **msg** sends it a message, **stop** stops it (or, when stopping needs your OK, puts the request in the prompt). Finished agents stay a minute, then drop off; the crew header folds it to one line. Works in the terminal.
+
 ### 0.17.0
 
 - **Model** in Usage: the model Claude is answering with (as `/model` shows it) and the main thread's tokens on it this session: input (cached and not), output, and how much the prompt cache served. Other models the main thread used this session are listed under it. A **/model** button puts `/model ` in the prompt box.

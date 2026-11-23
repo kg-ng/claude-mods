@@ -98,6 +98,21 @@ export type UsageSnap = {
   error?: string
 }
 
+/** A subagent on the crew band, by its agent id. */
+export type CrewAgent = {
+  id: string
+  desc: string
+  type: string
+  model: string
+  status: 'pending' | 'running' | 'waiting' | 'idle' | 'completed' | 'failed' | 'killed'
+  startedAt: number
+  endedAt?: number
+  /** What it is doing now: its last tool call, shortened. */
+  step: string
+  tokensIn: number
+  tokensOut: number
+}
+
 /** A note on where a session stood, to pick it up again later. */
 export type Checkpoint = { id: string; at: number; note: string; session: string; project: string }
 
@@ -190,6 +205,9 @@ declare module 'claude-code' {
         byModel: Record<string, { input: number; output: number; cacheRead: number; cacheWrite: number; steps: number }>
       }>
       sessions: Shaped<SessionsSnapshot>
+      crew: Shaped<Record<string, CrewAgent>>
+      crewUi: Shaped<{ folded: boolean; msgFor: string }>
+      crewNow: number
       boardScope: 'here' | 'all'
       cwd: string
     }

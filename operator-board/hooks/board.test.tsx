@@ -762,3 +762,55 @@ test('Usage shows the main thread\'s tokens on the current model, and the others
   expect(fills.at(-1)).toMatchObject({ text: '/model ', mode: 'replace' })
   await ui.unmount()
 })
+
+test('the crew band shows a subagent live: its step, model, tokens; view, msg and stop reach it', async ($, on) => {
+  const views: any[] = []
+  const sends: any[] = []
+  const stops: any[] = []
+  let listed: any[] = [{ id: 'a1', status: 'running' }]
+  engine(on)
+  on('agent.spawn', () => ({ model: 'claude-haiku-5-5', agentId: 'a1' }))
+  on('agent.list', () => ({ value: listed }))
+  on('ui.view', (_: unknown, e: any) => (views.push(e), { value: {} }))
+  on('session.send', (_: unknown, e: any) => (sends.push(e), { isDelivered: true }))
+  on('tool.call', (_: unknown, e: any) => {
+    if (e.tool === 'TaskStop') stops.push(e)
+    return { result: 'ok' }
+  })
+  let nextStep: any
+  on('turn.step', async function* () {
+    return nextStep
+  })
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.agent.spawn({ prompt: 'Find the flaky test', description: 'hunt flaky test', subagentType: 'Explore' } as any)
+  await $.tool.call({ tool: 'Grep', pattern: 'retry\\(', agentId: 'a1' } as any)
+  nextStep = {
+    turnId: 't', index: 0, answer: '', toolUses: [], serverToolUses: [], stopReason: 'tool_use',
+    usage: { model: 'claude-haiku-5-5', input_tokens: 2_000, output_tokens: 1_500, cache_read_input_tokens: 10_000, cache_creation_input_tokens: 0 },
+  }
+  const s = $.turn.step({ turnId: 't', index: 0, model: 'haiku', messageCount: 1, agentId: 'a1' } as any)
+  for await (const _ of s) void _
+  await s.result
+  const band = { plugin: 'operator-board', component: 'AbovePrompt', surface: 'terminal',
+    props: { hasSurvey: false, isCollapsed: false, isWorking: true, maxRows: 10, bodyColumns: 100, scroll: { offset: 0, bodyRows: 10 }, view: {} } } as any
+  let ui = await $.ui.mount(band)
+  expect(await ui.find({ key: 'crew-fold', text: /crew 1 running/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /hunt flaky test · Explore · haiku-5-5 · 0s · 12k in 2k out/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /↳ Grep retry\\\(/ })).toBeDefined()
+  await ui.press({ key: 'crew-view-a1' })
+  expect(views.at(-1)).toMatchObject({ agentId: 'a1' })
+  await ui.press({ key: 'crew-msg-a1' })
+  await ui.input({ key: 'crew-input-a1', text: 'skip the e2e suite' })
+  expect(sends.at(-1)).toMatchObject({ to: 'a1', text: 'skip the e2e suite' })
+  await ui.press({ key: 'crew-stop-a1' })
+  expect(stops.at(-1)).toMatchObject({ task_id: 'a1' })
+  await ui.unmount()
+  // Once the engine no longer lists it running, the tick marks it done; folded, it is one line.
+  listed = [{ id: 'a1', status: 'completed' }]
+  await $.turn.complete({ ...TURN, agentId: 'a1' } as any)
+  ui = await $.ui.mount(band)
+  expect(await ui.find({ key: 'crew-fold', text: /crew 0 running · 1 done/ })).toBeDefined()
+  await ui.press({ key: 'crew-fold' })
+  expect(await ui.find({ key: 'crew-view-a1' })).toBeUndefined()
+  await ui.unmount()
+})
