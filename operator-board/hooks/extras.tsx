@@ -27,6 +27,28 @@ const SOUND = '/System/Library/Sounds/Glass.aiff'
 export const usage = atom({ plugin: 'operator-board', key: 'usage' } as const, { updatedAt: 0 }, {
   shape: 'usage-1',
 })
+/** Advisor calls in this session's main thread: how many, and the last one's time and length. */
+export const advisorCalls = atom(
+  { plugin: 'operator-board', key: 'advisorCalls' } as const,
+  { count: 0, lastAt: 0, lastMs: 0 },
+  { shape: 'advisor-1' },
+)
+
+/** Counts the advisor calls in one step's response (the API runs them, so they show only here). */
+export async function recordAdvisor($: $T, uses: readonly { name: string; startedAt: number; endedAt?: number }[] | undefined) {
+  const calls = (uses ?? []).filter(u => u.name === 'advisor')
+  const last = calls.at(-1)
+  if (!last) return
+  await update($, advisorCalls, a => ({
+    count: a.count + calls.length,
+    lastAt: last.startedAt,
+    lastMs: last.endedAt !== undefined ? Math.max(0, last.endedAt - last.startedAt) : 0,
+  }))
+}
+
+export const BTW_FILL = '/btw '
+export const ADVISOR_FILL = '/advisor '
+
 export const checkpoints = atom({ plugin: 'operator-board', key: 'checkpoints' } as const, [], {
   shape: 'checkpoints-1',
 })
@@ -317,6 +339,7 @@ export async function usageBody($: $T, e: any, L: Look) {
   const lim = await read($, usageLimits)
   const tf = await read($, timeFormat)
   const draft = await read($, limitsDraft)
+  const adv = await read($, advisorCalls)
   if (!lim.isSet)
     return (
       <Box flexDirection="column">
@@ -384,6 +407,24 @@ export async function usageBody($: $T, e: any, L: Look) {
       {meter('5-hour', u.fiveHour?.pct, untilText(u.fiveHour?.resetsAt, now))}
       {meter('weekly', u.sevenDay?.pct, untilText(u.sevenDay?.resetsAt, now))}
       {u.costUsd !== undefined && <Text {...dim(L)}>cost this session ${u.costUsd.toFixed(2)}</Text>}
+      <Box flexDirection="row" gap={2}>
+        <Box flexGrow={1} flexShrink={1}>
+          <Text wrap="truncate-end">
+            {'advisor'.padEnd(8)}
+            <Text {...dim(L)}>
+              {adv.count === 0
+                ? 'not called this session'
+                : `${adv.count} call${adv.count > 1 ? 's' : ''} this session · last ${hhmm(adv.lastAt)}${adv.lastMs ? `, ${Math.max(1, Math.round(adv.lastMs / 1000))}s` : ''}`}
+            </Text>
+          </Text>
+        </Box>
+        <Button
+          key="usage-advisor"
+          plain
+          label="/advisor"
+          onPress={() => $.prompt.fill({ text: ADVISOR_FILL, mode: 'replace' })}
+        />
+      </Box>
       {u.error && <Text color={L.err}>{u.error}</Text>}
       <Box flexDirection="row" gap={2}>
         <Text {...dim(L)}>{u.updatedAt ? `updated ${hhmm(u.updatedAt)}` : 'loading…'}</Text>
@@ -503,6 +544,14 @@ export async function quickBody($: $T, e: any, L: Look) {
   const fill = (text: string) => $.prompt.fill({ text, mode: 'replace' })
   return (
     <Box flexDirection="column">
+      <Box flexDirection="row" gap={1}>
+        <Button key="quick-btw" plain onPress={() => fill(BTW_FILL)}>
+          <Text color={L.accent}>▸ /btw</Text>
+        </Button>
+        <Text {...dim(L)} wrap="truncate-end">
+          a side question, answered without interrupting Claude
+        </Text>
+      </Box>
       {list.length === 0 && <Text {...dim(L)}>No pinned prompts yet.</Text>}
       {list.map(q => (
         <Box flexDirection="row" gap={1} key={`quick-${q.id}`}>

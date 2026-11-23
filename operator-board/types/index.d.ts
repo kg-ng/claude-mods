@@ -183,6 +183,7 @@ declare module 'claude-code' {
       limitsDraft: Shaped<{ warn: number; stop: number }>
       paneScroll: Shaped<{ contentRows: number; bodyRows: number }>
       claudeEdits: Shaped<string[]>
+      advisorCalls: Shaped<{ count: number; lastAt: number; lastMs: number }>
       sessions: Shaped<SessionsSnapshot>
       boardScope: 'here' | 'all'
       cwd: string
