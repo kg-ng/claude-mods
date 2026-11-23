@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="470" viewBox="0 0 980 470" role="img" aria-label="Illustration: Claude Code at work with the operator pane docked beside it (persona: Catppuccin Mocha)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13">
+<title>Illustration: Claude Code at work with the operator pane docked beside it (persona: Catppuccin Mocha)</title>
+<rect width="980" height="470" rx="14" fill="#1e1e2e"/>
+<rect x="0.5" y="0.5" width="979" height="469" rx="14" fill="none" stroke="#44465a"/>
+<circle cx="22" cy="20" r="6" fill="#f7768e"/><circle cx="40" cy="20" r="6" fill="#e0af68"/><circle cx="58" cy="20" r="6" fill="#9ece6a"/>
+<text x="392.5" y="25" fill="#7f849c" xml:space="preserve">claude-mods — Claude Code</text>
+<text x="962" y="25" fill="#7f849c" font-size="12" text-anchor="end">persona: Catppuccin Mocha</text>
+<line x1="0" y1="38" x2="980" y2="38" stroke="#44465a"/>
+<rect x="580" y="52" width="380" height="400" rx="8" fill="#242435" stroke="#44465a"/>
+<text x="594.0" y="72" fill="#7f849c" font-weight="700" xml:space="preserve">operator</text>
+<line x1="580" y1="82" x2="960" y2="82" stroke="#44465a"/>
+<rect x="20" y="420" width="540" height="34" rx="6" fill="none" stroke="#44465a"/>
+
+<text x="24.0" y="72" fill="#7f849c" xml:space="preserve">&gt; make the PR rows shorter</text>
+<text x="24.0" y="110" fill="#89dceb" xml:space="preserve">◇</text>
+<text x="31.8" y="110" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="39.6" y="110" fill="#cdd6f4" xml:space="preserve">Read</text>
+<text x="70.8" y="110" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="78.6" y="110" fill="#7f849c" xml:space="preserve">operator-board/hooks/prs.tsx</text>
+<text x="24.0" y="129" fill="#fab387" xml:space="preserve">✐</text>
+<text x="31.8" y="129" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="39.6" y="129" fill="#cdd6f4" xml:space="preserve">Edit</text>
+<text x="70.8" y="129" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="78.6" y="129" fill="#7f849c" xml:space="preserve">operator-board/hooks/prs.tsx</text>
+<text x="297.0" y="129" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="304.8" y="129" fill="#a6e3a1" xml:space="preserve">+12</text>
+<text x="328.2" y="129" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="336.0" y="129" fill="#f38ba8" xml:space="preserve">−18</text>
+<text x="24.0" y="148" fill="#f9e2af" xml:space="preserve">▸</text>
+<text x="31.8" y="148" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="39.6" y="148" fill="#cdd6f4" xml:space="preserve">Bash</text>
+<text x="70.8" y="148" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="78.6" y="148" fill="#7f849c" xml:space="preserve">claude plugin test .</text>
+<text x="234.6" y="148" fill="#cdd6f4" xml:space="preserve">  </text>
+<text x="250.2" y="148" fill="#a6e3a1" xml:space="preserve">39 pass</text>
+<text x="24.0" y="186" fill="#74c7ec" font-weight="700" xml:space="preserve">## Shorter PR rows</text>
+<text x="24.0" y="205" fill="#cdd6f4" xml:space="preserve">Each PR now takes </text>
+<text x="164.4" y="205" fill="#cdd6f4" font-weight="700" xml:space="preserve">two lines</text>
+<text x="234.6" y="205" fill="#cdd6f4" xml:space="preserve">: the title, then</text>
+<text x="24.0" y="224" fill="#89dceb" xml:space="preserve">CI red: lint · 2d</text>
+<text x="156.6" y="224" fill="#cdd6f4" xml:space="preserve"> with its </text>
+<text x="234.6" y="224" fill="#74c7ec" xml:space="preserve">fix CI</text>
+<text x="281.4" y="224" fill="#cdd6f4" xml:space="preserve"> button.</text>
+<text x="24.0" y="262" fill="#7f849c" xml:space="preserve">=^.^= Purring…</text>
+<text x="24.0" y="386" fill="#74c7ec" text-decoration="underline" xml:space="preserve">board (1 need reply)</text>
+<text x="180.0" y="386" fill="#cdd6f4" xml:space="preserve">  </text>
+<text x="195.6" y="386" fill="#cdd6f4" text-decoration="underline" xml:space="preserve">recall</text>
+<text x="242.4" y="386" fill="#cdd6f4" xml:space="preserve">  </text>
+<text x="258.0" y="386" fill="#cdd6f4" text-decoration="underline" xml:space="preserve">PRs (2, 1 red)</text>
+<text x="367.2" y="386" fill="#cdd6f4" xml:space="preserve">  </text>
+<text x="382.8" y="386" fill="#f38ba8" xml:space="preserve">●</text>
+<text x="390.6" y="386" fill="#cdd6f4" xml:space="preserve">  </text>
+<text x="406.2" y="386" fill="#74c7ec" text-decoration="underline" xml:space="preserve">● 1 alert</text>
+<text x="24.0" y="406" fill="#74c7ec" font-weight="700" xml:space="preserve">◆ Catppuccin Mocha</text>
+<text x="164.4" y="406" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="172.2" y="406" fill="#89dceb" xml:space="preserve">●</text>
+<text x="180.0" y="406" fill="#fab387" xml:space="preserve">●</text>
+<text x="187.8" y="406" fill="#f9e2af" xml:space="preserve">●</text>
+<text x="195.6" y="406" fill="#cba6f7" xml:space="preserve">●</text>
+<text x="203.4" y="406" fill="#74c7ec" xml:space="preserve">●</text>
+<text x="211.2" y="406" fill="#94e2d5" xml:space="preserve">●</text>
+<text x="219.0" y="406" fill="#a6e3a1" xml:space="preserve">●</text>
+<text x="226.8" y="406" fill="#f9e2af" xml:space="preserve">●</text>
+<text x="234.6" y="406" fill="#f38ba8" xml:space="preserve">●</text>
+<text x="242.4" y="406" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="250.2" y="406" fill="#7f849c" xml:space="preserve">/persona to switch</text>
+<text x="34.0" y="442" fill="#7f849c" xml:space="preserve">&gt;</text>
+<text x="41.8" y="442" fill="#cdd6f4" xml:space="preserve"> ▌</text>
+<text x="594.0" y="104" fill="#f9e2af" font-weight="700" xml:space="preserve">● Alerts (1)</text>
+<text x="687.6" y="104" fill="#cdd6f4" xml:space="preserve">  </text>
+<text x="703.2" y="104" fill="#7f849c" text-decoration="underline" xml:space="preserve">dismiss all</text>
+<text x="594.0" y="123" fill="#7f849c" xml:space="preserve">14:02</text>
+<text x="633.0" y="123" fill="#cdd6f4" xml:space="preserve"> CI failed: #12 Shorter PR rows   </text>
+<text x="898.2" y="123" fill="#7f849c" text-decoration="underline" xml:space="preserve">✓</text>
+<text x="594.0" y="161" fill="#f9e2af" font-weight="700" xml:space="preserve">▸ Board (1 need reply)</text>
+<text x="594.0" y="199" fill="#f38ba8" font-weight="700" xml:space="preserve">▾ PRs (2, 1 red · 1 to review)</text>
+<text x="594.0" y="218" fill="#74c7ec" font-weight="700" xml:space="preserve">#12 Shorter PR rows</text>
+<text x="742.2" y="218" fill="#cdd6f4" xml:space="preserve"> </text>
+<text x="750.0" y="218" fill="#7f849c" xml:space="preserve">claude-mods</text>
+<text x="594.0" y="237" fill="#cdd6f4" xml:space="preserve">  </text>
+<text x="609.6" y="237" fill="#f38ba8" xml:space="preserve">CI red: lint · 2d</text>
+<text x="742.2" y="237" fill="#cdd6f4" xml:space="preserve">            </text>
+<text x="835.8" y="237" fill="#74c7ec" text-decoration="underline" xml:space="preserve">fix CI</text>
+<text x="594.0" y="275" fill="#74c7ec" font-weight="700" xml:space="preserve">▸ Git · feat/x · 2 changed</text>
+<text x="796.8" y="275" fill="#cdd6f4" xml:space="preserve">  </text>
+<text x="812.4" y="275" fill="#74c7ec" text-decoration="underline" xml:space="preserve">push</text>
+<text x="594.0" y="313" fill="#74c7ec" font-weight="700" xml:space="preserve">▸ To-do (3 open) · autopilot on</text>
+<text x="594.0" y="351" fill="#74c7ec" font-weight="700" xml:space="preserve">▸ Usage · ctx 42% · 5h 30%</text>
+<text x="594.0" y="389" fill="#74c7ec" font-weight="700" xml:space="preserve">▸ Sessions (8)</text>
+</svg>

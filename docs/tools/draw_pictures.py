@@ -1,7 +1,11 @@
-"""Draws the README illustrations as terminal-style SVGs.
+"""Draws the README's still pictures as terminal-style SVGs, each in a different persona.
 
-Every string shown comes from the mods' render code (operator-board/hooks,
-persona/hooks); sample data (titles, numbers, times) is made up.
+Every label comes from the mods' render code (operator-board/hooks, persona/hooks);
+sample data (titles, numbers, times) is made up. Colours are the personas' own palettes,
+read from persona/hooks/themes.ts, mapped the way operator-board's look.ts maps them
+(accent = web, plus ok / warn / err / muted / fg on the persona's background).
+
+    python3 docs/tools/draw_pictures.py docs/images persona/hooks/themes.ts
 """
 import re
 import sys
@@ -10,22 +14,60 @@ from pathlib import Path
 
 OUT = Path(sys.argv[1])
 OUT.mkdir(parents=True, exist_ok=True)
+THEMES = Path(sys.argv[2]).read_text()
 
-# tokyo-night, the default persona
-T = dict(bg='#1a1b26', panel='#16161e', border='#3b4261', fg='#c0caf5', muted='#737aa2',
-         accent='#7aa2f7', ok='#9ece6a', warn='#e0af68', err='#f7768e', read='#7dcfff',
-         write='#ff9e64', run='#e0af68', search='#bb9af7', mcp='#73daca')
 FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
 FS = 14
 CW = FS * 0.6  # monospace advance
 LH = 21
 PAD = 18
+COLS = 48
 
+
+# ---------- personas ----------
+
+def load_personas(src):
+    found = re.findall(r"\{ name: '([a-z-]+)', label: '([^']*)',\s*palette: \{([^}]*)\}", src)
+    out = {}
+    for name, label, palette in found:
+        out[name] = (label, dict(re.findall(r"(\w+): '(#[0-9a-fA-F]{6})'", palette)))
+    return out
+
+
+PERSONAS = load_personas(THEMES)
+assert len(PERSONAS) == 24, len(PERSONAS)
+
+
+def mix(a, b, t):
+    """a blended toward b by t (0..1), as #rrggbb."""
+    pa = [int(a[i:i + 2], 16) for i in (1, 3, 5)]
+    pb = [int(b[i:i + 2], 16) for i in (1, 3, 5)]
+    return '#' + ''.join(f'{round(x + (y - x) * t):02x}' for x, y in zip(pa, pb))
+
+
+T = {}
+LABEL = ['']
+
+
+def use(name):
+    """Paint what follows in this persona."""
+    label, p = PERSONAS[name]
+    fg = p.get('fg', '#c0caf5')
+    T.clear()
+    T.update(
+        bg=p['bg'], fg=fg, muted=p.get('muted', mix(p['bg'], fg, 0.5)),
+        accent=p.get('web', fg), ok=p.get('ok', fg), warn=p.get('warn', fg), err=p.get('err', fg),
+        read=p.get('read', fg), write=p.get('write', fg), run=p.get('run', fg),
+        search=p.get('search', fg), mcp=p.get('mcp', fg),
+        panel=mix(p['bg'], fg, 0.035), border=mix(p['bg'], fg, 0.22),
+    )
+    LABEL[0] = label
+
+
+# ---------- drawing ----------
 
 def span_svg(x, y, spans):
-    """spans: list of (text, colour, flags) where flags may hold b (bold), u (underline)."""
-    out = []
-    col = 0
+    out, col = [], 0
     for text, color, flags in spans:
         if not text:
             continue
@@ -41,8 +83,7 @@ def span_svg(x, y, spans):
 
 def truncate(spans, cols):
     """truncate-end at `cols` columns, as Ink does."""
-    total = sum(len(t) for t, _, _ in spans)
-    if total <= cols:
+    if sum(len(t) for t, _, _ in spans) <= cols:
         return spans
     out, left = [], cols - 1
     for t, c, f in spans:
@@ -55,7 +96,7 @@ def truncate(spans, cols):
 
 
 def parse(line):
-    """Tiny markup: {colour|flags:text}. Plain text is fg."""
+    """Tiny markup: {colour|flags:text}, flags b (bold) and u (underline, a button). Plain text is fg."""
     spans, pos = [], 0
     for m in re.finditer(r'\{(\w+)(?:\|(\w+))?:(.*?)\}', line):
         if m.start() > pos:
@@ -67,7 +108,12 @@ def parse(line):
     return spans
 
 
-def pane(lines, cols=48, title='operator', caption=None):
+def tag():
+    """The persona's name, small, so a reader knows which colours they're looking at."""
+    return f'persona: {LABEL[0]}'
+
+
+def pane(lines, cols=COLS, title='operator'):
     w = int(cols * CW + PAD * 2)
     body_top = 44
     h = body_top + len(lines) * LH + PAD
@@ -75,6 +121,7 @@ def pane(lines, cols=48, title='operator', caption=None):
         f'<rect x="0.5" y="0.5" width="{w-1}" height="{h-1}" rx="10" fill="{T["panel"]}" stroke="{T["border"]}"/>',
         f'<line x1="0" y1="32" x2="{w}" y2="32" stroke="{T["border"]}"/>',
         span_svg(PAD, 22, [(title, T['muted'], 'b')]),
+        f'<text x="{w - PAD}" y="22" fill="{T["muted"]}" font-size="12" text-anchor="end">{escape(tag())}</text>',
     ]
     for i, line in enumerate(lines):
         if line:
@@ -97,8 +144,14 @@ def offset(inner, dx, dy):
     return f'<g transform="translate({dx},{dy})">\n{inner}\n</g>'
 
 
-# 1. The pane with everything folded: alerts strip, then header summaries.
-folded = [
+def save_pane(name, persona, rows, label):
+    use(persona)
+    w, h, inner = pane(rows)
+    save(name, w + 40, h + 40, offset(inner, 20, 20), f'{label} (persona: {LABEL[0]})')
+
+
+# ---------- 1. the folded pane ----------
+save_pane('operator-pane.svg', 'dracula', [
     '{warn|b:● Alerts (2)}  {muted|u:dismiss all}',
     '{muted:14:02} Finished, needs your reply: Merge 0.… {muted|u:✓}',
     '{muted:13:47} CI failed: #12 Shorter PR rows        {muted|u:✓}',
@@ -118,79 +171,169 @@ folded = [
     '{accent|b:▸ Quick prompts (3)}',
     '',
     '{accent|b:▸ Recall (120 saved)}',
-]
-w, h, inner = pane(folded)
-save('operator-pane.svg', w + 40, h + 40, offset(inner, 20, 20),
-     'Illustration: the operator pane with every section folded, each header showing a one-line summary')
+], 'Illustration: the operator pane with every section folded, each header showing a one-line summary')
 
-# 2. Board and PRs opened.
-opened = [
-    '{warn|b:▾ Board (1 need reply, 2 pending)}',
-    '{muted:showing:}  {accent|u:this folder}  {fg|u:all sessions}',
-    '',
-    '{accent|b:Needs reply (1)}  {fg|u:show context}',
-    '1. Merge 0.9.0 into main?',
-    '   {accent|u:reply "yes, merge it"}  {fg|u:done}',
-    '',
-    '{accent|b:Pending – CI (1)}',
-    '1. Waiting on e2e for #12                  {muted|u:✓}',
-    '{accent|b:Pending – follow-ups (1)}',
-    '1. Fix the SessionEnd hook path            {muted|u:✓}',
-    '',
-    '{accent|b:Recent asks}',
-    '{fg|b:◆ This session · make the panel friendlier}',
-    '  {muted:add header summaries}',
-    '',
-    '{err|b:▾ PRs (3, 1 red · 2 to review)}',
-    '{muted:updated 14:05}  {fg|u:refresh}',
-    '',
-    '{accent|b:#12 Shorter PR rows} {muted:claude-mods}',
-    '  {err:CI red: lint, e2e · 2d}             {accent|u:fix CI}',
-    '',
-    '{accent|b:#9 Recall search} {muted:claude-mods}',
-    '  {warn:2 threads · CI green · 4d}  {accent|u:address threads}',
-    '',
-    '{ok|b:Ready (1)}',
-    '{ok:✓} #11 Alerts you can find… {muted:claude-mods}    {accent|u:merge}',
-    '',
-    '{accent|b:To review (2)}',
-    '#8 Faster recall search {muted:claude-mods · 1d}  {accent|u:review}',
-    '#4 Fix the docs links {muted:web · 3d}           {accent|u:review}',
-]
-w, h, inner = pane(opened)
-save('board-and-prs.svg', w + 40, h + 40, offset(inner, 20, 20),
-     'Illustration: Board and PRs sections open, with one-click reply and fix CI buttons')
+# ---------- 2. each section, opened ----------
+SECTIONS = {
+    'board': ('rose-pine', 'Board: needs reply, pending and recent asks', [
+        '{warn|b:▾ Board (1 need reply, 2 pending)}',
+        '{muted:showing:}  {accent|u:this folder}  {fg|u:all sessions}',
+        '',
+        '{accent|b:Needs reply (1)}  {fg|u:show context}',
+        '1. Merge 0.9.0 into main?',
+        '{muted:   Option 1 now, or wait for the e2e run.}',
+        '   {accent|u:reply "yes, merge it"}  {fg|u:done}',
+        '',
+        '{accent|b:Pending – CI (1)}',
+        '1. Waiting on e2e for #12                  {muted|u:✓}',
+        '{accent|b:Pending – follow-ups (1)}',
+        '1. Fix the SessionEnd hook path            {muted|u:✓}',
+        '',
+        '{accent|b:Recent asks}',
+        '{fg|b:◆ This session · make the panel friendlier}',
+        '  {muted:add header summaries}',
+        '',
+        '{accent|b:◇ fix the login redirect}{muted: · 11:20 · ~/dev/web}',
+        '  {muted:why does the callback drop the state param?}',
+    ]),
+    'todo': ('everforest', 'To-do: the folder\'s list, with autopilot', [
+        '{accent|b:▾ To-do (3 open) · autopilot on}',
+        '{accent|u:autopilot: on}  {fg|u:stop after 3 ▾}',
+        '',
+        '{warn:◐} Add review requests to PRs        {muted|u:✓} {muted|u:×}',
+        '{accent:○} Write the try-it walkthrough  {muted|u:▶} {muted|u:✓} {muted|u:×}',
+        '{accent:○} Shorter PR rows{muted: · by Claude} {muted|u:▶} {muted|u:✓} {muted|u:×}',
+        '',
+        '{muted:Proposed by Claude:}',
+        '{muted:?} Split register.tsx             {accent|u:approve} {muted|u:×}',
+        '',
+        '{muted:Add  }{border:[}{muted: something to do           }{border:]} {fg|u:add}',
+        '',
+        '{ok:✓ }{muted:Fix the chime · alerts you can find again}',
+        '{ok:✓ }{muted:One-click show pane on narrow terminals}',
+        '',
+        '{muted:▶ starts an item now. Autopilot starts the next}',
+        '{muted:one when Claude finishes, and pauses on a}',
+        '{muted:question, your usage warn line, or after the}',
+        '{muted:set number in a row.}',
+    ]),
+    'usage': ('kanagawa', 'Usage: context, 5-hour and weekly limits, cost', [
+        '{warn|b:▾ Usage · ctx 42% · 5h 78% · wk 31% · $1.20}',
+        'context {ok:████░░░░░░ 42%}{muted: · of 200k}',
+        '5-hour  {warn:████████░░ 78%}{muted: · resets in 2h (17:00)}',
+        'weekly  {ok:███░░░░░░░ 31%}{muted: · resets Mon 09:00}',
+        '{muted:cost this session $1.20}',
+        '',
+        '{muted:updated 14:05}  {fg|u:refresh}  {fg|u:time: 24h}',
+        '{fg|u:limits 75/90%}  {fg|u:alerts: on}',
+        '',
+        '{muted:Log  }{border:[}{muted: label, e.g. sprint 23 start  }{border:]}',
+        '{muted:Readings are logged at session start and end}',
+        '{muted:to ~/.claude/operator-board/usage-log.jsonl.}',
+    ]),
+    'git': ('one-dark', 'Git: branch, changes, what Claude changed, the next step', [
+        '{accent|b:▾ Git · feat/x · 3 changed}         {accent|u:open PR}',
+        '{accent|b:feat/x}{muted: · ↑0 ↓0}{warn: · 3 changed}',
+        '{muted:  M  operator-board/hooks/prs.tsx}',
+        '{muted:  M  operator-board/hooks/register.tsx}',
+        '{muted:  ?? notes.md}',
+        'Claude changed 2 files {ok:+48} {err:−6}  {accent|u:review} {fg|u:commit}',
+        'last: 94e1386 Split register.tsx (2 hours ago)',
+        '{accent|u:review}  {fg|u:commit}',
+        '{muted:updated 14:05}  {fg|u:refresh}',
+    ]),
+    'sessions': ('nord', 'Sessions: resume, continue from a checkpoint, copy', [
+        '{accent|b:▾ Sessions (8)}',
+        '{muted:updated 14:05}  {fg|u:refresh}  {accent|u:checkpoint}',
+        '{ok:✓ this session} {muted:14:02} README merged; next: personas',
+        '',
+        '{muted:13:40} make the panel friendlier',
+        '  {ok:✓} Sprint 22 closed; next: plan 23',
+        '{muted:  ~/dev/claude-mods · 42 msg}',
+        '  {accent|u:resume}  {accent|u:continue}  {fg|u:copy cmd}',
+        '',
+        '{muted:11-21 18:10} fix the login redirect',
+        '{muted:  ~/dev/web · 17 msg}  {fg|u:copy cmd}',
+        '',
+        '{muted:resume reopens a session; continue starts}',
+        '{muted:fresh from its checkpoint; copy cmd works}',
+        '{muted:from any folder.}',
+    ]),
+    'quick': ('night-owl', 'Quick prompts: pinned prompts, one click to send', [
+        '{accent|b:▾ Quick prompts (3)}',
+        '{accent:run the tests and fix what fails}         {muted|u:×}',
+        '{accent:/code-review}                             {muted|u:×}',
+        '{accent:summarise what changed today}             {muted|u:×}',
+        '',
+        '{muted:Pin  }{border:[}{muted: a prompt you send often     }{border:]} {fg|u:pin}',
+        '',
+        '{muted:You often send:}',
+        'sorry continue                          {fg|u:+ pin}',
+        'run the e2e tests                       {fg|u:+ pin}',
+        '',
+        '{muted:Click a prompt to put it in the prompt box.}',
+    ]),
+    'prs': ('synthwave', 'PRs: yours, two lines each, and those waiting on your review', [
+        '{err|b:▾ PRs (3, 1 red · 2 to review)}',
+        '{muted:updated 14:05}  {fg|u:refresh}',
+        '',
+        '{accent|b:#12 Shorter PR rows} {muted:claude-mods}',
+        '  {err:CI red: lint, e2e · 2d}             {accent|u:fix CI}',
+        '',
+        '{accent|b:#9 Recall search} {muted:claude-mods}',
+        '  {warn:2 threads · CI green · 4d}  {accent|u:address threads}',
+        '',
+        '{ok|b:Ready (1)}',
+        '{ok:✓} #11 Alerts you can find… {muted:claude-mods}    {accent|u:merge}',
+        '',
+        '{accent|b:To review (2)}',
+        '#8 Faster recall search {muted:claude-mods · 1d}  {accent|u:review}',
+        '#4 Fix the docs links {muted:web · 3d}           {accent|u:review}',
+        '',
+        '{muted:Click a PR to open it in the browser.}',
+    ]),
+    'recall': ('solarized-light', 'Recall: search earlier questions and their answers', [
+        '{accent|b:▾ Recall (120 saved)}',
+        '{muted:Find }{border:[}{fg: merge                       }{border:]} {fg|u:search}',
+        '',
+        '{muted:3 earlier questions match "merge"}',
+        '{muted:11-22 15:20} merge 6',
+        '{muted:11-22 14:41} merge 2 and 3',
+        '{muted:11-20 10:02} how do I merge into a protected branch?',
+        '',
+        '{muted:Picking a question shows it with the reply it got.}',
+    ]),
+}
+for key, (persona, label, rows) in SECTIONS.items():
+    save_pane(f'section-{key}.svg', persona, rows, f'Illustration: {label}')
 
-# 3. Bands above the prompt (operator-board, then persona), and the prompt.
+# ---------- 3. the bands above the prompt ----------
+use('gruvbox')
 cols = 64
-band_lines = [
-    '{accent|u:board (1 need reply)}  {fg|u:recall}  {fg|u:PRs (3, 1 red)}  {err:●}  {accent|u:● 2 alerts}',
-]
-pal = ['read', 'write', 'run', 'search', 'accent', 'mcp', 'ok', 'warn', 'err']
-persona_line = [('◆ Tokyo Night ', T['accent'], 'b')] + [('●', T[k], '') for k in pal] + \
-    [(' /persona to switch', T['muted'], '')]
 bw = int(cols * CW + PAD * 2)
-rows = []
 y = 30
-rows.append(span_svg(PAD, y, [('operator-board band', T['muted'], '')]))
-rows.append(span_svg(PAD, y + LH, truncate(parse(band_lines[0]), cols)))
-rows.append(span_svg(PAD, y + LH * 2.6, [('persona band', T['muted'], '')]))
-rows.append(span_svg(PAD, y + LH * 3.6, persona_line))
+pal = ['read', 'write', 'run', 'search', 'accent', 'mcp', 'ok', 'warn', 'err']
+persona_line = [(f'◆ {LABEL[0]} ', T['accent'], 'b')] + [('●', T[k], '') for k in pal] + \
+    [(' /persona to switch', T['muted'], '')]
+rows = [
+    span_svg(PAD, y, [('operator-board band', T['muted'], '')]),
+    span_svg(PAD, y + LH, truncate(parse(
+        '{accent|u:board (1 need reply)}  {fg|u:recall}  {fg|u:PRs (3, 1 red)}  {err:●}  {accent|u:● 2 alerts}'), cols)),
+    span_svg(PAD, y + LH * 2.6, [('persona band', T['muted'], '')]),
+    span_svg(PAD, y + LH * 3.6, persona_line),
+]
 py = y + LH * 4.6
 rows.append(f'<rect x="{PAD-6}" y="{py}" width="{bw - 2*PAD + 12}" height="34" rx="6" fill="none" stroke="{T["border"]}"/>')
 rows.append(span_svg(PAD + 4, py + 22, [('> ', T['muted'], ''), ('▌', T['fg'], '')]))
-bh = int(py + 34 + PAD)
-save('bands.svg', bw, bh, '\n'.join(rows),
-     'Illustration: the operator-board and persona bands drawn above the Claude Code prompt')
+rows.append(f'<text x="{bw - PAD}" y="{y}" fill="{T["muted"]}" font-size="12" text-anchor="end">{escape(tag())}</text>')
+save('bands.svg', bw, int(py + 34 + PAD), '\n'.join(rows),
+     f'Illustration: the operator-board and persona bands above the Claude Code prompt (persona: {LABEL[0]})')
 
-# 4. The 24 built-in personas.
-themes = Path(sys.argv[2]).read_text()
-personas = re.findall(r"\{ name: '([a-z-]+)', label: '([^']*)',\s*palette: \{([^}]*)\}", themes)
-assert len(personas) == 24, len(personas)
+# ---------- 4. the 24 built-in personas ----------
+use('tokyo-night')
 tile_w, tile_h, per_row, gap = 330, 58, 4, 12
 tiles = []
-for n, (name, label, palette) in enumerate(personas):
-    p = dict(re.findall(r"(\w+): '(#[0-9a-fA-F]{6})'", palette))
+for n, (name, (label, p)) in enumerate(PERSONAS.items()):
     x = gap + (n % per_row) * (tile_w + gap)
     y = gap + (n // per_row) * (tile_h + gap)
     tiles.append(f'<rect x="{x}" y="{y}" width="{tile_w}" height="{tile_h}" rx="8" fill="{p["bg"]}" stroke="#3b4261"/>')
@@ -198,12 +341,13 @@ for n, (name, label, palette) in enumerate(personas):
     for k, key in enumerate(['read', 'write', 'run', 'search', 'web', 'mcp', 'ok', 'warn', 'err']):
         tiles.append(f'<circle cx="{x + 18 + k*16}" cy="{y+41}" r="5.5" fill="{p.get(key, p["fg"])}"/>')
     tiles.append(f'<text x="{x+tile_w-12}" y="{y+45}" fill="{p["muted"]}" font-size="12" text-anchor="end">{escape(name)}</text>')
-gw = gap + per_row * (tile_w + gap)
-gh = gap + 6 * (tile_h + gap)
-save('personas.svg', gw, gh, '\n'.join(tiles),
+save('personas.svg', gap + per_row * (tile_w + gap), gap + 6 * (tile_h + gap), '\n'.join(tiles),
      'The 24 built-in personas, each on its own background with its accent colours')
 
-# 5. How the pieces fit.
+# ---------- 5. how the pieces fit ----------
+use('tokyo-night')
+
+
 def box(x, y, w, h, title, lines, color):
     s = [f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" fill="{T["panel"]}" stroke="{color}"/>',
          f'<text x="{x+14}" y="{y+24}" fill="{color}" font-weight="700">{escape(title)}</text>']
@@ -211,10 +355,11 @@ def box(x, y, w, h, title, lines, color):
         s.append(f'<text x="{x+14}" y="{y+48+i*20}" fill="{T["fg"]}" font-size="13">{escape(l)}</text>')
     return '\n'.join(s)
 
-def arrow(x1, y1, x2, y2):
-    return (f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{T["muted"]}" stroke-width="1.5" marker-end="url(#a)"/>')
 
-aw, ah = 920, 470
+def arrow(x1, y1, x2, y2):
+    return f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{T["muted"]}" stroke-width="1.5" marker-end="url(#a)"/>'
+
+
 d = [f'<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">'
      f'<path d="M0,0 L10,5 L0,10 z" fill="{T["muted"]}"/></marker></defs>']
 d.append(box(310, 20, 300, 76, 'kg-ng/claude-mods', ['GitHub repo = plugin marketplace', '.claude-plugin/marketplace.json'], T['accent']))
@@ -233,9 +378,6 @@ d.append(box(490, 150, 390, 150, 'persona  0.7.1', [
 d.append(box(240, 360, 440, 90, 'Claude Code', [
     'claude plugin marketplace add kg-ng/claude-mods',
     'claude plugin install <mod>@claude-mods'], T['ok']))
-d.append(arrow(420, 96, 235, 148))
-d.append(arrow(500, 96, 685, 148))
-d.append(arrow(235, 300, 390, 358))
-d.append(arrow(685, 300, 530, 358))
-save('overview.svg', aw, ah, '\n'.join(d), 'How the repo, the two mods and Claude Code fit together')
-print('ok', sorted(p.name for p in OUT.iterdir()))
+d += [arrow(420, 96, 235, 148), arrow(500, 96, 685, 148), arrow(235, 300, 390, 358), arrow(685, 300, 530, 358)]
+save('overview.svg', 920, 470, '\n'.join(d), 'How the repo, the two mods and Claude Code fit together')
+print('ok', sorted(p.name for p in OUT.glob('*.svg')))
