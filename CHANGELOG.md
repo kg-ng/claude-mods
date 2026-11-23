@@ -10,6 +10,10 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 ## operator-board
 
+### 0.18.1
+
+- **Alert sound** setting (on by default): turn it off when [chimes](chimes) plays your sounds, so you don't hear both.
+
 ### 0.18.0
 
 - **Crew** in the band: while subagents run, the band above the prompt lists them, one row each: what it's on now (its last tool call), type, model, time and tokens. **view** opens its transcript, **msg** sends it a message, **stop** stops it (or, when stopping needs your OK, puts the request in the prompt). Finished agents stay a minute, then drop off; the crew header folds it to one line. Works in the terminal.
@@ -118,6 +122,12 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 ### 0.1.0
 
 - **First version.** Each main-thread turn's closing line (`Baked for 42s`) gets ` · 180k in · 3.1k out · $0.41`: input tokens (cached included), output tokens, and how much the session's cost rose during the turn. Turns at or over $0.50 (a setting) are drawn in amber. The ctrl+o transcript keeps the plain line.
+
+## chimes
+
+### 0.1.0
+
+- **First version.** Soft sounds (made by `tools/make_sounds.py`): **finished** after a main-thread turn of 20 seconds or more, **needs you** on Claude Code's own notification (a permission prompt, waiting for input), and **passed**, **failed** or **needs you** for any mod's desktop notification, picked from its words. Sounds within 0.4 seconds play once, the most urgent. Quiet within 5 seconds of typing in the prompt. `/chimes`, `/chimes test`, `/chimes on|off`. macOS.
 
 ## copilot/operator-board
 

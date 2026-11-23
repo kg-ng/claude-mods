@@ -50,6 +50,7 @@ import {
   usageBody,
   recordAdvisor,
   recordModelUsage,
+  setAlertSound,
 } from './extras'
 import { CREW_TICK_MS, crewBand, crewDone, crewSpawned, crewStep, crewTick, crewTokens } from './crew'
 import { BASE_LOOK, dim, watchLook } from './look'
@@ -195,7 +196,8 @@ async function tick($: $T) {
 
 // ---------- register ----------
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  setAlertSound(options.alertSound !== false)
   on('session.start', async ($, e, next) => {
     await loadRecall($)
 

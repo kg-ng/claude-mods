@@ -1,6 +1,6 @@
 {
   "name": "operator-board",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Session board (recent asks, needs reply, pending), live PR status and searchable recall of past questions and answers.",
   "author": {
     "name": "kg-ng",
@@ -8,5 +8,13 @@
   },
   "repository": "https://github.com/kg-ng/claude-mods",
   "license": "MIT",
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "alertSound": {
+      "type": "boolean",
+      "title": "Alert sound",
+      "description": "Play a sound with each alert on macOS. Turn it off if chimes plays your sounds",
+      "default": true
+    }
+  }
 }

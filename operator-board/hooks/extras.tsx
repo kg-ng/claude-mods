@@ -23,6 +23,11 @@ const LIMIT_PRESETS: [number, number][] = [
   [80, 95],
 ]
 const SOUND = '/System/Library/Sounds/Glass.aiff'
+/** The Alert sound setting; off when another mod (chimes) plays the sounds. */
+let alertSound = true
+export function setAlertSound(on: boolean) {
+  alertSound = on
+}
 
 export const usage = atom({ plugin: 'operator-board', key: 'usage' } as const, { updatedAt: 0 }, {
   shape: 'usage-1',
@@ -232,7 +237,7 @@ export async function alert($: $T, key: string, text: string, sound = true) {
   $.ui.toast(text, { timeoutMs: ALERT_TOAST_MS })
   const folder = await folderName($)
   await $.ui.notify(text, { title: folder ? `Claude · ${folder}` : 'Claude', key }).catch(() => undefined)
-  if (!sound) return
+  if (!sound || !alertSound) return
   try {
     if ((await $.process.run(['uname'], { timeoutMs: 3000 })).stdout.trim() === 'Darwin')
       await $.process.run(['afplay', SOUND], { timeoutMs: 5000 })
