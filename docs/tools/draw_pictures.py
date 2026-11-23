@@ -433,4 +433,21 @@ save_term('guard.svg', 'tokyo-night', [
     '{muted:  guard removed the Claude co-author line}',
 ], 'Illustration: guard stopping a push to main and an rm -rf on a variable, letting a new branch through')
 
+save_term('diff-cards.svg', 'one-dark', [
+    '{write:✎} {fg:Edit} {muted:operator-board/hooks/prs.tsx}',
+    '  {ok:+12} {err:−18}{muted: · 2 hunks}  {fg|u:show diff ▾}',
+    '',
+    '{write:✎} {fg:Write} {muted:operator-board/hooks/crew.tsx}',
+    '  {muted:new file · }{ok:+236}  {fg|u:show diff ▾}',
+    '',
+    '{write:✎} {fg:Edit} {muted:README.md}',
+    '  {ok:+8} {err:−3}{muted: · 1 hunk}  {fg|u:hide diff ▴}',
+    '  {muted:104 }  ### The band',
+    '  {muted:105 }{err:- A row above the prompt with shortcuts into the pane.}',
+    '  {muted:105 }{ok:+ A row above the prompt with shortcuts into the pane:}',
+    '  {muted:106 }{ok:+ the board, recall, PRs and the alert count.}',
+    '  {muted:107 }{ok:+ While subagents run, the crew shows under it.}',
+    '  {muted:     … 6 more lines}',
+], 'Illustration: two edits folded to one line each, and one unfolded to its diff')
+
 print('ok', sorted(p.name for p in OUT.glob('*.svg')))

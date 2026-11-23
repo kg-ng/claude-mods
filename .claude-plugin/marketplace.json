@@ -17,6 +17,10 @@
     {
       "name": "guard",
       "source": "./guard"
+    },
+    {
+      "name": "diff-cards",
+      "source": "./diff-cards"
     }
   ]
 }

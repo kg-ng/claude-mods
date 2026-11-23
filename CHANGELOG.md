@@ -107,6 +107,12 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 - **Co-author lines** (`Co-Authored-By: Claude`, "Generated with Claude Code") come out of commit messages and PR bodies.
 - `/guard`, `/guard on`, `/guard off`.
 
+## diff-cards
+
+### 0.1.0
+
+- **First version.** Each Edit, Write and MultiEdit diff in the transcript folds to one line (`+12 −18 · 2 hunks`, or `new file · +40`) with **show diff** / **hide diff** to unfold Claude Code's own diff in place. Diffs of 6 changed lines or fewer (a setting), the ctrl+o transcript, failed edits and edits held for review are drawn as before.
+
 ## copilot/operator-board
 
 ### 0.1.0
