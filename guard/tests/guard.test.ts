@@ -23,6 +23,8 @@ test('commands that pass', () => {
     'git commit -m "push to main later"',
     'gh pr create --base main --title x --body y',
     'git checkout main && git pull',
+    'git push --tags',
+    'git push origin --tags',
   ])
     expect([cmd, check(cmd, OPTS)]).toEqual([cmd, undefined])
 })
@@ -56,6 +58,7 @@ test('a plain push from a protected branch is stopped; from a feature branch it 
   expect(check('git push', { ...OPTS, currentBranch: 'main' })?.rule).toBe('push-protected')
   expect(check('git push -u origin HEAD', { ...OPTS, currentBranch: 'main' })?.rule).toBe('push-protected')
   expect(check('git push', OPTS)).toBeUndefined()
+  expect(check('git push --tags', { ...OPTS, currentBranch: 'main' })).toBeUndefined()
 })
 
 test('heredoc bodies and quoted strings are not read as commands', () => {

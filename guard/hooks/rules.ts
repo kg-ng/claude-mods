@@ -82,6 +82,8 @@ export function checkPush(words: string[], protectedBranches: string[], currentB
     return { rule: 'push-all', reason: '`git push --mirror` / `--all` can overwrite protected branches. Push the one branch you mean.' }
   const pos = args.filter(a => !a.startsWith('-'))
   const refspecs = pos.slice(1)
+  // `git push --tags` with no refspec pushes tags alone, no branch.
+  if (!refspecs.length && flags.includes('--tags')) return
   const targets = (refspecs.length ? refspecs : [currentBranch ?? '']).map(r => {
     const s = r.replace(/^\+/, '')
     const dst = s.includes(':') ? s.slice(s.indexOf(':') + 1) : s
