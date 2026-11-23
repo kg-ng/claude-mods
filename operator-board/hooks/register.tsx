@@ -34,6 +34,7 @@ import {
   gitSummary,
   recordEdit,
   recordScroll,
+  stillTarget,
   scrollbarColumn,
   quickSummary,
   usageLevel,
@@ -48,7 +49,7 @@ import {
   saveCheckpoint,
   usageBody,
 } from './extras'
-import { BASE_LOOK, watchLook } from './look'
+import { BASE_LOOK, dim, watchLook } from './look'
 import { PR_EVERY_MS, openPrKeys, prStats, prsBody, refreshPrs } from './prs'
 import { loadRecall, recallBody, recallCount, saveRecall, setRecallQuery } from './recall'
 import { refreshSessions, sessionRows, sessionsBody, sessionsUpdatedAt } from './sessions'
@@ -153,6 +154,34 @@ export function paneOrder<K extends string>(keys: readonly K[], urgent: Readonly
   return [...keys.filter(k => urgent.has(k)), ...keys.filter(k => !urgent.has(k))]
 }
 
+// ---------- the scrollbar's measure ----------
+
+const REMEASURE_MS = 3000
+let measuredAs = ''
+
+/**
+ * When what the pane holds has changed (new board items, a PR refresh, a fold), asks for a
+ * scroll that moves nothing, so the engine reports the new height and the scrollbar keeps
+ * its size. Cheap when nothing changed: it compares counts, and only then scrolls.
+ */
+async function remeasure($: $T) {
+  if (!(await isPaneOpen($))) return
+  const g = await gitSnap($)
+  const sig = JSON.stringify([
+    await read($, openSections),
+    await boardStats($),
+    await prStats($),
+    (await sessionRows($)).length,
+    await recallCount($),
+    await todoCount($, await getCwd($)),
+    await alertCount($),
+    [g.changed, g.files?.length, g.claude?.paths.length, g.run?.length, g.ci, g.last],
+  ])
+  if (sig === measuredAs) return
+  measuredAs = sig
+  await measurePane($, await stillTarget($))
+}
+
 // ---------- periodic checks ----------
 async function tick($: $T) {
   await loadTodos($)
@@ -205,6 +234,7 @@ export const register: Register = on => {
     await $.command.register({ name: 'quick', description: 'Pin a quick prompt', argumentHint: '<prompt text>' })
     await $.command.register({ name: 'alerts', description: 'Turn operator alerts on or off', argumentHint: '[on|off]' })
     $.clock.every(TICK_MS, () => void tick($))
+    $.clock.every(REMEASURE_MS, () => void remeasure($))
     void refreshUsage($)
     void refreshGit($)
     await restoreScope($)
@@ -392,7 +422,7 @@ export const register: Register = on => {
 
   // ---------- the operator pane: every section in one place ----------
   on('ui.scroll', { component: 'Pane', requestId: PANE.id }, async ($, e, next) => {
-    await recordScroll($, e.contentRows).catch(() => undefined)
+    await recordScroll($, e.contentRows, e.bodyRows).catch(() => undefined)
     return next(e)
   })
 
@@ -420,7 +450,12 @@ export const register: Register = on => {
     }
     // The branch's next step (push / open PR), a button on the Git header itself.
     const prKeys = await openPrKeys($)
-    const nextStep = gitNext(await gitSnap($), (repo, branch) => prKeys.has(`${repo}:${branch}`))
+    const g = await gitSnap($)
+    const nextStep = gitNext(g, (repo, branch) => prKeys.has(`${repo}:${branch}`))
+    const branchHasPr = !!g.repo && prKeys.has(`${g.repo}:${g.branch ?? ''}`)
+    // 1-8 open or fold sections while the pane has the keyboard; the digit shows then.
+    const keyOf = (k: PaneKey) => String((Object.keys(SECTIONS) as PaneKey[]).indexOf(k) + 1)
+    const isFocused = e.props.isFocused === true
     const headColor = (k: PaneKey) =>
       (k === 'prs' && red) || (k === 'usage' && level === 'stop')
         ? L.err
@@ -437,7 +472,7 @@ export const register: Register = on => {
       board: open.board ? await boardBody($, e, L) : null,
       todo: open.todo ? await todoBody($, e, L, await pilotContext($)) : null,
       usage: open.usage ? await usageBody($, e, L) : null,
-      git: open.git ? await gitBody($, e, L) : null,
+      git: open.git ? await gitBody($, e, L, branchHasPr) : null,
       sessions: open.sessions ? await sessionsBody($, e, L) : null,
       quick: open.quick ? await quickBody($, e, L) : null,
       prs: open.prs ? await prsBody($, e, L, await gitRepo($)) : null,
@@ -451,8 +486,9 @@ export const register: Register = on => {
           <Box flexDirection="column" key={`section-${k}`}>
             <Box flexDirection="row" gap={1}>
               <Box flexGrow={1} flexShrink={1}>
-                <Button key={`sec-${k}`} plain onPress={() => setSection($, k, !open[k])}>
+                <Button key={`sec-${k}`} plain hotkey={keyOf(k)} onPress={() => setSection($, k, !open[k])}>
                   <Text wrap="truncate-end" color={headColor(k)} bold>
+                    {isFocused && <Text {...dim(L)}>{keyOf(k)} </Text>}
                     {open[k] ? '▾' : '▸'} {SECTIONS[k]}
                     {counts[k]}
                   </Text>

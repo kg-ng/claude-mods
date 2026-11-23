@@ -1,5 +1,5 @@
 import { expect, test } from 'claude-code/testing'
-import { gitNext, repoFromRemote } from './extras'
+import { ciText, gitNext, repoFromRemote, runPrompt, runTargets, summariseChecks } from './extras'
 import { ciJustPassed, reviewPrompt } from './prs'
 
 const g = { updatedAt: 1, isRepo: true, branch: 'feat/x', upstream: 'origin/feat/x', ahead: 0, behind: 0, repo: 'o/r' }
@@ -38,4 +38,27 @@ test('CI just passed: same commit, was running or red, now all green', async () 
 test('a review button runs /code-review for this repo, and names the PR for another', async () => {
   expect(reviewPrompt(pr('a', {}), 'o/r')).toBe('/code-review 7')
   expect(reviewPrompt(pr('a', {}), 'x/y')).toBe('Review o/r#7 (https://x/7).')
+})
+
+test('run targets: package.json scripts with the lockfile\'s package manager, else Makefile targets', async () => {
+  const pkg = JSON.stringify({ scripts: { test: 'jest', lint: 'eslint', typecheck: 'tsc', build: 'vite build', dev: 'vite' } })
+  expect(runTargets(pkg, undefined, 'npm').map(r => r.command)).toEqual(['npm test', 'npm run lint', 'npm run typecheck', 'npm run build'])
+  expect(runTargets(pkg, undefined, 'yarn')[1]?.command).toBe('yarn lint')
+  expect(runTargets(pkg, undefined, 'bun')[0]?.command).toBe('bun run test')
+  expect(runTargets(undefined, 'build:\n\tgo build\ntest: build\n\tgo test ./...\nVAR := 1\n', 'npm').map(r => r.command)).toEqual(['make test', 'make build'])
+  expect(runTargets('not json', undefined, 'npm')).toEqual([])
+  expect(runPrompt({ label: 'lint', command: 'npm run lint' })).toBe('Run `npm run lint` and fix what fails.')
+})
+
+test('branch checks: summed and said in one line', async () => {
+  const ci = summariseChecks([
+    { name: 'a', status: 'completed', conclusion: 'success' },
+    { name: 'b', status: 'completed', conclusion: 'skipped' },
+    { name: 'c', status: 'queued', conclusion: null },
+  ])
+  expect(ci).toEqual({ passed: 1, failed: 0, running: 1, failedNames: [] })
+  expect(ciText(ci)).toBe('CI 1/2')
+  expect(ciText({ passed: 3, failed: 0, running: 0, failedNames: [] })).toBe('CI green')
+  expect(ciText({ passed: 0, failed: 3, running: 0, failedNames: ['x', 'y', 'z'] })).toBe('CI red: x, y +1')
+  expect(ciText(undefined)).toBe('')
 })

@@ -118,6 +118,10 @@ export type GitSnap = {
   repo?: string
   /** The files Claude edited this session that still differ from HEAD, and their line counts. */
   claude?: { paths: string[]; added: number; removed: number }
+  /** The project's test / lint / build commands, from package.json scripts or Makefile targets. */
+  run?: { label: string; command: string }[]
+  /** GitHub checks on the pushed branch (for a branch with no PR yet). */
+  ci?: { passed: number; failed: number; running: number; failedNames: string[] }
 }
 
 /** One to-do item of a project folder's list. */
@@ -177,7 +181,7 @@ declare module 'claude-code' {
       timeFormat: string
       usageLimits: Shaped<UsageLimits>
       limitsDraft: Shaped<{ warn: number; stop: number }>
-      paneScroll: Shaped<{ contentRows: number }>
+      paneScroll: Shaped<{ contentRows: number; bodyRows: number }>
       claudeEdits: Shaped<string[]>
       sessions: Shaped<SessionsSnapshot>
       boardScope: 'here' | 'all'

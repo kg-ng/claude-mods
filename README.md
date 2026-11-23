@@ -6,7 +6,7 @@ Two mods for [Claude Code](https://claude.com/claude-code), published as a plugi
 
 | Mod | Version | What it does |
 |---|---|---|
-| [`operator-board`](operator-board) | 0.14.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
+| [`operator-board`](operator-board) | 0.15.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 
 ### Before and after
@@ -53,6 +53,7 @@ To check they loaded, type `/operator` (the pane opens) and `/persona` (the pick
 - **Width:** it follows your terminal. Claude Code gives it a share of the window (at most 45%) and resizes it with the window. Drag its edge to pick your own width, and Claude Code keeps it.
 - **Narrow terminals:** Claude Code only shows a pane that opened by itself on a terminal at least 144 columns wide, or 110 once you've opened it yourself and left it open. On a narrower terminal, click **▸ show operator pane** above the prompt, or type `/operator`. In Apple Terminal, a smaller font (Cmd and −) gives you more columns.
 - **Folded headers:** every section starts folded, and its header carries a one-line summary, so you can see what needs you without opening anything. Click a header to open it.
+- **Hotkeys:** click the pane (or ctrl+x tab) and `1`–`8` open or fold the sections: 1 Board, 2 To-do, 3 Usage, 4 Git, 5 Sessions, 6 Quick prompts, 7 PRs, 8 Recall. The digits show on the headers while the pane has the keyboard.
 
 <img src="docs/images/operator-pane.svg" width="480" alt="Illustration: the operator pane with every section folded, each header showing a one-line summary">
 
@@ -67,7 +68,7 @@ Each section, opened, in a different persona:
 | **Board**<br><br>*Needs reply*: questions Claude asked you, each with a button that fills your answer into the prompt.<br><br>*Pending*: open work grouped by section (CI, follow-ups, your action).<br><br>*Recent asks* from this and other sessions. Switch between "this folder" and "all sessions". | <img src="docs/images/section-board.svg" width="420" alt="Illustration: the Board section"> |
 | **To-do**<br><br>A to-do list for the folder, shared by every session in it. Claude proposes items, you approve them.<br><br>Turn on **autopilot** and Claude starts the next item when it finishes one. It stops at a cap, on a question, or when usage reaches your warn line. | <img src="docs/images/section-todo.svg" width="420" alt="Illustration: the To-do section"> |
 | **Usage**<br><br>Context used, 5-hour and weekly limits with when they reset, and session cost.<br><br>Meters turn amber at your warn line and red at your stop line. **Log** saves a labelled reading. | <img src="docs/images/section-usage.svg" width="420" alt="Illustration: the Usage section"> |
-| **Git**<br><br>Branch, changed files, ahead and behind, with **review** (`/code-review`) and **commit**.<br><br>**Claude changed N files +a −b**: the files Claude edited this session, until they're committed.<br><br>The header offers the branch's next step: **push**, or **open PR**. | <img src="docs/images/section-git.svg" width="420" alt="Illustration: the Git section"> |
+| **Git**<br><br>Branch, changed files, ahead and behind, with **review** (`/code-review`) and **commit**.<br><br>**Claude changed N files +a −b**: the files Claude edited this session, until they're committed.<br><br>The header offers the branch's next step: **push**, or **open PR**.<br><br>**CI on a pushed branch** shows before there's a PR (`CI red: lint`), and **run** buttons (**test**, **lint**, **typecheck**, **build**) come from your `package.json` scripts or Makefile. | <img src="docs/images/section-git.svg" width="420" alt="Illustration: the Git section"> |
 | **Sessions**<br><br>Earlier sessions with **resume**, **continue** (from its checkpoint) and **copy cmd** (works from any folder).<br><br>**checkpoint** and `/savepoint` save where this session stands. | <img src="docs/images/section-sessions.svg" width="420" alt="Illustration: the Sessions section"> |
 | **Quick prompts**<br><br>Prompts you pin with `/quick` or **Pin**; click one to put it in the prompt box.<br><br>*You often send* suggests prompts you repeat, with **+ pin**. | <img src="docs/images/section-quick.svg" width="420" alt="Illustration: the Quick prompts section"> |
 | **PRs**<br><br>Your open PRs, two lines each: the title, then what's wrong, CI and age. A PR that needs work gets **fix CI**, **address threads** or **address review**.<br><br>**Ready** PRs get **merge**. **To review** lists PRs that ask for your review, with **review**. Buttons fill the prompt; nothing is sent until you press Enter. | <img src="docs/images/section-prs.svg" width="420" alt="Illustration: the PRs section"> |

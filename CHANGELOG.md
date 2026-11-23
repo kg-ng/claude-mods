@@ -10,6 +10,13 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 ## operator-board
 
+### 0.15.0
+
+- **Hotkeys:** while the pane has the keyboard (click it, or ctrl+x tab), `1`–`8` open or fold Board, To-do, Usage, Git, Sessions, Quick prompts, PRs and Recall. Each header shows its digit then.
+- **Run buttons in Git:** **test**, **lint**, **typecheck** and **build** from your `package.json` scripts (with your package manager: npm, pnpm, yarn or bun), else from Makefile targets. Each one fills the prompt.
+- **CI on your branch before a PR exists:** once a branch is pushed, Git shows its GitHub checks (`CI 3/5`, `CI green`, `CI red: lint`), and the folded header names a red or running one.
+- **Scrollbar** keeps its size right when the pane grows by itself (new board items, a PR refresh), not only when you scroll.
+
 ### 0.14.0 · [#10](https://github.com/kg-ng/claude-mods/pull/10)
 
 - **To review:** PRs that ask for your review, each with a **review** button. The PRs header counts them: `PRs (2, 1 red · 3 to review)`.

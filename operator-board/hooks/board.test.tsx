@@ -33,6 +33,7 @@ let gitFixture: Record<string, string> | null = null
 let usageFixture: any = null
 let panesFixture: any[] = []
 let ghFixture: ((q: string) => string) | null = null
+let checksFixture: string | null = null
 const closes: any[] = []
 
 function engine(on: any, opens: any[] = []) {
@@ -71,9 +72,11 @@ function engine(on: any, opens: any[] = []) {
           ? historyFixture
           : e.argv?.[0] === 'git'
             ? (gitFixture?.[e.argv[3]] ?? '')
-            : ghFixture
-              ? ghFixture(String(e.argv?.find((x: string) => x.startsWith('q=')) ?? ''))
-              : '{"data":{"search":{"nodes":[]}}}',
+            : String(e.argv?.[2] ?? '').includes('/check-runs')
+              ? (checksFixture ?? '[]')
+              : ghFixture
+                ? ghFixture(String(e.argv?.find((x: string) => x.startsWith('q=')) ?? ''))
+                : '{"data":{"search":{"nodes":[]}}}',
       stderr: '',
       isStdoutTruncated: false,
       isStderrTruncated: false,
@@ -647,4 +650,44 @@ test('PRs list the ones waiting on your review, counted on the header, with a re
   await ui.unmount()
   ghFixture = null
   gitFixture = null
+})
+
+test('Git: run buttons from package.json, CI on a pushed branch with no PR, and hotkeys on the headers', async ($, on) => {
+  gitFixture = {
+    status: ['# branch.head feat/y', '# branch.upstream origin/feat/y', '# branch.ab +0 -0'].join('\n'),
+    log: 'abc1234 Try things (5 minutes ago)',
+    remote: 'https://github.com/kg-ng/claude-mods.git',
+  }
+  checksFixture = JSON.stringify([
+    { name: 'lint', status: 'completed', conclusion: 'failure' },
+    { name: 'test', status: 'in_progress', conclusion: null },
+    { name: 'build', status: 'completed', conclusion: 'success' },
+  ])
+  const fills: any[] = []
+  engine(on)
+  on('prompt.fill', (_: unknown, e: any) => (fills.push(e), { isFilled: true }))
+  on('fs.read', (_: unknown, e: any) =>
+    String(e.path).endsWith('/package.json')
+      ? { value: JSON.stringify({ scripts: { test: 'vitest', lint: 'eslint .', build: 'tsc', dev: 'vite' } }) }
+      : { deny: 'ENOENT' },
+  )
+  on('fs.exists', (_: unknown, e: any) => ({ value: String(e.path).endsWith('/pnpm-lock.yaml') }))
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  await $.turn.complete({ answer: 'ok', durationMs: 1, isAborted: false, turnId: 't', reason: 'answer' } as any)
+  const focused = { ...pane('operator', 'operator'), surface: 'terminal', props: { ...pane('operator', 'operator').props, isFocused: true } } as any
+  const ui = await $.ui.mount(focused)
+  // The folded header names the branch's failing check; the pane has the keyboard, so digits show.
+  expect(await ui.find({ type: 'Text', text: /4 ▸ Git · feat\/y · clean · CI red: lint/ })).toBeDefined()
+  expect(((await ui.find({ key: 'sec-git' })) as any)?.props.hotkey).toBe('4')
+  expect(((await ui.find({ key: 'sec-board' })) as any)?.props.hotkey).toBe('1')
+  await ui.press({ key: 'sec-git' })
+  expect(await ui.find({ type: 'Text', text: /CI red: lint on feat\/y · no PR yet/ })).toBeDefined()
+  await ui.press({ key: 'git-run-test' })
+  expect(fills.at(-1)?.text).toBe('Run `pnpm test` and fix what fails.')
+  await ui.press({ key: 'git-run-build' })
+  expect(fills.at(-1)?.text).toBe('Run `pnpm build` and fix any errors.')
+  expect(await ui.find({ key: 'git-run-dev' })).toBeUndefined()
+  await ui.unmount()
+  gitFixture = null
+  checksFixture = null
 })
