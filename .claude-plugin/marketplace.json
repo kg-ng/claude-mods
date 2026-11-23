@@ -1,6 +1,6 @@
 {
   "name": "claude-mods",
-  "description": "Claude Code mods: operator-board (a side pane for running sessions) and persona (terminal themes).",
+  "description": "Claude Code mods: operator-board (a side pane for running sessions), persona (terminal themes), guard (a seatbelt for shell commands) and more.",
   "owner": {
     "name": "kg-ng",
     "url": "https://github.com/kg-ng"
@@ -13,6 +13,10 @@
     {
       "name": "persona",
       "source": "./persona"
+    },
+    {
+      "name": "guard",
+      "source": "./guard"
     }
   ]
 }

@@ -1,0 +1,26 @@
+{
+  "name": "guard",
+  "version": "0.1.0",
+  "description": "A seatbelt for Claude's shell commands: stops force-pushes and pushes to protected branches, rm -rf outside the project, and strips Claude co-author lines from commits and PRs.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "protectedBranches": {
+      "type": "string",
+      "title": "Protected branches",
+      "description": "Branches Claude may not push to directly, comma-separated",
+      "default": "main,master"
+    },
+    "stripCoauthor": {
+      "type": "boolean",
+      "title": "Strip Claude co-author lines",
+      "description": "Remove Co-Authored-By: Claude and Generated with Claude Code lines from commit messages and PR bodies",
+      "default": true
+    }
+  }
+}
