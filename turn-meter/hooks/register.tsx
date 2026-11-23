@@ -9,8 +9,11 @@ import type { TurnReading } from '../types'
 type $T = EngineInterface
 
 const KEEP = 200
-/** The closing line is matched to its turn by duration; this much drift is still the same turn. */
-const MATCH_MS = 2000
+/**
+ * The closing line is matched to its turn by duration, both the turn's length in ms. A wrong cost
+ * on a line is worse than none, so only a hair of drift counts: an old line never borrows a turn's.
+ */
+const MATCH_MS = 50
 
 export const turns = atom({ plugin: 'turn-meter', key: 'turns' } as const, [], { shape: 'turns-1' })
 export const costSoFar = atom({ plugin: 'turn-meter', key: 'costSoFar' } as const, 0)
@@ -29,7 +32,7 @@ export function meterText(t: TurnReading) {
   return ` · ${parts.join(' · ')}`
 }
 
-/** The recorded turn a closing line of this duration belongs to: the same length, or the nearest within a little drift. */
+/** The recorded turn a closing line of this duration belongs to: the same length, give or take 50ms. */
 export function match(list: TurnReading[], durationMs: number) {
   let best: TurnReading | undefined
   for (const t of list) {

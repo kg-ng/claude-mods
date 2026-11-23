@@ -46,6 +46,11 @@ async function flush($: $T) {
   await play($, kind)
 }
 
+async function markTyped($: $T) {
+  const now = await $.clock.now()
+  await update($, typedAt, () => now)
+}
+
 /** Asks for a sound; the first ask opens a short window that gathers the rest. */
 function chime($: $T, kind: ChimeKind) {
   if (!pending.length) $.clock.after(GATHER_MS, () => void flush($))
@@ -84,9 +89,9 @@ export const register: Register = (on, options) => {
     return next(e)
   })
 
+  // On the typing path: pass the keystroke on at once, note the time after.
   on('prompt.edit', async ($, e, next) => {
-    const now = await $.clock.now()
-    await update($, typedAt, () => now)
+    void markTyped($)
     return next(e)
   })
 
