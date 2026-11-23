@@ -12,6 +12,7 @@ Mods for [Claude Code](https://claude.com/claude-code), published as a plugin ma
 | [`diff-cards`](diff-cards) | 0.1.0 | Folds each edit's diff in the transcript to one line, `+12 −18 · 2 hunks`, with **show diff** to unfold it. |
 | [`turn-meter`](turn-meter) | 0.1.0 | Each turn's tokens and cost on its closing line, `Baked for 42s · 180k in · 3.1k out · $0.41`, expensive turns in amber. |
 | [`chimes`](chimes) | 0.1.0 | Soft sounds for when Claude finishes, needs you, or a mod reports CI passed or failed. Quiet while you type. macOS. |
+| [`focus`](focus) | 0.1.0 | A focus timer in the status line: `/focus-timer 25` holds other mods' notifications and sounds until the break, then sends one summary. |
 
 **Also for GitHub Copilot CLI:** [`copilot/operator-board`](copilot/operator-board) brings the board, to-do and checkpoint tools to Copilot CLI extensions, sharing the same files, so both tools see one list. No pane: Copilot extensions don't have one.
 
@@ -34,7 +35,7 @@ Earlier versions: [CHANGELOG.md](CHANGELOG.md).
 
 <img src="docs/images/before-after.svg" width="900" alt="Illustration: the same Claude Code session without the mods, and with operator-board and persona">
 
-![How the repo, the two mods, the Copilot CLI port and Claude Code fit together](docs/images/overview.svg)
+![How the repo, its mods, the Copilot CLI port and Claude Code fit together](docs/images/overview.svg)
 
 > The pictures and animations in this README are drawn from the mods' render code with sample data. They are illustrations, not screenshots. Each one is painted in a different persona, named in its corner, so you can see the colours.
 
@@ -54,9 +55,11 @@ claude plugin install guard@claude-mods
 claude plugin install diff-cards@claude-mods
 claude plugin install turn-meter@claude-mods
 claude plugin install chimes@claude-mods
+claude plugin install focus@claude-mods
 claude plugin install diff-cards@claude-mods
 claude plugin install turn-meter@claude-mods
 claude plugin install chimes@claude-mods
+claude plugin install focus@claude-mods
 ```
 
 You can install either mod on its own. **Restart Claude Code** afterwards to load them.
@@ -174,6 +177,12 @@ Soft sounds, so you can look away while Claude works: **finished** after a turn 
 
 <img src="docs/images/chimes.svg" width="620" alt="Illustration: the four chimes and what plays each">
 
+## focus
+
+`/focus-timer 25` puts `◉ focus · 18m left` in the status line. Until the break, other mods' desktop notifications (operator-board's alerts) and sounds (chimes) wait. Then one notification tells you what you missed. Claude Code's own permission prompts are never held. `/focus-timer stop` ends it early. See [focus/README.md](focus/README.md).
+
+<img src="docs/images/focus.svg" width="620" alt="Illustration: the focus timer in the status line, then the break summary">
+
 ## Try it
 
 A walkthrough in your own repo. It makes a throwaway branch and PR, which you delete at the end.
@@ -193,7 +202,8 @@ claude plugin update persona@claude-mods
 claude plugin update guard@claude-mods
 claude plugin update diff-cards@claude-mods
 claude plugin update turn-meter@claude-mods
-claude plugin update chimes@claude-mods         # then restart Claude Code
+claude plugin update chimes@claude-mods
+claude plugin update focus@claude-mods          # then restart Claude Code
 ```
 
 ```sh
@@ -203,6 +213,7 @@ claude plugin uninstall guard@claude-mods
 claude plugin uninstall diff-cards@claude-mods
 claude plugin uninstall turn-meter@claude-mods
 claude plugin uninstall chimes@claude-mods
+claude plugin uninstall focus@claude-mods
 claude plugin marketplace remove claude-mods
 ```
 

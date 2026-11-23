@@ -29,6 +29,10 @@
     {
       "name": "chimes",
       "source": "./chimes"
+    },
+    {
+      "name": "focus",
+      "source": "./focus"
     }
   ]
 }
