@@ -1,0 +1,14 @@
+{
+  "name": "claude-mods",
+  "private": true,
+  "description": "Claude Code mods. Scripts run the same checks as the GitHub check workflow.",
+  "type": "module",
+  "scripts": {
+    "mods": "node scripts/mods.mjs list",
+    "validate": "node scripts/mods.mjs validate",
+    "test": "node scripts/mods.mjs test",
+    "check": "node scripts/mods.mjs check && python3 .github/scripts/check_versions.py origin/main",
+    "bump": "node scripts/bump.mjs",
+    "hooks": "git config core.hooksPath .githooks"
+  }
+}

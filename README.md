@@ -243,14 +243,19 @@ claude plugin install persona@claude-mods
 claude plugin install guard@claude-mods
 ```
 
-Test and validate before you open a PR:
+Every change to a mod needs a raised `version` in its `.claude-plugin/plugin.json`, or `claude plugin update` won't pick the change up, and an entry in [CHANGELOG.md](CHANGELOG.md). The GitHub check fails a PR that changes a mod without both (changes to tests and READMEs need neither). The scripts in `package.json` do both and run the same checks as CI, with nothing to install beyond Node and `claude`:
 
 ```sh
-cd operator-board && claude plugin test . && claude plugin validate .
-cd ../persona && claude plugin test . && claude plugin validate .
+npm run hooks                                  # once: check versions before every push
+npm run bump -- guard minor "What changed"     # raise the version (patch, minor or major) and add the CHANGELOG entry
+npm run check                                  # validate and test every mod, then check versions, as CI does
+npm test -- guard focus                        # only these mods' tests
+npm run mods                                   # list the mods and their versions
 ```
 
-Bump the mod's `version` in its `.claude-plugin/plugin.json` with every change, or `claude plugin update` won't pick the change up, and add an entry for it to [CHANGELOG.md](CHANGELOG.md). The GitHub check fails a PR that changes a mod without doing both (changes to tests and READMEs need neither). Then run the update commands above.
+<img src="docs/images/dev-check.svg" width="620" alt="Illustration: bumping a mod, npm run check catching a failing test, then a push the pre-push hook lets through">
+
+`npm run bump` adds one bullet; add more to the CHANGELOG entry by hand. Skip the pre-push check once with `git push --no-verify`. Then run the update commands above.
 
 Once a version is merged, tag it and publish its release, with the notes from its CHANGELOG entry:
 

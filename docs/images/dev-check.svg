@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="613" height="459" viewBox="0 0 613 459" role="img" aria-label="Illustration: bumping a mod, npm run check catching a failing test, then a push the pre-push hook lets through (persona: Night Owl)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="14">
+<title>Illustration: bumping a mod, npm run check catching a failing test, then a push the pre-push hook lets through (persona: Night Owl)</title>
+<rect width="613" height="459" rx="12" fill="#011627"/>
+<g transform="translate(20,20)">
+<rect x="0.5" y="0.5" width="572" height="418" rx="10" fill="#081d2e" stroke="#304252"/>
+<line x1="0" y1="32" x2="573" y2="32" stroke="#304252"/>
+<text x="18.0" y="22" fill="#7e8ea6" font-weight="700" xml:space="preserve">Claude Code</text>
+<text x="555" y="22" fill="#7e8ea6" font-size="12" text-anchor="end">persona: Night Owl</text>
+<text x="18.0" y="58" fill="#7e8ea6" xml:space="preserve">$</text>
+<text x="26.4" y="58" fill="#d6deeb" xml:space="preserve"> npm run bump -- guard minor &quot;Block push --force-with-lease&quot;</text>
+<text x="18.0" y="79" fill="#7e8ea6" xml:space="preserve">guard: 0.1.0 → 0.2.0, with a CHANGELOG.md entry.</text>
+<text x="18.0" y="121" fill="#7e8ea6" xml:space="preserve">$</text>
+<text x="26.4" y="121" fill="#d6deeb" xml:space="preserve"> npm run check</text>
+<text x="18.0" y="142" fill="#addb67" xml:space="preserve">ok  </text>
+<text x="51.6" y="142" fill="#d6deeb" xml:space="preserve"> operator-board validate</text>
+<text x="18.0" y="163" fill="#addb67" xml:space="preserve">ok  </text>
+<text x="51.6" y="163" fill="#d6deeb" xml:space="preserve"> operator-board test</text>
+<text x="18.0" y="184" fill="#7e8ea6" xml:space="preserve">…</text>
+<text x="18.0" y="205" fill="#addb67" xml:space="preserve">ok  </text>
+<text x="51.6" y="205" fill="#d6deeb" xml:space="preserve"> guard validate</text>
+<text x="18.0" y="226" fill="#ef5350" xml:space="preserve">FAIL</text>
+<text x="51.6" y="226" fill="#d6deeb" xml:space="preserve"> guard test</text>
+<text x="18.0" y="247" fill="#7e8ea6" xml:space="preserve">     ✗ blocks --force-with-lease onto main</text>
+<text x="18.0" y="289" fill="#ef5350" xml:space="preserve">Failed: guard test</text>
+<text x="18.0" y="331" fill="#7e8ea6" xml:space="preserve">… fixed, then:</text>
+<text x="18.0" y="352" fill="#7e8ea6" xml:space="preserve">$</text>
+<text x="26.4" y="352" fill="#d6deeb" xml:space="preserve"> git push</text>
+<text x="18.0" y="373" fill="#7e8ea6" xml:space="preserve">guard: 0.1.0 → 0.2.0, in CHANGELOG.md. OK</text>
+<text x="18.0" y="394" fill="#addb67" xml:space="preserve">Versions: OK</text>
+</g>
+</svg>

@@ -505,4 +505,27 @@ save_term('focus.svg', 'nord', [
     '  • Finished, needs your reply: Merge 0.9.0?{muted: (Claude · app)}',
 ], 'Illustration: the focus timer in the status line, then the break summary')
 
+# ---------- 7. developing: bump, check, push ----------
+# Lines are what scripts/bump.mjs, scripts/mods.mjs and the pre-push hook print.
+
+save_term('dev-check.svg', 'night-owl', [
+    '{muted:$} npm run bump -- guard minor "Block push --force-with-lease"',
+    '{muted:guard: 0.1.0 → 0.2.0, with a CHANGELOG.md entry.}',
+    '',
+    '{muted:$} npm run check',
+    '{ok:ok  } operator-board validate',
+    '{ok:ok  } operator-board test',
+    '{muted:…}',
+    '{ok:ok  } guard validate',
+    '{err:FAIL} guard test',
+    '{muted:     ✗ blocks --force-with-lease onto main}',
+    '',
+    '{err:Failed: guard test}',
+    '',
+    '{muted:… fixed, then:}',
+    '{muted:$} git push',
+    '{muted:guard: 0.1.0 → 0.2.0, in CHANGELOG.md. OK}',
+    '{ok:Versions: OK}',
+], 'Illustration: bumping a mod, npm run check catching a failing test, then a push the pre-push hook lets through')
+
 print('ok', sorted(p.name for p in OUT.glob('*.svg')))
