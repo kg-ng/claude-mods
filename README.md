@@ -6,9 +6,9 @@ Mods for [Claude Code](https://claude.com/claude-code), published as a plugin ma
 
 | Mod | Version | What it does |
 |---|---|---|
-| [`operator-board`](operator-board) | 0.18.1 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
+| [`operator-board`](operator-board) | 0.18.2 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
-| [`guard`](guard) | 0.1.0 | A seatbelt for Claude's shell commands: stops pushes onto protected branches and `rm -rf` outside the project, and strips Claude co-author lines from commits and PRs. |
+| [`guard`](guard) | 0.2.0 | A seatbelt for Claude's shell commands: stops pushes onto protected branches and `rm -rf` outside the project, and strips Claude co-author lines from commits and PRs. |
 | [`diff-cards`](diff-cards) | 0.1.0 | Folds each edit's diff in the transcript to one line, `+12 −18 · 2 hunks`, with **show diff** to unfold it. |
 | [`turn-meter`](turn-meter) | 0.1.0 | Each turn's tokens and cost on its closing line, `Baked for 42s · 180k in · 3.1k out · $0.41`, expensive turns in amber. |
 | [`chimes`](chimes) | 0.1.0 | Soft sounds for when Claude finishes, needs you, or a mod reports CI passed or failed. Quiet while you type. macOS. |

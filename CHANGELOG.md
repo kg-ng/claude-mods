@@ -10,6 +10,10 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 ## operator-board
 
+### 0.18.2
+
+- **Board updates sent together all land.** When Claude sent several `board_update` calls at once, only the last was kept; now they run one after another, each with its own id.
+
 ### 0.18.1
 
 - **Alert sound** setting (on by default): turn it off when [chimes](chimes) plays your sounds, so you don't hear both.
@@ -104,6 +108,10 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 - First release in this repo: 24 built-in personas for replies, tool icons, spinner words, the band and the terminal's own colours.
 
 ## guard
+
+### 0.2.0
+
+- **Wrapped commands are checked too:** `bash -c "…"`, `sh -c`, `eval`, subshells `( … )` and `$( … )`, `{ …; }`, `sudo -u <user>`, `env -i`, `xargs`, and full paths like `/bin/rm` or `/usr/bin/git`. Before, each of these let a stopped command through.
 
 ### 0.1.0
 

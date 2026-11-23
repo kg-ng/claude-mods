@@ -25,7 +25,7 @@ Restart Claude Code.
 | `push-all` | `git push --mirror`, `--all` | |
 | `rm-outside` | `rm -rf` on `/`, `~`, a `$VARIABLE`, `..`, a path outside the project, or the whole project (`.`) | `rm -rf dist node_modules` |
 
-Each part of a command is checked: `cd x && git push -f origin main` is stopped. Quoted text and heredoc bodies are not commands, so `echo "git push -f origin main"` runs.
+Each part of a command is checked: `cd x && git push -f origin main` is stopped. Quoted text and heredoc bodies are not commands, so `echo "git push -f origin main"` runs. A command run another way is still checked: `bash -c "…"`, `eval`, a subshell or `$( … )`, behind `sudo -u bob`, `env -i` or `xargs`, or by full path (`/bin/rm`).
 
 When guard stops a command, Claude gets the reason ("`main` is protected: push a branch of your own and open a PR") and you get a toast.
 

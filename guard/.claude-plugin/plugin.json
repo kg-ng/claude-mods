@@ -1,6 +1,6 @@
 {
   "name": "guard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A seatbelt for Claude's shell commands: stops force-pushes and pushes to protected branches, rm -rf outside the project, and strips Claude co-author lines from commits and PRs.",
   "author": {
     "name": "kg-ng",
