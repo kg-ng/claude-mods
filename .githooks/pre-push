@@ -1,0 +1,5 @@
+#!/bin/sh
+# Before a push, runs the GitHub check's version step: every changed mod needs a raised
+# version and a CHANGELOG.md entry. Turn on with `npm run hooks`; skip once with --no-verify.
+git fetch -q origin main 2>/dev/null
+exec python3 .github/scripts/check_versions.py origin/main
