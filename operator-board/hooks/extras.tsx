@@ -46,8 +46,58 @@ export async function recordAdvisor($: $T, uses: readonly { name: string; starte
   }))
 }
 
+/** Tokens one model used in this session's main thread, summed from each step's response. */
+export type ModelTally = { input: number; output: number; cacheRead: number; cacheWrite: number; steps: number }
+/** Main-thread tokens by the API's model id; `current` is the model of the last step, `label` as /model shows it. */
+export const modelUsage = atom(
+  { plugin: 'operator-board', key: 'modelUsage' } as const,
+  { current: '', label: '', byModel: {} },
+  { shape: 'model-usage-1' },
+)
+
+/** Adds one step's token counts to its model's tally. */
+export async function recordModelUsage(
+  $: $T,
+  u:
+    | { model: string; input_tokens: number; output_tokens: number; cache_read_input_tokens: number; cache_creation_input_tokens: number }
+    | null
+    | undefined,
+) {
+  if (!u?.model) return
+  const label = await $.session.model().catch(() => '')
+  await update($, modelUsage, m => {
+    const t = m.byModel[u.model] ?? { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, steps: 0 }
+    return {
+      current: u.model,
+      label: label || m.label,
+      byModel: {
+        ...m.byModel,
+        [u.model]: {
+          input: t.input + u.input_tokens,
+          output: t.output + u.output_tokens,
+          cacheRead: t.cacheRead + u.cache_read_input_tokens,
+          cacheWrite: t.cacheWrite + u.cache_creation_input_tokens,
+          steps: t.steps + 1,
+        },
+      },
+    }
+  })
+}
+
+/** 950 → `950`, 12_400 → `12k`, 1_240_000 → `1.2M`. */
+export const tokens = (n: number) =>
+  n < 1000 ? String(n) : n < 1_000_000 ? `${Math.round(n / 1000)}k` : `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
+
+/** `1.2M in · 48k out · 91% cached` for one model's tally. */
+export function tallyText(t: ModelTally) {
+  const totalIn = t.input + t.cacheRead + t.cacheWrite
+  const cached = totalIn ? Math.round((t.cacheRead / totalIn) * 100) : 0
+  return `${tokens(totalIn)} in · ${tokens(t.output)} out${totalIn ? ` · ${cached}% cached` : ''}`
+}
+
 export const BTW_FILL = '/btw '
 export const ADVISOR_FILL = '/advisor '
+export const MODEL_FILL = '/model '
 
 export const checkpoints = atom({ plugin: 'operator-board', key: 'checkpoints' } as const, [], {
   shape: 'checkpoints-1',
@@ -340,6 +390,7 @@ export async function usageBody($: $T, e: any, L: Look) {
   const tf = await read($, timeFormat)
   const draft = await read($, limitsDraft)
   const adv = await read($, advisorCalls)
+  const mu = await read($, modelUsage)
   if (!lim.isSet)
     return (
       <Box flexDirection="column">
@@ -425,6 +476,31 @@ export async function usageBody($: $T, e: any, L: Look) {
           onPress={() => $.prompt.fill({ text: ADVISOR_FILL, mode: 'replace' })}
         />
       </Box>
+      <Box flexDirection="row" gap={2}>
+        <Box flexGrow={1} flexShrink={1}>
+          <Text wrap="truncate-end">
+            {'model'.padEnd(8)}
+            {mu.current ? (
+              <Text>
+                <Text color={L.accent}>{mu.label || mu.current}</Text>
+                <Text {...dim(L)}> · {tallyText(mu.byModel[mu.current]!)}</Text>
+              </Text>
+            ) : (
+              <Text {...dim(L)}>no reply yet this session</Text>
+            )}
+          </Text>
+        </Box>
+        <Button key="usage-model" plain label="/model" onPress={() => $.prompt.fill({ text: MODEL_FILL, mode: 'replace' })} />
+      </Box>
+      {Object.keys(mu.byModel).length > 1 && (
+        <Text {...dim(L)} wrap="truncate-end">
+          {'        '}also{' '}
+          {Object.entries(mu.byModel)
+            .filter(([id]) => id !== mu.current)
+            .map(([id, t]) => `${id.replace(/^claude-/, '')} ${tokens(t.input + t.cacheRead + t.cacheWrite)} in`)
+            .join(' · ')}
+        </Text>
+      )}
       {u.error && <Text color={L.err}>{u.error}</Text>}
       <Box flexDirection="row" gap={2}>
         <Text {...dim(L)}>{u.updatedAt ? `updated ${hhmm(u.updatedAt)}` : 'loading…'}</Text>

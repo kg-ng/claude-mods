@@ -49,6 +49,7 @@ import {
   saveCheckpoint,
   usageBody,
   recordAdvisor,
+  recordModelUsage,
 } from './extras'
 import { BASE_LOOK, dim, watchLook } from './look'
 import { PR_EVERY_MS, openPrKeys, prStats, prsBody, refreshPrs } from './prs'
@@ -359,7 +360,10 @@ export const register: Register = on => {
   // The advisor runs inside the API request, so its calls show only in the step's response.
   on('turn.step', async function* ($, e, next) {
     const r = yield* next(e)
-    if (!e.agentId) await recordAdvisor($, r.serverToolUses)
+    if (!e.agentId) {
+      await recordAdvisor($, r.serverToolUses)
+      await recordModelUsage($, r.usage)
+    }
     return r
   })
 

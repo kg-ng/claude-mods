@@ -726,3 +726,39 @@ test('Usage counts advisor calls from the main thread, and /btw and /advisor fil
   expect(fills.at(-1)).toMatchObject({ text: '/btw ', mode: 'replace' })
   await ui.unmount()
 })
+
+test('Usage shows the main thread\'s tokens on the current model, and the others it used', async ($, on) => {
+  const fills: any[] = []
+  engine(on)
+  on('prompt.fill', (_: unknown, e: any) => (fills.push(e), { isFilled: true }))
+  on('session.model', () => ({ value: 'Opus 5.5' }))
+  const use = (model: string, input: number, output: number, cacheRead: number) => ({
+    model, input_tokens: input, output_tokens: output, cache_read_input_tokens: cacheRead, cache_creation_input_tokens: 0,
+  })
+  let nextStep: any
+  on('turn.step', async function* () {
+    return nextStep
+  })
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  const run = async (usage: any, agentId?: string) => {
+    nextStep = { turnId: 't', index: 0, answer: '', toolUses: [], serverToolUses: [], stopReason: 'end_turn', usage }
+    const s = $.turn.step({ turnId: 't', index: 0, model: 'opus', messageCount: 1, ...(agentId ? { agentId } : {}) } as any)
+    for await (const _ of s) void _
+    await s.result
+  }
+  await run(use('claude-haiku-5-5', 9_000, 1_000, 3_000))
+  await run(use('claude-opus-5-5', 100_000, 20_000, 900_000))
+  await run(use('claude-sonnet-5-5', 500_000, 5_000, 0), 'sub-1') // a subagent's tokens aren't counted
+  await run(use('claude-opus-5-5', 0, 28_000, 200_000))
+  await $.turn.complete(TURN)
+  const ui = await $.ui.mount({ ...pane('operator', 'operator'), surface: 'terminal' })
+  await ui.press({ key: 'sec-usage' })
+  await ui.press({ key: 'limits-75-90' })
+  expect(await ui.find({ type: 'Text', text: /Opus 5\.5/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /1\.2M in · 48k out · 92% cached/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /also haiku-5-5 12k in/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /sonnet/ })).toBeUndefined()
+  await ui.press({ key: 'usage-model' })
+  expect(fills.at(-1)).toMatchObject({ text: '/model ', mode: 'replace' })
+  await ui.unmount()
+})
