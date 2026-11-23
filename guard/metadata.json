@@ -1,8 +1,0 @@
-{
-  "id": "guard",
-  "name": "guard",
-  "version": "0.1.0",
-  "type": "hook",
-  "description": "Safety guard for shell commands.",
-  "entryPoint": "src/index.ts"
-}

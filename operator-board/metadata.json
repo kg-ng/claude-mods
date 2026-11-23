@@ -1,8 +1,0 @@
-{
-  "id": "operator-board",
-  "name": "operator-board",
-  "version": "0.18.1",
-  "type": "pane",
-  "description": "A comprehensive status pane for Claude Code.",
-  "entryPoint": "src/index.ts"
-}

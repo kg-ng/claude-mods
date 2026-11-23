@@ -1,22 +1,12 @@
 {
   "name": "claude-mods",
-  "version": "1.0.0",
-  "description": "A collection of Claude Code mods",
-  "main": "index.js",
+  "private": true,
+  "description": "Claude Code mods. Scripts run the same checks as the GitHub check workflow.",
+  "type": "module",
   "scripts": {
-    "test": "node scripts/clean-workspace.ts && vitest run",
-    "test:mod": "vitest run --filter <mod-name>",
-    "build": "tsc",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "register": "ts-node scripts/register-mods.ts",
-    "clean": "node scripts/clean-workspace.ts"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0",
-    "eslint": "^8.0.0",
-    "ts-node": "^10.0.0",
-    "tsx": "^4.0.0"
+    "mods": "node scripts/mods.mjs list",
+    "validate": "node scripts/mods.mjs validate",
+    "test": "node scripts/mods.mjs test",
+    "check": "node scripts/mods.mjs check && python3 .github/scripts/check_versions.py origin/main"
   }
 }

@@ -1,8 +1,0 @@
-{
-  "id": "chimes",
-  "name": "chimes",
-  "version": "0.1.0",
-  "type": "utility",
-  "description": "Audio notifications for events.",
-  "entryPoint": "src/index.ts"
-}
