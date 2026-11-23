@@ -7,13 +7,14 @@ test('numbers read short', () => {
   expect(meterText({ durationMs: 1, input: 400, output: 3_100, cacheRead: 179_600, costUsd: 0.41 })).toBe(' · 180k in · 3.1k out · $0.41')
 })
 
-test('a closing line finds its turn by duration, allowing a little drift, never a far one', () => {
+test('a closing line finds its turn by duration, give or take 50ms, never a nearby one', () => {
   const list = [
     { durationMs: 42_000, input: 1, output: 1, cacheRead: 0 },
     { durationMs: 9_000, input: 2, output: 2, cacheRead: 0 },
   ]
   expect(match(list, 42_000)?.input).toBe(1)
-  expect(match(list, 9_600)?.input).toBe(2)
+  expect(match(list, 9_030)?.input).toBe(2)
+  expect(match(list, 9_600)).toBeUndefined()
   expect(match(list, 20_000)).toBeUndefined()
 })
 

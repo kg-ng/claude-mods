@@ -33,4 +33,4 @@ In `/plugin`, under turn-meter:
 
 ## How it lines up
 
-The closing line doesn't say which turn it closes, so turn-meter matches it to the turn that just ended by its length (to within 2 seconds). Turns from before the mod loaded, or from a resumed session, keep their plain line.
+The closing line doesn't say which turn it closes, so turn-meter matches it to a turn of the same length (to the millisecond, give or take 50). A line it can't match, such as one from before the mod loaded or from a resumed session, keeps its plain text: a wrong cost would be worse than none.
