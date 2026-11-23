@@ -691,3 +691,38 @@ test('Git: run buttons from package.json, CI on a pushed branch with no PR, and 
   gitFixture = null
   checksFixture = null
 })
+
+test('Usage counts advisor calls from the main thread, and /btw and /advisor fill the prompt', async ($, on) => {
+  const fills: any[] = []
+  engine(on)
+  on('prompt.fill', (_: unknown, e: any) => (fills.push(e), { isFilled: true }))
+  const step = (agentId?: string) => ({
+    turnId: 't', index: 0, answer: '', toolUses: [], stopReason: 'end_turn', usage: null,
+    serverToolUses: [{ id: `a-${agentId ?? 'main'}`, name: 'advisor', input: {}, startedAt: 1_790_000_000_000, endedAt: 1_790_000_012_000 }],
+  })
+  let nextStep: any = step()
+  on('turn.step', async function* () {
+    return nextStep
+  })
+  await $.session.start({ cwd: '/work/app', surface: 'terminal', isInteractive: true })
+  const run = async (agentId?: string) => {
+    nextStep = step(agentId)
+    const s = $.turn.step({ turnId: 't', index: 0, model: 'opus', messageCount: 1, ...(agentId ? { agentId } : {}) } as any)
+    for await (const _ of s) void _
+    await s.result
+  }
+  await run()
+  await run('sub-1') // a subagent's advisor call isn't this session's
+  await run()
+  await $.turn.complete(TURN)
+  const ui = await $.ui.mount({ ...pane('operator', 'operator'), surface: 'terminal' })
+  await ui.press({ key: 'sec-usage' })
+  await ui.press({ key: 'limits-75-90' })
+  expect(await ui.find({ type: 'Text', text: /2 calls this session · last \d{1,2}:\d\d.*, 12s/ })).toBeDefined()
+  await ui.press({ key: 'usage-advisor' })
+  expect(fills.at(-1)).toMatchObject({ text: '/advisor ', mode: 'replace' })
+  await ui.press({ key: 'sec-quick' })
+  await ui.press({ key: 'quick-btw' })
+  expect(fills.at(-1)).toMatchObject({ text: '/btw ', mode: 'replace' })
+  await ui.unmount()
+})
