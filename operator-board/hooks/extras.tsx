@@ -618,6 +618,83 @@ export function gitNext(
   return undefined
 }
 
+// ---------- run buttons and branch CI ----------
+
+const RUN_SCRIPTS = ['test', 'lint', 'typecheck', 'build'] as const
+
+/** The command that runs a package.json script with this package manager. */
+function scriptCommand(pm: string, script: string): string {
+  if (pm === 'npm') return script === 'test' ? 'npm test' : `npm run ${script}`
+  if (pm === 'bun') return `bun run ${script}`
+  return `${pm} ${script}`
+}
+
+/**
+ * The project's test / lint / typecheck / build commands: package.json scripts first, else
+ * Makefile targets of those names. `pm` is the package manager the lockfile names.
+ */
+export function runTargets(pkg: string | undefined, makefile: string | undefined, pm: string): { label: string; command: string }[] {
+  let scripts: Record<string, unknown> = {}
+  try {
+    scripts = (pkg && JSON.parse(pkg)?.scripts) || {}
+  } catch {
+    scripts = {}
+  }
+  const fromPkg = RUN_SCRIPTS.filter(s => typeof scripts[s] === 'string').map(s => ({ label: s, command: scriptCommand(pm, s) }))
+  if (fromPkg.length) return fromPkg
+  const targets = new Set([...(makefile ?? '').matchAll(/^([A-Za-z0-9_-]+)\s*:(?!=)/gm)].map(m => m[1]))
+  return [...RUN_SCRIPTS, 'check' as const].filter(t => targets.has(t)).map(t => ({ label: t, command: `make ${t}` }))
+}
+
+/** The prompt a run button fills. */
+export function runPrompt(r: { label: string; command: string }): string {
+  return r.label === 'build' ? `Run \`${r.command}\` and fix any errors.` : `Run \`${r.command}\` and fix what fails.`
+}
+
+/** Sums GitHub check runs: passed, failed (with names), still running. */
+export function summariseChecks(runs: { name?: string; status?: string; conclusion?: string | null }[]): NonNullable<GitSnap['ci']> {
+  const ci = { passed: 0, failed: 0, running: 0, failedNames: [] as string[] }
+  for (const r of runs) {
+    if (r.status !== 'completed') ci.running += 1
+    else if (r.conclusion === 'success') ci.passed += 1
+    else if (r.conclusion === 'skipped' || r.conclusion === 'neutral') continue
+    else {
+      ci.failed += 1
+      ci.failedNames.push(r.name ?? '?')
+    }
+  }
+  return ci
+}
+
+/** One line for a branch's checks: `CI red: lint`, `CI 3/5`, `CI green`; '' with none. */
+export function ciText(ci: GitSnap['ci']): string {
+  if (!ci) return ''
+  const total = ci.passed + ci.failed + ci.running
+  if (total === 0) return ''
+  if (ci.failed) return `CI red: ${ci.failedNames.slice(0, 2).join(', ')}${ci.failedNames.length > 2 ? ` +${ci.failedNames.length - 2}` : ''}`
+  if (ci.running) return `CI ${total - ci.running}/${total}`
+  return 'CI green'
+}
+
+async function projectRun($: $T, cwd: string): Promise<GitSnap['run']> {
+  const read_ = (f: string) => $.fs.read(`${cwd}/${f}`).catch(() => undefined)
+  const has = async (f: string) => (await $.fs.exists(`${cwd}/${f}`).catch(() => false)) === true
+  const pm = (await has('pnpm-lock.yaml')) ? 'pnpm' : (await has('yarn.lock')) ? 'yarn' : (await has('bun.lockb')) || (await has('bun.lock')) ? 'bun' : 'npm'
+  const list = runTargets(await read_('package.json'), await read_('Makefile'), pm)
+  return list.length ? list : undefined
+}
+
+/** Checks on the pushed branch, from GitHub; undefined when there's no GitHub remote or gh fails. */
+async function branchChecks($: $T, repo: string, branch: string): Promise<GitSnap['ci']> {
+  const out = await $.process.run(
+    ['gh', 'api', `repos/${repo}/commits/${encodeURIComponent(branch)}/check-runs?per_page=100`, '--jq', '.check_runs'],
+    { timeoutMs: 20000 },
+  )
+  if (out.exitCode !== 0) return undefined
+  const runs = JSON.parse(out.stdout || '[]')
+  return Array.isArray(runs) && runs.length ? summariseChecks(runs) : undefined
+}
+
 /** owner/name of this folder's GitHub remote, as Git last read it. */
 export async function gitRepo($: $T): Promise<string> {
   return (await read($, git)).repo ?? ''
@@ -666,6 +743,13 @@ export async function refreshGit($: $T) {
     })
     const remote = await $.process.run(['git', '-C', cwd, 'remote', 'get-url', 'origin'], { timeoutMs: 10000 })
     const claude = await claudeChanges($, cwd).catch(() => undefined)
+    const run = await projectRun($, cwd).catch(() => undefined)
+    const repo = remote.exitCode === 0 ? repoFromRemote(remote.stdout) : ''
+    // A pushed branch other than main: its checks, so CI shows before there's a PR.
+    const ci =
+      repo && upstream && branch && !/^(main|master|trunk)$/.test(branch)
+        ? await branchChecks($, repo, branch).catch(() => undefined)
+        : undefined
     await update(
       $,
       git,
@@ -679,8 +763,10 @@ export async function refreshGit($: $T) {
         changed: files.length,
         files: files.slice(0, 6),
         last: log.exitCode === 0 ? line1(log.stdout, 90) : '',
-        repo: remote.exitCode === 0 ? repoFromRemote(remote.stdout) : '',
+        repo,
         claude,
+        run,
+        ci,
       }),
     )
   } catch (err) {
@@ -690,7 +776,8 @@ export async function refreshGit($: $T) {
   }
 }
 
-export async function gitBody($: $T, e: any, L: Look) {
+/** `hasPr`: the branch has an open PR, whose CI the PRs section shows, so Git doesn't repeat it. */
+export async function gitBody($: $T, e: any, L: Look, hasPr = false) {
   const { Box, Button, Text } = $.ui.resolve(e)
   const g = await read($, git)
   if (!g.updatedAt) return <Text {...dim(L)}>loading…</Text>
@@ -751,6 +838,12 @@ export async function gitBody($: $T, e: any, L: Look) {
           />
         </Box>
       )}
+      {!hasPr && ciText(g.ci) && (
+        <Text wrap="truncate-end">
+          <Text color={g.ci!.failed ? L.err : g.ci!.running ? L.warn : L.ok}>{ciText(g.ci)}</Text>
+          <Text {...dim(L)}> on {g.branch} · no PR yet</Text>
+        </Text>
+      )}
       {g.last && <Text wrap="truncate-end">last: {g.last}</Text>}
       {g.error && <Text color={L.err}>{g.error}</Text>}
       {(g.changed ?? 0) > 0 && (
@@ -768,6 +861,19 @@ export async function gitBody($: $T, e: any, L: Look) {
             label="commit"
             onPress={() => $.prompt.fill({ text: GIT_COMMIT_PROMPT, mode: 'replace' })}
           />
+        </Box>
+      )}
+      {(g.run ?? []).length > 0 && (
+        <Box flexDirection="row" gap={2}>
+          <Text {...dim(L)}>run:</Text>
+          {(g.run ?? []).map(r => (
+            <Button
+              key={`git-run-${r.label}`}
+              plain
+              label={r.label}
+              onPress={() => $.prompt.fill({ text: runPrompt(r), mode: 'replace' })}
+            />
+          ))}
         </Box>
       )}
       <Box flexDirection="row" gap={2}>
@@ -790,6 +896,8 @@ export async function gitSummary($: $T): Promise<string> {
     if (g.ahead) parts.push(`↑${g.ahead}`)
     if (g.behind) parts.push(`↓${g.behind}`)
   }
+  const ci = ciText(g.ci)
+  if (ci && ci !== 'CI green') parts.push(ci)
   return ` · ${parts.join(' · ')}`
 }
 
@@ -833,8 +941,8 @@ export async function usageBlockReason($: $T): Promise<string | undefined> {
 // ---------- pane scrollbar ----------
 
 /** The pane's height in rows, as the engine last reported it on a scroll. */
-export const paneScroll = atom({ plugin: 'operator-board', key: 'paneScroll' } as const, { contentRows: 0 }, {
-  shape: 'pane-scroll-1',
+export const paneScroll = atom({ plugin: 'operator-board', key: 'paneScroll' } as const, { contentRows: 0, bodyRows: 0 }, {
+  shape: 'pane-scroll-2',
 })
 
 /**
@@ -852,8 +960,18 @@ export function scrollbar(offset: number, bodyRows: number, contentRows: number)
 }
 
 /** Remembers the pane's height from a scroll; writes only when it changed, so a scroll redraws once. */
-export async function recordScroll($: $T, contentRows: number) {
-  if ((await read($, paneScroll)).contentRows !== contentRows) await update($, paneScroll, () => ({ contentRows }))
+export async function recordScroll($: $T, contentRows: number, bodyRows: number) {
+  const s = await read($, paneScroll)
+  if (s.contentRows !== contentRows || s.bodyRows !== bodyRows) await update($, paneScroll, () => ({ contentRows, bodyRows }))
+}
+
+/**
+ * What to reveal so a scroll moves nothing and only re-measures: the scrollbar, which is pinned
+ * to the window, while there is one; else the top, where a pane that fits already is.
+ */
+export async function stillTarget($: $T): Promise<'start' | { key: string }> {
+  const s = await read($, paneScroll)
+  return s.bodyRows > 0 && s.contentRows > s.bodyRows ? { key: 'pane-scrollbar' } : 'start'
 }
 
 /** The bar, pinned to the window's right edge. Terminal only: other surfaces draw their own. */

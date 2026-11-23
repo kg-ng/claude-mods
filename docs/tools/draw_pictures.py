@@ -232,14 +232,16 @@ SECTIONS = {
         '{muted:to ~/.claude/operator-board/usage-log.jsonl.}',
     ]),
     'git': ('one-dark', 'Git: branch, changes, what Claude changed, the next step', [
-        '{accent|b:▾ Git · feat/x · 3 changed}         {accent|u:open PR}',
+        '{accent|b:▾ Git · feat/x · 3 changed · CI 3/5}  {accent|u:open PR}',
         '{accent|b:feat/x}{muted: · ↑0 ↓0}{warn: · 3 changed}',
         '{muted:  M  operator-board/hooks/prs.tsx}',
         '{muted:  M  operator-board/hooks/register.tsx}',
         '{muted:  ?? notes.md}',
         'Claude changed 2 files {ok:+48} {err:−6}  {accent|u:review} {fg|u:commit}',
+        '{warn:CI 3/5}{muted: on feat/x · no PR yet}',
         'last: 94e1386 Split register.tsx (2 hours ago)',
         '{accent|u:review}  {fg|u:commit}',
+        '{muted:run:}  {fg|u:test}  {fg|u:lint}  {fg|u:typecheck}  {fg|u:build}',
         '{muted:updated 14:05}  {fg|u:refresh}',
     ]),
     'sessions': ('nord', 'Sessions: resume, continue from a checkpoint, copy', [
