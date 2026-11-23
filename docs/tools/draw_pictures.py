@@ -450,4 +450,18 @@ save_term('diff-cards.svg', 'one-dark', [
     '  {muted:     … 6 more lines}',
 ], 'Illustration: two edits folded to one line each, and one unfolded to its diff')
 
+save_term('turn-meter.svg', 'kanagawa', [
+    '{muted:> make the PR rows shorter}',
+    '{accent:⏺} Each PR now takes two lines.',
+    '{muted:✻ Baked for 42s · 180k in · 3.1k out · $0.41}',
+    '',
+    '{muted:> now add a test for it}',
+    '{accent:⏺} Added prs.test.tsx; 41 pass.',
+    '{muted:✻ Simmered for 1m 12s}{warn: · 1.4M in · 9.8k out · $1.92}',
+    '',
+    '{muted:> commit it}',
+    '{accent:⏺} Committed 3e1f0a2.',
+    '{muted:✻ Brewed for 6s · 41k in · 220 out · $0.04}',
+], 'Illustration: three turns\' closing lines with their tokens and cost, one in amber')
+
 print('ok', sorted(p.name for p in OUT.glob('*.svg')))

@@ -21,6 +21,10 @@
     {
       "name": "diff-cards",
       "source": "./diff-cards"
+    },
+    {
+      "name": "turn-meter",
+      "source": "./turn-meter"
     }
   ]
 }
