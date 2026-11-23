@@ -399,5 +399,13 @@ d.append(box(240, 360, 440, 90, 'Claude Code', [
     'claude plugin marketplace add kg-ng/claude-mods',
     'claude plugin install <mod>@claude-mods'], T['ok']))
 d += [arrow(420, 96, 235, 148), arrow(500, 96, 685, 148), arrow(235, 300, 390, 358), arrow(685, 300, 530, 358)]
-save('overview.svg', 920, 470, '\n'.join(d), 'How the repo, the two mods and Claude Code fit together')
+d.append(box(40, 490, 470, 104, 'copilot/operator-board', [
+    'GitHub Copilot CLI extension (no pane)',
+    'tools  board_update · todo_update · checkpoint_save',
+    'cmds  /board /todo /savepoint · status line'], T['mcp']))
+d.append(f'<line x1="90" y1="300" x2="90" y2="488" stroke="{T["muted"]}" stroke-width="1.5" stroke-dasharray="5 4"/>')
+d.append(f'<text x="100" y="398" fill="{T["muted"]}" font-size="12">shares</text>')
+d.append(f'<text x="100" y="414" fill="{T["muted"]}" font-size="12">~/.claude/</text>')
+d.append(f'<text x="100" y="430" fill="{T["muted"]}" font-size="12">operator-board/</text>')
+save('overview.svg', 920, 614, '\n'.join(d), 'How the repo, the two mods, the Copilot CLI port and Claude Code fit together')
 print('ok', sorted(p.name for p in OUT.glob('*.svg')))

@@ -30,7 +30,7 @@ Earlier versions: [CHANGELOG.md](CHANGELOG.md).
 
 <img src="docs/images/before-after.svg" width="900" alt="Illustration: the same Claude Code session without the mods, and with operator-board and persona">
 
-![How the repo, the two mods and Claude Code fit together](docs/images/overview.svg)
+![How the repo, the two mods, the Copilot CLI port and Claude Code fit together](docs/images/overview.svg)
 
 > The pictures and animations in this README are drawn from the mods' render code with sample data. They are illustrations, not screenshots. Each one is painted in a different persona, named in its corner, so you can see the colours.
 
