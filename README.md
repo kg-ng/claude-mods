@@ -2,7 +2,7 @@
 
 <img src="docs/images/hero.svg" width="900" alt="Illustration: Claude Code at work with the operator pane docked beside it">
 
-Two mods for [Claude Code](https://claude.com/claude-code), published as a plugin marketplace:
+Two mods for [Claude Code](https://claude.com/claude-code), published as a plugin marketplace. What changed in each version: [CHANGELOG.md](CHANGELOG.md).
 
 | Mod | Version | What it does |
 |---|---|---|
@@ -157,7 +157,7 @@ cd operator-board && claude plugin test . && claude plugin validate .
 cd ../persona && claude plugin test . && claude plugin validate .
 ```
 
-Bump the mod's `version` in its `.claude-plugin/plugin.json` with every change, or `claude plugin update` won't pick the change up. Then run the update commands above.
+Bump the mod's `version` in its `.claude-plugin/plugin.json` with every change, or `claude plugin update` won't pick the change up, and add an entry for it to [CHANGELOG.md](CHANGELOG.md). The GitHub check fails a PR that changes a mod without doing both. Then run the update commands above.
 
 The README pictures are SVGs in `docs/images/`, drawn by two scripts. If you change what the pane draws, change the scripts to match and run them again:
 
