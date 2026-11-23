@@ -9,6 +9,8 @@ Two mods for [Claude Code](https://claude.com/claude-code), published as a plugi
 | [`operator-board`](operator-board) | 0.17.0 | One side pane for running a session: a board of what's waiting on you, a to-do list with autopilot, usage, git, earlier sessions, quick prompts, your PRs and recall. Alerts you can find again. |
 | [`persona`](persona) | 0.7.1 | Themes for the terminal, Claude's replies and the panels: colours, tool icons, spinner words and an animated scene while Claude works. 24 built-ins, or make your own. |
 
+**Also for GitHub Copilot CLI:** [`copilot/operator-board`](copilot/operator-board) brings the board, to-do and checkpoint tools to Copilot CLI extensions, sharing the same files, so both tools see one list. No pane: Copilot extensions don't have one.
+
 ### What's new in operator-board 0.17.0
 
 - **Model** in Usage: the model Claude is using, its tokens this session (in, out, % cached), and a **/model** button.

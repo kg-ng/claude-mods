@@ -93,3 +93,12 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 ### 0.6.1
 
 - First release in this repo: 24 built-in personas for replies, tool icons, spinner words, the band and the terminal's own colours.
+
+## copilot/operator-board
+
+### 0.1.0
+
+- **First version for GitHub Copilot CLI**, as a Copilot extension: the `board_update`, `todo_update` and `checkpoint_save` tools, `/board`, `/todo` and `/savepoint`, and the folder's open to-dos, needs-reply items and latest checkpoint at session start.
+- **Shares `~/.claude/operator-board/`** with the Claude Code mod, so both tools see the same to-dos, board and checkpoints. Copilot's items carry `"source": "copilot"`.
+- **Status line script** for Copilot's `statusLine.command`: context %, AI credits, to-dos and needs-reply.
+- Installed with `install.sh`; needs Copilot's experimental features on. No pane: Copilot extensions don't have one.
