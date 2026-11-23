@@ -10,6 +10,11 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 ## operator-board
 
+### 0.16.0
+
+- **/btw** in Quick prompts: puts `/btw ` in the prompt box, for a side question answered without interrupting Claude.
+- **Advisor** in Usage: how many times Claude consulted the advisor this session, when it last did and how long it took, and a **/advisor** button to pick its model or turn it off.
+
 ### 0.15.0
 
 - **Hotkeys:** while the pane has the keyboard (click it, or ctrl+x tab), `1`–`8` open or fold Board, To-do, Usage, Git, Sessions, Quick prompts, PRs and Recall. Each header shows its digit then.
