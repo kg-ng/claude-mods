@@ -1,0 +1,12 @@
+{
+  "name": "procs",
+  "version": "0.1.0",
+  "description": "A band above the prompt for what's left running: Claude's background commands and the ports held by processes in your project, with stop and kill buttons. Tells Claude who holds a port when it hits 'address already in use'.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

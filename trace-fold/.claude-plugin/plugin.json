@@ -1,0 +1,20 @@
+{
+  "name": "trace-fold",
+  "version": "0.1.0",
+  "description": "Folds library and runtime frames in stack traces in the transcript (node_modules, site-packages, java., the Go runtime) to one line each, so your own frames stand out. Claude still reads the whole trace.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "minRun": {
+      "type": "number",
+      "title": "Fold runs of at least",
+      "description": "Library frames in a row it takes to fold them to one line",
+      "default": 3
+    }
+  }
+}

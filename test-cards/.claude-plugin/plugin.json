@@ -1,0 +1,12 @@
+{
+  "name": "test-cards",
+  "version": "0.1.0",
+  "description": "Folds a test run's output in the transcript to one line, ✓ 142 passed · ✗ 3 failed · 4.2s, with the failing tests' names and a button to unfold it. vitest, jest, pytest, go, cargo, bun and mocha.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

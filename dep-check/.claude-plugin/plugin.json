@@ -1,0 +1,19 @@
+{
+  "name": "dep-check",
+  "version": "0.1.0",
+  "description": "Looks up each package Claude installs (npm, pnpm, yarn, bun, pip, uv, poetry): version, license, downloads, age. Stops lookalikes of popular names, barely used and brand new packages until you /deps allow them.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "userConfig": {
+    "minWeekly": {
+      "type": "number",
+      "title": "Fewest weekly downloads",
+      "description": "A package downloaded fewer times than this in the last week is stopped until you allow it",
+      "default": 500
+    }
+  }
+}

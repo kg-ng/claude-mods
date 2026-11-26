@@ -1,0 +1,25 @@
+{
+  "name": "check-on-edit",
+  "version": "0.1.0",
+  "description": "After each edit, runs your project's own linter on that file (eslint, biome, ruff, gofmt, go vet, shellcheck) and hands the problems back to Claude in the same turn.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "userConfig": {
+    "typecheck": {
+      "type": "boolean",
+      "title": "Typecheck too",
+      "description": "Also run tsc (TypeScript) or mypy (Python) after each edit, showing only errors in the edited file. Slower on big projects.",
+      "default": false
+    },
+    "command": {
+      "type": "string",
+      "title": "Your own check",
+      "description": "A command to run instead of the built-in checks, with {file} for the edited file, e.g. 'npx eslint {file}'. Leave empty to detect.",
+      "default": ""
+    }
+  }
+}

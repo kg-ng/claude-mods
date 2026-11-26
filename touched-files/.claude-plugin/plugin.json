@@ -1,0 +1,12 @@
+{
+  "name": "touched-files",
+  "version": "0.1.0",
+  "description": "/touched shows a heat map of the files Claude read and edited this session, and about how many tokens of context each took, so you can see where the context went.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

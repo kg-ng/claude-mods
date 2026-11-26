@@ -143,6 +143,54 @@ claude plugin update persona@claude-mods        # then restart Claude Code
 
 - **First version.** `/focus-timer [25|90m|1h|stop]` runs a timer in the status line (`◉ focus · 18m left · 2 held`). While it runs, every other mod's desktop notification is held, and their sounds too (a setting). At the break, one notification lists what came in. Claude Code's own permission prompts are never held. (Claude Code ships `/focus`, hence `/focus-timer`.)
 
+## secrets-guard
+
+### 0.1.0
+
+- First release. Stops Claude's `Edit`, `Write` and `NotebookEdit` calls, `git commit` (what's staged) and `gh pr/issue` bodies when they hold an API key, token or private key, naming the line and kind of key, never the value. Gitignored files pass; `secrets-guard: allow` lets one line through; `/secrets` shows what it stopped, `/secrets off` turns it off.
+
+## check-on-edit
+
+### 0.1.0
+
+- First release. After each edit, runs the project's own read-only linter on that file (biome or eslint, ruff, gofmt and go vet, shellcheck) and gives Claude the problems in the same turn. **Typecheck too** adds tsc or mypy (edited file only); **Your own check** replaces them. `/checks` shows what it found.
+
+## test-cards
+
+### 0.1.0
+
+- First release. Folds a test run's output to `✓ 140 passed · ✗ 2 failed · 4.21s · vitest` with the failing tests named under it, and **show output** to unfold it. Reads vitest, jest, pytest, go test, cargo test, bun test and mocha, including failing runs.
+
+## procs
+
+### 0.1.0
+
+- First release. A band above the prompt for Claude's background commands (**stop**) and processes listening on ports in the project (**kill**, via `lsof`). Tells Claude who holds a port when a command fails with "address already in use". `/procs` lists them; `/procs hide` hides the band.
+
+## trace-fold
+
+### 0.1.0
+
+- First release. Folds runs of library and runtime frames in stack traces (JavaScript, Python, Java and Kotlin, Go) to one line, `… 6 library frames (express)`, with **show all** to unfold. Drawing only: Claude reads the whole trace.
+
+## dep-check
+
+### 0.1.0
+
+- First release. Looks up each package Claude installs on npm or PyPI (version, license, weekly downloads, age) and tells Claude. Stops lookalikes of popular names, barely used packages and brand new ones until `/deps allow <name>`.
+
+## touched-files
+
+### 0.1.0
+
+- First release. `/touched` shows a heat map of the files Claude read and edited this session, with about how many tokens each took. `/touched all` and `/touched clear`.
+
+## session-notes
+
+### 0.1.0
+
+- First release. `/handoff` writes a handoff note (asked, done, checks, not committed, next) from the session and git. `/handoff save [path]` writes it to a file; `/handoff pr` fills the prompt with a request for a PR description.
+
 ## copilot/operator-board
 
 ### 0.1.0
