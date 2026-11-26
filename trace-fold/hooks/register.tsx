@@ -14,6 +14,10 @@ export const open = atom({ plugin: 'trace-fold', key: 'open' } as const, [], { s
 
 type BashOutput = { stdout?: string; stderr?: string }
 
+/** A test runner's summary line: test-cards draws those runs, so trace-fold leaves them to it. */
+export const TEST_SUMMARY =
+  /^\s*Tests\s+\d+ (?:passed|failed)|^Tests:\s+.+ total$|^=+ .*\d+ (?:passed|failed).* in [\d.]+s|^test result: \w+\. \d+ passed|^Ran \d+ tests? across|^\s+\d+ passing \(/m
+
 export const register: Register = (on, options) => {
   const minRun = Math.max(2, Number(options.minRun ?? 3))
 
@@ -22,6 +26,7 @@ export const register: Register = (on, options) => {
     if (p.tool !== 'Bash' || p.isExpanded) return next(e)
     const isText = typeof p.output === 'string'
     const out = (typeof p.output === 'object' && p.output ? p.output : {}) as BashOutput
+    if (TEST_SUMMARY.test(isText ? (p.output as string) : `${out.stdout ?? ''}\n${out.stderr ?? ''}`)) return next(e)
     const parts = isText ? [fold(p.output as string, minRun)] : [fold(out.stdout ?? '', minRun), fold(out.stderr ?? '', minRun)]
     const hidden = parts.reduce((n, f) => n + f.hidden, 0)
     if (!hidden) return next(e)
