@@ -14,9 +14,9 @@ test('which files a call touches', () => {
 })
 
 test('the heat map: hottest first, a bar each, and what was only read', () => {
-  let list = add([], [{ path: '/w/src/server.ts', kind: 'read', chars: 40_000 }], '/w', 1)
-  list = add(list, [{ path: '/w/src/server.ts', kind: 'edit', chars: 2000 }, { path: '/w/src/util.ts', kind: 'read', chars: 8000 }], '/w', 2)
-  list = add(list, [{ path: 'README.md', kind: 'read', chars: 400 }], '/w', 3)
+  let list = add([], [{ path: '/w/src/server.ts', kind: 'read', chars: 40_000 }], '/w')
+  list = add(list, [{ path: '/w/src/server.ts', kind: 'edit', chars: 2000 }, { path: '/w/src/util.ts', kind: 'read', chars: 8000 }], '/w')
+  list = add(list, [{ path: 'README.md', kind: 'read', chars: 400 }], '/w')
   expect(list.map(t => [t.path, t.reads, t.edits, t.tokens])).toEqual([
     ['src/server.ts', 1, 1, 10_500],
     ['src/util.ts', 1, 0, 2000],
@@ -37,7 +37,7 @@ test('in a session: reads and edits are counted; /touched shows them and clear s
   mock.store(on)
   mock.clock(on, { now: 1_790_000_000_000 })
   on('command.register', () => ({ value: { command: 'touched' } }))
-  on('session.cwd', () => ({ value: '/work/app' }))
+  on('session.root', () => ({ value: '/work/app' }))
   on('tool.call', (_: unknown, e: any) =>
     e.file_path?.endsWith('missing.ts') ? { isError: true, result: 'no', text: 'File does not exist.' } : { result: 'ok', text: 'x'.repeat(e.tool === 'Read' ? 8000 : 10) },
   )

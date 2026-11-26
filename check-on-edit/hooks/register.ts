@@ -16,32 +16,50 @@ async function which($: $T, name: string, cwd: string): Promise<string[] | undef
 }
 
 async function anyExists($: $T, root: string, names: string[]) {
-  for (const n of names) if (await $.fs.exists(`${root}/${n}`)) return true
-  return false
+  return (await Promise.all(names.map(n => $.fs.exists(`${root}/${n}`)))).some(Boolean)
 }
 
-/** What the project has, looked up once per session root. */
+/** The project's virtualenv copy of a tool, else the one on the PATH. */
+async function venvOr($: $T, root: string, name: string) {
+  const local = `${root}/.venv/bin/${name}`
+  return (await $.fs.exists(local)) ? [local] : which($, name, root)
+}
+
+const ESLINT_CONFIGS = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', '.eslintrc', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.json', '.eslintrc.yml', '.eslintrc.yaml']
+const PYTHON_MARKERS = ['pyproject.toml', 'ruff.toml', '.ruff.toml', 'setup.py', 'requirements.txt']
+
+/** What the project has, looked up once per root; every probe at once. */
 async function findTools($: $T, root: string): Promise<Toolbox> {
-  const box: Toolbox = {}
   const bin = (n: string) => `${root}/node_modules/.bin/${n}`
-  if ((await $.fs.exists(bin('biome'))) && (await anyExists($, root, ['biome.json', 'biome.jsonc']))) box.biome = [bin('biome')]
-  if (
-    (await $.fs.exists(bin('eslint'))) &&
-    (await anyExists($, root, ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', '.eslintrc', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.json', '.eslintrc.yml', '.eslintrc.yaml']))
-  )
-    box.eslint = [bin('eslint')]
-  if ((await $.fs.exists(bin('tsc'))) && (await $.fs.exists(`${root}/tsconfig.json`))) box.tsc = [bin('tsc')]
-  if (await anyExists($, root, ['pyproject.toml', 'ruff.toml', '.ruff.toml', 'setup.py', 'requirements.txt'])) {
-    box.ruff = (await $.fs.exists(`${root}/.venv/bin/ruff`)) ? [`${root}/.venv/bin/ruff`] : await which($, 'ruff', root)
-    box.mypy = (await $.fs.exists(`${root}/.venv/bin/mypy`)) ? [`${root}/.venv/bin/mypy`] : await which($, 'mypy', root)
-  }
-  if (await $.fs.exists(`${root}/go.mod`)) {
-    box.gofmt = await which($, 'gofmt', root)
-    box.govet = await which($, 'go', root)
-  }
-  box.shellcheck = await which($, 'shellcheck', root)
-  for (const k of Object.keys(box) as (keyof Toolbox)[]) if (!box[k]) delete box[k]
+  const has = (p: string) => $.fs.exists(p)
+  const [biome, eslint, tsc, isPython, isGo, shellcheck] = await Promise.all([
+    Promise.all([has(bin('biome')), anyExists($, root, ['biome.json', 'biome.jsonc'])]).then(([a, b]) => a && b),
+    Promise.all([has(bin('eslint')), anyExists($, root, ESLINT_CONFIGS)]).then(([a, b]) => a && b),
+    Promise.all([has(bin('tsc')), has(`${root}/tsconfig.json`)]).then(([a, b]) => a && b),
+    anyExists($, root, PYTHON_MARKERS),
+    has(`${root}/go.mod`),
+    which($, 'shellcheck', root),
+  ])
+  const [ruff, mypy, gofmt, govet] = await Promise.all([
+    isPython ? venvOr($, root, 'ruff') : undefined,
+    isPython ? venvOr($, root, 'mypy') : undefined,
+    isGo ? which($, 'gofmt', root) : undefined,
+    isGo ? which($, 'go', root) : undefined,
+  ])
+  const box: Toolbox = {}
+  if (biome) box.biome = [bin('biome')]
+  if (eslint) box.eslint = [bin('eslint')]
+  if (tsc) box.tsc = [bin('tsc')]
+  if (ruff) box.ruff = ruff
+  if (mypy) box.mypy = mypy
+  if (gofmt) box.gofmt = gofmt
+  if (govet) box.govet = govet
+  if (shellcheck) box.shellcheck = shellcheck
   return box
+}
+
+async function projectRoot($: $T) {
+  return (await $.session.root()).replace(/\/+$/, '')
 }
 
 const found = new Map<string, Promise<Toolbox>>()
@@ -61,6 +79,8 @@ export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     if ((await $.store.get(STORE_ON)) === false) isOn = false
     await $.command.register({ name: 'checks', description: 'check-on-edit on, off, or what it found last', argumentHint: '[on|off]' })
+    // Look the project's tools up now, unawaited, so the first edit doesn't wait on it.
+    if (isOn && !custom) void projectRoot($).then(root => toolbox($, root))
     return next(e)
   })
 
@@ -71,7 +91,7 @@ export const register: Register = (on, options) => {
     if (ran.deny !== undefined || ran.isError) return ran
     const input = e as unknown as { file_path?: string; notebook_path?: string }
     const abs = String(input.file_path ?? input.notebook_path ?? '')
-    const root = (await $.session.cwd()).replace(/\/+$/, '')
+    const root = await projectRoot($)
     if (!abs.startsWith(root + '/') || abs.includes('/node_modules/')) return ran
     const file = abs.slice(root.length + 1)
     const checks = checkersFor(file, await toolbox($, root), { typecheck, custom })
@@ -79,7 +99,7 @@ export const register: Register = (on, options) => {
     const results = await Promise.all(
       checks.map(async c => {
         const r = await $.process.run(c.argv, { cwd: root, timeoutMs: c.timeoutMs }).catch(() => undefined)
-        return { name: c.name, lines: r ? problems(c.name, file, r) : [] }
+        return { name: c.name, lines: r ? problems(c.pick, file, r) : [] }
       }),
     )
     const note = report(file, results)
@@ -98,7 +118,7 @@ export const register: Register = (on, options) => {
       if (!isOn) $.ui.status(undefined)
       return { text: isOn ? 'check-on-edit is on.' : 'check-on-edit is off until /checks on.' }
     }
-    const box = await toolbox($, (await $.session.cwd()).replace(/\/+$/, ''))
+    const box = await toolbox($, await projectRoot($))
     const have = custom ? `your command: ${custom}` : Object.keys(box).join(', ') || 'none found in this project'
     return { text: [`check-on-edit is ${isOn ? 'on' : 'off'}. Checks: ${have}${typecheck ? ' (typecheck on)' : ''}.`, ...(last ? ['Last:', last] : [])].join('\n') }
   })

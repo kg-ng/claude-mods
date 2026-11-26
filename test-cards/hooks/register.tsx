@@ -4,7 +4,8 @@
 import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import { parse } from './parse'
+import { parse, segments } from './parse'
+import type { Summary } from './parse'
 
 /** Unfolded runs remembered, so the list stays small in a long session. */
 const KEEP = 200
@@ -14,15 +15,31 @@ export const open = atom({ plugin: 'test-cards', key: 'open' } as const, [], { s
 
 type BashOutput = { stdout?: string; stderr?: string; backgroundTaskId?: string; interrupted?: boolean }
 
+/** Each row's summary (or none), parsed once: a row is drawn again on every transcript redraw. */
+const parsed = new Map<string, Summary | null>()
+const CACHE = 500
+
+function summaryOf(id: string, output: unknown): Summary | null {
+  const hit = parsed.get(id)
+  if (hit !== undefined) return hit
+  // A run that exits non-zero (failing tests do) arrives errored, its output as the error text.
+  const out = (typeof output === 'object' && output ? output : {}) as BashOutput
+  let s: Summary | null = null
+  if (!out.backgroundTaskId && !out.interrupted) {
+    const found = parse(typeof output === 'string' ? output : `${out.stdout ?? ''}\n${out.stderr ?? ''}`)
+    if (found && found.passed + found.failed + found.skipped > 0) s = found
+  }
+  if (parsed.size >= CACHE) parsed.delete(parsed.keys().next().value!)
+  parsed.set(id, s)
+  return s
+}
+
 export const register: Register = on => {
   on('ui.render', { component: 'ToolResult' }, async ($, e, next) => {
     const p = e.props
     if (p.tool !== 'Bash' || p.isExpanded) return next(e)
-    // A run that exits non-zero (failing tests do) arrives errored, its output as the error text.
-    const out = (typeof p.output === 'object' && p.output ? p.output : {}) as BashOutput
-    if (out.backgroundTaskId || out.interrupted) return next(e)
-    const s = parse(typeof p.output === 'string' ? p.output : `${out.stdout ?? ''}\n${out.stderr ?? ''}`)
-    if (!s || s.passed + s.failed + s.skipped === 0) return next(e)
+    const s = summaryOf(p.tool_use_id, p.output)
+    if (!s) return next(e)
 
     const { Box, Button, Text } = $.ui.resolve(e)
     const id = p.tool_use_id
@@ -35,11 +52,11 @@ export const register: Register = on => {
       <Box flexDirection="column">
         <Box flexDirection="row" gap={1}>
           <Text>
-            <Text color="success">{`✓ ${s.passed} passed`}</Text>
-            {s.failed ? <Text color="error">{` · ✗ ${s.failed} failed`}</Text> : null}
-            {s.skipped ? <Text dimColor>{` · ${s.skipped} skipped`}</Text> : null}
-            {s.duration ? <Text dimColor>{` · ${s.duration}`}</Text> : null}
-            <Text dimColor>{` · ${s.runner}`}</Text>
+            {[...segments(s), { text: s.runner, tone: 'dim' as const }].map((x, i) => (
+              <Text key={`seg-${i}`} color={x.tone === 'dim' ? undefined : x.tone} dimColor={x.tone === 'dim'}>
+                {i ? ` · ${x.text}` : x.text}
+              </Text>
+            ))}
           </Text>
           <Button key={`tests-${id}`} plain label={isOpen ? 'hide output ▴' : 'show output ▾'} onPress={toggle} />
         </Box>

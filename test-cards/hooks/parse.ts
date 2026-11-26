@@ -115,29 +115,34 @@ export function parse(raw: string): Summary | undefined {
 
   // go test: "--- FAIL: TestX (0.00s)", "ok  \tpkg\t0.01s", "FAIL\tpkg\t0.02s". Counts packages
   // unless -v printed each test.
-  const goPkgs = [...text.matchAll(/^(ok|FAIL|---)\s+(\S+)\s+(?:([\d.]+s)|\[no test files\]|\(cached\))/gm)].filter(m => m[1] !== '---')
+  const goPkgs = [...text.matchAll(/^(ok|FAIL)\s+(\S+)\s+(?:([\d.]+s)|\[no test files\]|\(cached\))/gm)]
   const goPass = (text.match(/^\s*--- PASS: /gm) ?? []).length
   const goFail = names(text, [/^\s*--- FAIL: (\S+)/gm])
   if (goPkgs.length || goFail.length) {
-    const failedPkgs = goPkgs.filter(m => m[1] === 'FAIL').length
+    const failedPkgs = goPkgs.filter(m => m[1] === 'FAIL')
     const verbose = goPass > 0 || goFail.length > 0
     return {
       runner: 'go',
-      passed: verbose ? goPass : goPkgs.length - failedPkgs,
-      failed: verbose ? (text.match(/^\s*--- FAIL: /gm) ?? []).length : failedPkgs,
+      passed: verbose ? goPass : goPkgs.length - failedPkgs.length,
+      failed: verbose ? (text.match(/^\s*--- FAIL: /gm) ?? []).length : failedPkgs.length,
       skipped: (text.match(/^\s*--- SKIP: /gm) ?? []).length,
       duration: goPkgs.at(-1)?.[3],
-      failures: goFail.length ? goFail : goPkgs.filter(m => m[1] === 'FAIL').map(m => m[2]!),
+      failures: goFail.length ? goFail : failedPkgs.map(m => m[2]!),
     }
   }
 }
 
-/** `✓ 142 passed · ✗ 3 failed · 2 skipped · 4.2s`, as plain text. */
-export function line(s: Summary): string {
+export type Segment = { text: string; tone: 'success' | 'error' | 'dim' }
+
+/** The summary's pieces, each with its colour: what the card draws and `line` joins. */
+export function segments(s: Summary): Segment[] {
   return [
-    `✓ ${s.passed} passed`,
-    ...(s.failed ? [`✗ ${s.failed} failed`] : []),
-    ...(s.skipped ? [`${s.skipped} skipped`] : []),
-    ...(s.duration ? [s.duration] : []),
-  ].join(' · ')
+    { text: `✓ ${s.passed} passed`, tone: 'success' as const },
+    ...(s.failed ? [{ text: `✗ ${s.failed} failed`, tone: 'error' as const }] : []),
+    ...(s.skipped ? [{ text: `${s.skipped} skipped`, tone: 'dim' as const }] : []),
+    ...(s.duration ? [{ text: s.duration, tone: 'dim' as const }] : []),
+  ]
 }
+
+/** `✓ 142 passed · ✗ 3 failed · 2 skipped · 4.2s`, as plain text. */
+export const line = (s: Summary) => segments(s).map(x => x.text).join(' · ')

@@ -1,7 +1,7 @@
 /** The last run of a test, lint, typecheck or build command. */
-export type Check = { command: string; ok: boolean; at: number }
-/** When the session started, and HEAD then, so commits since can be listed. */
-export type Start = { at: number; head?: string }
+export type Check = { command: string; ok: boolean }
+/** HEAD when the session started, so commits since can be listed. */
+export type Start = { head?: string }
 
 declare module 'claude-code' {
   interface PluginState {

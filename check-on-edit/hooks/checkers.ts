@@ -1,37 +1,54 @@
 // check-on-edit's checkers: which read-only check runs on which file, and how to read its output.
 // Every one only reports. None of them rewrites the file, so Claude's next edit finds it as it left it.
 
-/** A check to run on one file: `argv` with the file in it, and which lines of output are problems. */
-export type Checker = { name: string; argv: string[]; timeoutMs: number }
+/**
+ * How a checker's problems are read from its output:
+ * - `file`: a one-line format (unix, gcc, concise, tsc's): the lines about the edited file
+ * - `listed`: the tool lists the files that fail (gofmt -l), so any output is one problem
+ * - `all`: every line, on a non-zero exit (a custom command, biome's own format)
+ */
+export type Pick = 'file' | 'listed' | 'all'
+
+/** A check to run on one file: `argv` with the file in it, and how to read what it prints. */
+export type Checker = { name: string; argv: string[]; timeoutMs: number; pick: Pick }
 
 /** What the project has, found once per session: tools by name, each its command's first words. */
 export type Toolbox = Partial<Record<'eslint' | 'biome' | 'tsc' | 'ruff' | 'mypy' | 'gofmt' | 'govet' | 'shellcheck', string[]>>
 
 const ext = (file: string) => file.slice(file.lastIndexOf('.') + 1).toLowerCase()
 const JS = ['ts', 'tsx', 'js', 'jsx', 'mjs', 'cjs', 'mts', 'cts']
+const isTs = (e: string) => /^[mc]?tsx?$/.test(e)
+// tsc checks the whole project; its build info makes the second and later runs fast.
+const TSC_CACHE = 'node_modules/.cache/check-on-edit/tsbuildinfo'
 
 /** The checks for one file, from what the project has. `custom` (with `{file}`) replaces them all. */
 export function checkersFor(file: string, box: Toolbox, opts: { typecheck: boolean; custom?: string }): Checker[] {
   if (opts.custom) {
     const argv = opts.custom.split(/\s+/).filter(Boolean).map(w => w.replaceAll('{file}', file))
     if (!argv.includes(file)) argv.push(file)
-    return [{ name: argv[0]!.split('/').at(-1)!, argv, timeoutMs: 60_000 }]
+    return [{ name: argv[0]!.split('/').at(-1)!, argv, timeoutMs: 60_000, pick: 'all' }]
   }
   const e = ext(file)
   const out: Checker[] = []
   if (JS.includes(e)) {
-    if (box.biome) out.push({ name: 'biome', argv: [...box.biome, 'lint', '--colors=off', file], timeoutMs: 30_000 })
-    else if (box.eslint) out.push({ name: 'eslint', argv: [...box.eslint, '--format', 'unix', file], timeoutMs: 30_000 })
-    if (opts.typecheck && box.tsc && e !== 'js' && e !== 'jsx' && e !== 'mjs' && e !== 'cjs')
-      out.push({ name: 'tsc', argv: [...box.tsc, '--noEmit', '--pretty', 'false'], timeoutMs: 120_000 })
+    if (box.biome) out.push({ name: 'biome', argv: [...box.biome, 'lint', '--colors=off', file], timeoutMs: 30_000, pick: 'all' })
+    else if (box.eslint) out.push({ name: 'eslint', argv: [...box.eslint, '--format', 'unix', file], timeoutMs: 30_000, pick: 'file' })
+    if (opts.typecheck && box.tsc && isTs(e))
+      out.push({
+        name: 'tsc',
+        argv: [...box.tsc, '--noEmit', '--pretty', 'false', '--incremental', '--tsBuildInfoFile', TSC_CACHE],
+        timeoutMs: 120_000,
+        pick: 'file',
+      })
   } else if (e === 'py') {
-    if (box.ruff) out.push({ name: 'ruff', argv: [...box.ruff, 'check', '--output-format', 'concise', '--no-fix', file], timeoutMs: 30_000 })
-    if (opts.typecheck && box.mypy) out.push({ name: 'mypy', argv: [...box.mypy, '--no-color-output', '--no-error-summary', file], timeoutMs: 120_000 })
+    if (box.ruff) out.push({ name: 'ruff', argv: [...box.ruff, 'check', '--output-format', 'concise', '--no-fix', file], timeoutMs: 30_000, pick: 'file' })
+    if (opts.typecheck && box.mypy)
+      out.push({ name: 'mypy', argv: [...box.mypy, '--no-color-output', '--no-error-summary', file], timeoutMs: 120_000, pick: 'file' })
   } else if (e === 'go') {
-    if (box.gofmt) out.push({ name: 'gofmt', argv: [...box.gofmt, '-l', file], timeoutMs: 15_000 })
-    if (box.govet) out.push({ name: 'go vet', argv: [...box.govet, 'vet', `./${dirOf(file) || '.'}`], timeoutMs: 60_000 })
+    if (box.gofmt) out.push({ name: 'gofmt', argv: [...box.gofmt, '-l', file], timeoutMs: 15_000, pick: 'listed' })
+    if (box.govet) out.push({ name: 'go vet', argv: [...box.govet, 'vet', `./${dirOf(file) || '.'}`], timeoutMs: 60_000, pick: 'file' })
   } else if (e === 'sh' || e === 'bash') {
-    if (box.shellcheck) out.push({ name: 'shellcheck', argv: [...box.shellcheck, '-f', 'gcc', file], timeoutMs: 15_000 })
+    if (box.shellcheck) out.push({ name: 'shellcheck', argv: [...box.shellcheck, '-f', 'gcc', file], timeoutMs: 15_000, pick: 'file' })
   }
   return out
 }
@@ -42,20 +59,16 @@ function dirOf(file: string) {
 }
 
 /**
- * The problem lines from one run, or none when it passed. `tsc` checks the whole project, so only
- * its lines about the edited file count: errors elsewhere were there before this edit.
+ * The problem lines from one run, or none when it passed. A `file` checker's lines about other
+ * files (tsc and go vet check more than the edited file) were there before this edit.
  */
-export function problems(name: string, file: string, run: { exitCode: number; stdout: string; stderr: string }): string[] {
-  const text = `${run.stdout}\n${run.stderr}`
-  const lines = text.split('\n').map(l => l.trimEnd()).filter(Boolean)
-  if (name === 'gofmt') return lines.length ? [`${file}: not gofmt-formatted (run gofmt -w ${file})`] : []
+export function problems(c: Pick, file: string, run: { exitCode: number; stdout: string; stderr: string }): string[] {
+  const lines = `${run.stdout}\n${run.stderr}`.split('\n').map(l => l.trimEnd()).filter(Boolean)
+  if (c === 'listed') return lines.length ? [`${file}: not formatted (run the formatter on it)`] : []
   if (run.exitCode === 0) return []
-  if (name === 'tsc') return lines.filter(l => l.startsWith(file + '(') || l.startsWith('./' + file + '('))
-  // Summary and noise lines that aren't a problem of their own.
-  return lines.filter(
-    l =>
-      !/^\s*(?:✖|✔|Found \d+ error|\d+ problems?|Checked \d+ files?|All checks passed|Run `?ruff|\[\*\]|Oops!|Failed to load)/i.test(l),
-  )
+  // The path may be printed as given, with ./, or absolute (eslint's unix format).
+  if (c === 'file') return lines.filter(l => l.includes(`${file}:`) || l.includes(`${file}(`))
+  return lines
 }
 
 /** The note Claude reads after the edit, cut to a size it can act on. */

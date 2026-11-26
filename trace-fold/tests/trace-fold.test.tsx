@@ -56,9 +56,9 @@ test('folds runs of library frames and keeps yours', () => {
 
 test('a short run, or output with no trace, is left as it is', () => {
   const two = 'Error: x\n    at a (/w/src/a.ts:1:1)\n    at b (/w/node_modules/x/b.js:1:1)\n    at c (/w/node_modules/x/c.js:1:1)'
-  expect(fold(two)).toEqual({ text: two, hidden: 0, groups: 0 })
+  expect(fold(two)).toEqual({ text: two, hidden: 0 })
   for (const text of ['', 'build ok in 2.1s', 'meet at noon (lunch)'])
-    expect(fold(text)).toEqual({ text, hidden: 0, groups: 0 })
+    expect(fold(text)).toEqual({ text, hidden: 0 })
 })
 
 const result = (id: string, output: unknown, extra: Record<string, unknown> = {}) => ({
@@ -69,6 +69,11 @@ const result = (id: string, output: unknown, extra: Record<string, unknown> = {}
 for (const surface of ['terminal', 'desktop'] as const)
   test(`${surface}: a trace draws folded, unfolds on press; output with none is left alone`, async ($, on) => {
     mock.store(on)
+    let seen: any
+    on('ui.render', (_: unknown, ev: any, next: any) => {
+      seen = ev.props.output
+      return next(ev)
+    })
     on('session.start', (_: unknown, e: any) => ({ cwd: e.cwd }))
     await $.session.start({ cwd: '/work/app', surface, isInteractive: true })
     let ui = await $.ui.mount({ ...result('t1', `Exit code 1\n${NODE}`, { isErrored: true }), surface })
@@ -77,9 +82,10 @@ for (const surface of ['terminal', 'desktop'] as const)
     await ui.press({ key: 'trace-t1' })
     expect(await ui.find({ key: 'trace-t1', text: /fold again/ })).toBeDefined()
     await ui.unmount()
-    // A failing test run with a trace is test-cards' to draw.
-    ui = await $.ui.mount({ ...result('t3', `${NODE}\n\nTests:       1 failed, 4 passed, 5 total`, { isErrored: true }), surface })
-    expect(await ui.find({ key: 'trace-t3' })).toBeUndefined()
+    // Plain output goes down folded, for Claude Code to draw as its own.
+    ui = await $.ui.mount({ ...result('t4', { stdout: NODE, stderr: '', interrupted: false }), surface })
+    expect(seen.stdout).toMatch(/… 6 library frames \(express\)/)
+    expect(await ui.find({ key: 'trace-t4' })).toBeDefined()
     await ui.unmount()
     ui = await $.ui.mount({ ...result('t2', { stdout: 'all good', stderr: '', interrupted: false }), surface })
     expect(await ui.find({ key: 'trace-t2' })).toBeUndefined()

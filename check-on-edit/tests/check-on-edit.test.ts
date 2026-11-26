@@ -12,6 +12,8 @@ test('picks the checks a file gets from what the project has', () => {
   expect(names('src/a.ts')).toEqual(['eslint'])
   expect(names('src/a.ts', true)).toEqual(['eslint', 'tsc'])
   expect(names('src/a.js', true)).toEqual(['eslint'])
+  expect(names('src/a.mts', true)).toEqual(['eslint', 'tsc'])
+  expect(checkersFor('a.ts', BOX, { typecheck: true })[1]!.argv).toContain('--incremental')
   expect(names('app/main.py')).toEqual(['ruff'])
   expect(names('cmd/x/main.go')).toEqual(['gofmt', 'go vet'])
   expect(checkersFor('cmd/x/main.go', BOX, { typecheck: false })[1]!.argv).toEqual(['/usr/bin/go', 'vet', './cmd/x'])
@@ -22,15 +24,16 @@ test('picks the checks a file gets from what the project has', () => {
   ])
 })
 
-test('reads problems; a clean run, summary lines and tsc errors in other files are not problems', () => {
-  const eslint = { exitCode: 1, stdout: "src/a.ts:3:7: 'x' is assigned a value but never used. [Error/no-unused-vars]\n\n1 problem\n", stderr: '' }
-  expect(problems('eslint', 'src/a.ts', eslint)).toEqual(["src/a.ts:3:7: 'x' is assigned a value but never used. [Error/no-unused-vars]"])
-  expect(problems('eslint', 'src/a.ts', { exitCode: 0, stdout: '', stderr: '' })).toEqual([])
+test('reads problems; a clean run, summary lines and errors in other files are not problems', () => {
+  const eslint = { exitCode: 1, stdout: "/work/app/src/a.ts:3:7: 'x' is assigned a value but never used. [Error/no-unused-vars]\n\n1 problem\n", stderr: '' }
+  expect(problems('file', 'src/a.ts', eslint)).toEqual(["/work/app/src/a.ts:3:7: 'x' is assigned a value but never used. [Error/no-unused-vars]"])
+  expect(problems('file', 'src/a.ts', { exitCode: 0, stdout: '', stderr: '' })).toEqual([])
   const tsc = { exitCode: 2, stdout: "src/a.ts(4,1): error TS2322: Type 'string' is not assignable to type 'number'.\nsrc/old.ts(9,9): error TS7006: x\n", stderr: '' }
-  expect(problems('tsc', 'src/a.ts', tsc)).toEqual(["src/a.ts(4,1): error TS2322: Type 'string' is not assignable to type 'number'."])
-  expect(problems('gofmt', 'main.go', { exitCode: 0, stdout: 'main.go\n', stderr: '' })).toEqual(['main.go: not gofmt-formatted (run gofmt -w main.go)'])
+  expect(problems('file', 'src/a.ts', tsc)).toEqual(["src/a.ts(4,1): error TS2322: Type 'string' is not assignable to type 'number'."])
+  expect(problems('listed', 'main.go', { exitCode: 0, stdout: 'main.go\n', stderr: '' })).toEqual(['main.go: not formatted (run the formatter on it)'])
   const ruff = { exitCode: 1, stdout: 'app.py:1:8: F401 [*] `os` imported but unused\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n', stderr: '' }
-  expect(problems('ruff', 'app.py', ruff)).toEqual(['app.py:1:8: F401 [*] `os` imported but unused'])
+  expect(problems('file', 'app.py', ruff)).toEqual(['app.py:1:8: F401 [*] `os` imported but unused'])
+  expect(problems('all', 'a.ts', { exitCode: 1, stdout: 'bad thing\n', stderr: '' })).toEqual(['bad thing'])
 })
 
 test('the note Claude reads is short and says what to do', () => {
@@ -46,7 +49,7 @@ async function boot($: T$, on: TOn, lint: { exitCode: number; stdout: string }) 
   const runs: string[][] = []
   mock.store(on)
   on('command.register', () => ({ value: { command: 'checks' } }))
-  on('session.cwd', () => ({ value: '/work/app' }))
+  on('session.root', () => ({ value: '/work/app' }))
   on('ui.status', () => ({ value: undefined }))
   on('fs.exists', (_: unknown, e: any) => ({
     value: ['/work/app/node_modules/.bin/eslint', '/work/app/eslint.config.js'].includes(e.path),

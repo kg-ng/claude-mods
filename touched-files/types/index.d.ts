@@ -6,8 +6,6 @@ export type Touch = {
   edits: number
   /** About how many tokens of this file went through Claude's context: what it read, and what it wrote. */
   tokens: number
-  /** When it was last touched, ms since the epoch. */
-  last: number
 }
 
 declare module 'claude-code' {

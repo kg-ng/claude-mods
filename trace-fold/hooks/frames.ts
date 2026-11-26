@@ -35,7 +35,7 @@ export function frameAt(lines: string[], i: number): Frame | undefined {
   }
 }
 
-export type Folded = { text: string; hidden: number; groups: number }
+export type Folded = { text: string; hidden: number }
 
 /**
  * The text with each run of at least `minRun` library frames replaced by one line,
@@ -45,7 +45,6 @@ export function fold(text: string, minRun = 3): Folded {
   const lines = text.split('\n')
   const out: string[] = []
   let hidden = 0
-  let groups = 0
   let i = 0
   while (i < lines.length) {
     const f = frameAt(lines, i)
@@ -72,9 +71,8 @@ export function fold(text: string, minRun = 3): Folded {
     const indent = /^\s*/.exec(lines[start]!)![0]
     out.push(`${indent}… ${count} library frames${where ? ` (${where})` : ''}`)
     hidden += count
-    groups++
   }
-  return { text: out.join('\n'), hidden, groups }
+  return { text: out.join('\n'), hidden }
 }
 
 /** A short name for where library frames come from: the package, or the runtime. */

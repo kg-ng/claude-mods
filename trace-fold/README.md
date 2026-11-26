@@ -30,7 +30,7 @@ Restart Claude Code.
 | Java, Kotlin, Scala | `java.`, `jdk.`, `sun.`, `kotlin.`, `org.junit.`, `org.springframework.`, `org.apache.` and the like |
 | Go | the Go runtime and standard library, modules under `pkg/mod` |
 
-A run shorter than the setting below is left as it is. Test runs (a vitest, jest, pytest, cargo, bun or mocha summary in the output) are left to [test-cards](../test-cards), so the two don't draw over each other.
+A run shorter than the setting below is left as it is. When another mod draws the row itself, such as [test-cards](../test-cards)' summary card, trace-fold leaves the row to it, so the two don't draw over each other.
 
 ## Settings
 

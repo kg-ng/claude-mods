@@ -19,9 +19,9 @@ test('the note: asked, done, checks, not committed, next', () => {
     uncommitted: [' M src/auth.ts'],
     diffStat: ' 1 file changed, 4 insertions(+), 1 deletion(-)',
     checks: [
-      { command: 'npm test', ok: false, at: 1 },
-      { command: 'npm run lint', ok: true, at: 2 },
-      { command: 'npm test', ok: false, at: 3 },
+      { command: 'npm test', ok: false },
+      { command: 'npm run lint', ok: true },
+      { command: 'npm test', ok: false },
     ],
   })
   expect(text).toBe(
@@ -47,7 +47,8 @@ test('in a session: asks, edits and checks are kept; /handoff shows the note, sa
   const written: [string, string][] = []
   const filled: string[] = []
   on('command.register', () => ({ value: { command: 'handoff' } }))
-  on('session.cwd', () => ({ value: '/work/app' }))
+  on('session.root', () => ({ value: '/work/app' }))
+  on('session.usage', () => ({ value: { startedAt: NOW - 30 * 60_000 } as any }))
   on('fs.write', (_: unknown, e: any) => (written.push([e.path, e.text]), { value: undefined }))
   on('prompt.fill', (_: unknown, e: any) => (filled.push(e.text), { isFilled: true }))
   on('process.run', (_: unknown, e: any) => {
@@ -66,6 +67,7 @@ test('in a session: asks, edits and checks are kept; /handoff shows the note, sa
 
   const shown: any = await $.command.run({ command: 'handoff', args: '' } as any)
   expect(shown.text).toMatch(/# Handoff: app \(feat\/x\)/)
+  expect(shown.text).toMatch(/session of 30 min/)
   expect(shown.text).toMatch(/- fix the flaky test\n/)
   expect(shown.text).toMatch(/- abc111 First\n- def111 Second/)
   expect(shown.text).toMatch(/`src\/a\.ts`/)

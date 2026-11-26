@@ -2,7 +2,7 @@
 import type { Touch } from '../types'
 
 /** About four characters to a token: close enough to compare files, not to bill by. */
-export const tokensOf = (chars: number) => Math.ceil(chars / 4)
+const tokensOf = (chars: number) => Math.ceil(chars / 4)
 
 export type Hit = { path: string; kind: 'read' | 'edit'; chars: number }
 
@@ -35,23 +35,22 @@ export function hits(tool: string, input: Record<string, unknown>, resultChars: 
 }
 
 /** The path shown: relative to the project when it's inside it. */
-export function rel(path: string, root: string): string {
+function rel(path: string, root: string): string {
   const r = root.replace(/\/+$/, '')
   if (path.startsWith(r + '/')) return path.slice(r.length + 1)
   return path.replace(/^\.\//, '')
 }
 
 /** The list with one call's hits added. */
-export function add(list: readonly Touch[], add: Hit[], root: string, now: number): Touch[] {
+export function add(list: readonly Touch[], add: Hit[], root: string): Touch[] {
   const out = list.map(t => ({ ...t }))
   for (const h of add) {
     const path = rel(h.path, root)
     let t = out.find(x => x.path === path)
-    if (!t) out.push((t = { path, reads: 0, edits: 0, tokens: 0, last: now }))
+    if (!t) out.push((t = { path, reads: 0, edits: 0, tokens: 0 }))
     if (h.kind === 'read') t.reads++
     else t.edits++
     t.tokens += tokensOf(h.chars)
-    t.last = now
   }
   return out
 }

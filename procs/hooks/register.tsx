@@ -17,7 +17,7 @@ const MAX_ROWS = 6
 
 /** Re-reads which ports processes in the project hold. Leaves the list as it was when lsof can't run. */
 async function refreshPorts($: $T) {
-  const root = (await $.session.cwd()).replace(/\/+$/, '')
+  const root = (await $.session.root()).replace(/\/+$/, '')
   const run = (argv: string[]) => $.process.run(argv, { timeoutMs: 5000 }).catch(() => undefined)
   const all = await run(['lsof', '-nP', '-iTCP', '-sTCP:LISTEN', '-Fpcn'])
   if (!all) return
@@ -32,7 +32,14 @@ async function refreshPorts($: $T) {
       return d !== undefined && (d === root || d.startsWith(root + '/'))
     })
   }
-  await update($, ports, () => mine)
+  // Unchanged lists aren't written, so the band isn't redrawn for nothing.
+  await update($, ports, old => (JSON.stringify(old) === JSON.stringify(mine) ? old : mine))
+}
+
+/** The timer's refresh: only while something runs and the band shows. Stop and /procs refresh anyway. */
+async function poll($: $T) {
+  const [hidden, t, p] = await Promise.all([read($, isHidden), read($, tasks), read($, ports)])
+  if (!hidden && (t.length || p.length)) await refreshPorts($)
 }
 
 async function stopTask($: $T, id: string) {
@@ -62,7 +69,7 @@ export const register: Register = on => {
     await $.command.register({ name: 'procs', description: 'What is still running: background commands and ports', argumentHint: '[show|hide]' })
     const r = await next(e)
     await refreshPorts($)
-    $.clock.every(REFRESH_MS, () => refreshPorts($))
+    $.clock.every(REFRESH_MS, () => poll($))
     return r
   })
 
@@ -111,12 +118,10 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    if (e.props.hasSurvey || (await read($, isHidden))) return next(e)
-    const t = await read($, tasks)
-    const p = await read($, ports)
-    if (!t.length && !p.length) return next(e)
+    if (e.props.hasSurvey) return next(e)
+    const [hidden, t, p, now] = await Promise.all([read($, isHidden), read($, tasks), read($, ports), $.clock.now()])
+    if (hidden || (!t.length && !p.length)) return next(e)
     const { Box, Button, Text } = $.ui.resolve(e)
-    const now = await $.clock.now()
     const width = Math.max(20, e.props.bodyColumns - 24)
     const rows = [
       ...t.map(x => (
@@ -139,7 +144,7 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column">
         <Box flexDirection="row" gap={1}>
-          <Text bold>{`Running · ${t.length ? `${t.length} background` : ''}${t.length && p.length ? ' · ' : ''}${p.length ? `${p.length} port${p.length === 1 ? '' : 's'}` : ''}`}</Text>
+          <Text bold>{['Running', t.length && `${t.length} background`, p.length && `${p.length} port${p.length === 1 ? '' : 's'}`].filter(Boolean).join(' · ')}</Text>
           <Button key="procs-hide" plain label="hide" onPress={() => update($, isHidden, () => true)} />
         </Box>
         {rows.slice(0, MAX_ROWS)}
@@ -155,6 +160,7 @@ export const register: Register = on => {
       return { text: arg === 'hide' ? 'procs band hidden until /procs show.' : 'procs band shown.' }
     }
     await refreshPorts($)
-    return { text: listText(await read($, tasks), await read($, ports), await $.clock.now()) }
+    const [t, p, now] = await Promise.all([read($, tasks), read($, ports), $.clock.now()])
+    return { text: listText(t, p, now) }
   })
 }

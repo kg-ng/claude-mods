@@ -1,11 +1,10 @@
 // procs' readers: lsof's field output (-F) into processes and ports, and a port-in-use error
 // out of a command's output. Pure, so tested on samples.
-
-export type Listener = { pid: number; command: string; port: number; address: string }
+import type { Port } from '../types'
 
 /** `lsof -nP -iTCP -sTCP:LISTEN -Fpcn`: one listener per process and port, lowest port first. */
-export function listeners(out: string): Listener[] {
-  const found: Listener[] = []
+export function listeners(out: string): Port[] {
+  const found: Port[] = []
   let pid = 0
   let command = ''
   for (const line of out.split('\n')) {
@@ -16,10 +15,10 @@ export function listeners(out: string): Listener[] {
       command = ''
     } else if (tag === 'c') command = v
     else if (tag === 'n' && pid) {
-      const m = /^(.*):(\d+)$/.exec(v)
+      const m = /:(\d+)$/.exec(v)
       if (!m) continue
-      const port = Number(m[2])
-      if (!found.some(f => f.pid === pid && f.port === port)) found.push({ pid, command, port, address: m[1]! })
+      const port = Number(m[1])
+      if (!found.some(f => f.pid === pid && f.port === port)) found.push({ pid, command, port })
     }
   }
   return found.sort((a, b) => a.port - b.port)

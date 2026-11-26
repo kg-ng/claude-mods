@@ -1,7 +1,7 @@
 /** A shell command Claude started in the background, by its task id. */
 export type Task = { id: string; command: string; startedAt: number }
 /** A process listening on a TCP port, whose working folder is in the project. */
-export type Port = { pid: number; command: string; port: number; address: string }
+export type Port = { pid: number; command: string; port: number }
 
 declare module 'claude-code' {
   interface PluginState {

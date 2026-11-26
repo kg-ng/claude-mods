@@ -10,9 +10,9 @@ const CWD = ['p501', 'fcwd', 'n/work/app', 'p777', 'fcwd', 'n/opt/homebrew/var/p
 
 test('reads lsof listeners and working folders', () => {
   expect(listeners(LSOF)).toEqual([
-    { pid: 501, command: 'node', port: 3000, address: '*' },
-    { pid: 902, command: 'vite', port: 5173, address: '127.0.0.1' },
-    { pid: 777, command: 'postgres', port: 5432, address: '127.0.0.1' },
+    { pid: 501, command: 'node', port: 3000 },
+    { pid: 902, command: 'vite', port: 5173 },
+    { pid: 777, command: 'postgres', port: 5432 },
   ])
   expect(cwds(CWD).get(902)).toBe('/work/app/web')
   expect(listeners('')).toEqual([])
@@ -33,7 +33,7 @@ async function boot($: T$, on: TOn, calls: { stopped: string[]; killed: string[]
   mock.store(on)
   mock.clock(on, { now: 1_790_000_000_000 })
   on('command.register', () => ({ value: { command: 'procs' } }))
-  on('session.cwd', () => ({ value: '/work/app' }))
+  on('session.root', () => ({ value: '/work/app' }))
   on('ui.toast', () => ({ value: undefined }))
   on('process.run', (_: unknown, e: any) => {
     const argv: string[] = e.argv

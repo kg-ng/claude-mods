@@ -76,7 +76,7 @@ async function boot($: T$, on: TOn, ran: any[], staged = '') {
   mock.store(on)
   mock.clock(on, { now: 1_790_000_000_000 })
   on('command.register', () => ({ value: { command: 'secrets' } }))
-  on('session.cwd', () => ({ value: '/work/app' }))
+  on('session.root', () => ({ value: '/work/app' }))
   on('ui.toast', () => ({ value: undefined }))
   on('process.run', (_: unknown, e: any) => {
     const argv: string[] = e.argv

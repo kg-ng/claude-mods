@@ -52,7 +52,7 @@ export function lookalike(eco: Ecosystem, name: string): string | undefined {
   if (name.startsWith('@')) return
   const n = norm(eco, name)
   const list = eco === 'npm' ? NPM_POPULAR : PYPI_POPULAR
-  if (list.some(p => norm(eco, p) === norm(eco, name))) return
+  if (list.some(p => norm(eco, p) === n)) return
   for (const p of list) {
     const q = norm(eco, p)
     if (q.length < 4) continue
@@ -60,7 +60,7 @@ export function lookalike(eco: Ecosystem, name: string): string | undefined {
     // One letter off for most names; two for long ones.
     if (d >= 1 && d <= (q.length >= 8 ? 2 : 1)) return p
     // `react-dom-js`, `requests2`: the popular name with a bit added.
-    if (n !== q && (n === `${q}js` || n === `${q}-js` || n === `${q}2` || n === `${q}-dev` || n === `py${q}` || n === `python-${q}`))
+    if ((n === `${q}js` || n === `${q}-js` || n === `${q}2` || n === `${q}-dev` || n === `py${q}` || n === `python-${q}`))
       return p
   }
 }
@@ -124,7 +124,7 @@ export function judge(w: Wanted, info: Info | undefined, now: number, opts: { mi
     return { block: false, line: `${w.name}: not on ${w.eco === 'npm' ? 'npm' : 'PyPI'}. Check the name: a made-up name is one an attacker can register.` }
   const facts = [
     info?.version,
-    info?.license ? info.license : info ? 'no license given' : undefined,
+    info && (info.license || 'no license given'),
     info?.weekly !== undefined ? `${fmt(info.weekly)} downloads/week` : undefined,
     info?.firstRelease ? `first released ${Math.max(0, Math.round((now - info.firstRelease) / DAY))} days ago` : undefined,
   ].filter(Boolean)

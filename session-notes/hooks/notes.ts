@@ -1,7 +1,6 @@
 // session-notes' writer: builds the handoff note from what the session did and what git says.
 // Pure, so tested on sample facts.
-
-export type Check = { command: string; ok: boolean; at: number }
+import type { Check } from '../types'
 
 export type Facts = {
   project: string

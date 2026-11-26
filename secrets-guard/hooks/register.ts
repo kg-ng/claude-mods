@@ -3,7 +3,6 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import type { Stop } from '../types'
 import { ALLOW, describe, scan, scanDiff, sends, written } from './rules'
 
 type $T = EngineInterface
@@ -23,10 +22,15 @@ async function isIgnored($: $T, path: string, cwd: string) {
   return r?.exitCode === 0
 }
 
-async function stop($: $T, where: string, kind: string, why: string) {
+async function root($: $T) {
+  return (await $.session.root()).replace(/\/+$/, '')
+}
+
+/** `where` is the full list for /secrets; `short` names the first place, for the toast. */
+async function stop($: $T, where: string, short: string, kind: string, why: string) {
   const now = await $.clock.now()
   await update($, stops, s => [{ at: now, where, kind }, ...s].slice(0, KEEP))
-  $.ui.toast(`secrets-guard stopped a ${kind} in ${where.split(',')[0]}`)
+  $.ui.toast(`secrets-guard stopped a ${kind} in ${short}`)
   return {
     deny:
       `secrets-guard: ${why} Read the value from an environment variable or a gitignored file (.env) instead. ` +
@@ -45,40 +49,44 @@ export const register: Register = (on, options) => {
   })
 
   on('tool.call', async ($, e, next) => {
-    if (!(await read($, isOn))) return next(e)
+    // Most calls (Read, Grep, …) aren't checked: decide that before any engine call.
     const tool = String(e.tool)
     const input = e as unknown as Record<string, unknown>
-    const cwd = await $.session.cwd()
+    const isEdit = EDIT_TOOLS.includes(tool)
+    const s = tool === 'Bash' ? sends(String(input.command ?? '')) : {}
+    if (!isEdit && !s.text && !s.commit) return next(e)
+    if (!(await read($, isOn))) return next(e)
 
-    if (EDIT_TOOLS.includes(tool)) {
+    if (isEdit) {
       const w = written(tool, input)
-      if (!w || !w.text) return next(e)
-      const found = scan(w.text)
-      if (!found.length) return next(e)
+      const found = w?.text ? scan(w.text) : []
+      if (!w || !found.length) return next(e)
+      const cwd = await root($)
       if (allowIgnored && w.path && (await isIgnored($, w.path, cwd))) return next(e)
       const file = w.path.startsWith(cwd + '/') ? w.path.slice(cwd.length + 1) : w.path
-      return stop($, file, found[0]!.kind, `what you're writing to ${file} has ${describe(found)}.`)
+      return stop($, file, file, found[0]!.kind, `what you're writing to ${file} has ${describe(found)}.`)
     }
 
-    if (tool === 'Bash') {
-      const command = String(input.command ?? '')
-      const s = sends(command)
-      if (s.text) {
-        const found = scan(command)
-        if (found.length) return stop($, 'the command', found[0]!.kind, `the command sends ${describe(found)} to a remote.`)
-      }
-      if (s.commit) {
-        const diffs = [await git($, ['diff', '--cached', '-U0', '--no-color'], cwd)]
-        if (s.commit.all) diffs.push(await git($, ['diff', '-U0', '--no-color'], cwd))
-        const found = diffs.flatMap(d => (d?.exitCode === 0 ? scanDiff(d.stdout) : []))
-        if (found.length)
-          return stop(
-            $,
-            describe(found),
-            found[0]!.kind,
-            `the commit would add ${describe(found)}. Unstage it (\`git restore --staged <file>\`) and take the key out first.`,
-          )
-      }
+    const command = String(input.command ?? '')
+    if (s.text) {
+      const found = scan(command)
+      if (found.length) return stop($, 'the command', 'the command', found[0]!.kind, `the command sends ${describe(found)} to a remote.`)
+    }
+    if (s.commit) {
+      const cwd = await root($)
+      const diffs = await Promise.all([
+        git($, ['diff', '--cached', '-U0', '--no-color'], cwd),
+        ...(s.commit.all ? [git($, ['diff', '-U0', '--no-color'], cwd)] : []),
+      ])
+      const found = diffs.flatMap(d => (d?.exitCode === 0 ? scanDiff(d.stdout) : []))
+      if (found.length)
+        return stop(
+          $,
+          describe(found),
+          found[0]!.file,
+          found[0]!.kind,
+          `the commit would add ${describe(found)}. Unstage it (\`git restore --staged <file>\`) and take the key out first.`,
+        )
     }
     return next(e)
   }).catch(($, e, next) => (next.called ? next(e) : { deny: 'secrets-guard: its check failed, so the call was stopped. (/secrets off turns it off.)' }))

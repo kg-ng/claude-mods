@@ -19,33 +19,42 @@ const start = atom({ plugin: 'session-notes', key: 'start' } as const, null)
 const EDIT_TOOLS = ['Edit', 'Write', 'MultiEdit', 'NotebookEdit']
 const DEFAULT_PATH = '.claude/handoff.md'
 
-async function git($: $T, args: string[]) {
-  const r = await $.process.run(['git', ...args], { timeoutMs: 8000 }).catch(() => undefined)
+async function root($: $T) {
+  return (await $.session.root()).replace(/\/+$/, '')
+}
+
+async function git($: $T, cwd: string, args: string[]) {
+  const r = await $.process.run(['git', ...args], { cwd, timeoutMs: 8000 }).catch(() => undefined)
   return r && r.exitCode === 0 ? r.stdout : undefined
 }
 
 async function gather($: $T): Promise<Facts> {
-  const root = (await $.session.cwd()).replace(/\/+$/, '')
-  const s = await read($, start)
-  const now = await $.clock.now()
-  const head = s?.head
+  const [dir, s, usage, now, asked, files, ran] = await Promise.all([
+    root($),
+    read($, start),
+    $.session.usage(),
+    $.clock.now(),
+    read($, asks),
+    read($, edited),
+    read($, checks),
+  ])
   const [branch, log, status, stat] = await Promise.all([
-    git($, ['branch', '--show-current']),
-    head ? git($, ['log', '--oneline', '--no-decorate', `${head}..HEAD`]) : Promise.resolve(undefined),
-    git($, ['status', '--short']),
-    git($, ['diff', '--stat', 'HEAD']),
+    git($, dir, ['branch', '--show-current']),
+    s?.head ? git($, dir, ['log', '--oneline', '--no-decorate', `${s.head}..HEAD`]) : undefined,
+    git($, dir, ['status', '--short']),
+    git($, dir, ['diff', '--stat', 'HEAD']),
   ])
   return {
-    project: root.split('/').at(-1) || root,
+    project: dir.split('/').at(-1) || dir,
     branch: branch?.trim() || undefined,
-    startedAt: s?.at ?? now,
+    startedAt: usage.startedAt,
     now,
-    asks: [...(await read($, asks))],
-    edited: [...(await read($, edited))],
+    asks: [...asked],
+    edited: [...files],
     commits: (log ?? '').split('\n').filter(Boolean).reverse(),
     uncommitted: (status ?? '').split('\n').filter(Boolean),
     diffStat: (stat ?? '').trim().split('\n').at(-1) || undefined,
-    checks: [...(await read($, checks))],
+    checks: [...ran],
   }
 }
 
@@ -53,10 +62,10 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'handoff', description: 'A handoff note for this session: asked, done, checks, not committed, next', argumentHint: '[save [path]|pr]' })
     const r = await next(e)
+    // HEAD as the session found it, so /handoff can list the commits made since.
     if (!(await read($, start))) {
-      const head = (await git($, ['rev-parse', 'HEAD']))?.trim()
-      const at = await $.clock.now()
-      await update($, start, () => ({ at, ...(head ? { head } : {}) }))
+      const head = (await git($, await root($), ['rev-parse', 'HEAD']))?.trim()
+      await update($, start, () => (head ? { head } : {}))
     }
     return r
   })
@@ -75,15 +84,15 @@ export const register: Register = on => {
     const tool = String(e.tool)
     const input = e as unknown as { file_path?: string; notebook_path?: string; command?: string }
     if (EDIT_TOOLS.includes(tool) && !ran.isError) {
-      const root = (await $.session.cwd()).replace(/\/+$/, '')
+      const dir = await root($)
       const abs = String(input.file_path ?? input.notebook_path ?? '')
-      const path = abs.startsWith(root + '/') ? abs.slice(root.length + 1) : abs
+      const path = abs.startsWith(dir + '/') ? abs.slice(dir.length + 1) : abs
       if (path) await update($, edited, list => (list.includes(path) ? list : [...list, path].slice(-200)))
     } else if (tool === 'Bash' && input.command && isCheck(input.command)) {
       const out = ran.result as { backgroundTaskId?: string } | undefined
       if (typeof out === 'object' && out?.backgroundTaskId) return ran
       const command = input.command.trim().split('\n')[0]!.slice(0, 100)
-      const c: Check = { command, ok: !ran.isError, at: await $.clock.now() }
+      const c: Check = { command, ok: !ran.isError }
       await update($, checks, list => [...list.filter(x => x.command !== command), c].slice(-20))
     }
     return ran
@@ -93,9 +102,9 @@ export const register: Register = on => {
     const [verb, ...rest] = e.args.trim().split(/\s+/).filter(Boolean)
     const text = note(await gather($))
     if (verb === 'save') {
-      const root = (await $.session.cwd()).replace(/\/+$/, '')
+      // Relative to the project root: `$.fs` resolves a relative path against the process's own folder.
       const asked = rest.join(' ') || DEFAULT_PATH
-      const path = asked.startsWith('/') ? asked : `${root}/${asked}`
+      const path = asked.startsWith('/') ? asked : `${await root($)}/${asked}`
       await $.fs.write(path, text)
       return { text: `session-notes: saved to ${path}.\n\n${text}` }
     }

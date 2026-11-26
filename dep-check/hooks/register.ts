@@ -12,10 +12,14 @@ const STORE_ON = 'on-v1'
 const MAX_LOOKUPS = 6
 const LOOKUP_MS = 6000
 
+/** The JSON at `url`; status 0 when it can't be fetched or read. */
 async function json($: $T, url: string): Promise<{ status: number; body?: any }> {
-  const r = await $.http.fetch(url, { headers: { accept: 'application/json' } })
-  if (!r.ok) return { status: r.status }
-  return { status: r.status, body: JSON.parse(r.text) }
+  try {
+    const r = await $.http.fetch(url, { headers: { accept: 'application/json' } })
+    return r.ok ? { status: r.status, body: JSON.parse(r.text) } : { status: r.status }
+  } catch {
+    return { status: 0 }
+  }
 }
 
 const licenseOf = (l: unknown) =>
@@ -24,7 +28,7 @@ const licenseOf = (l: unknown) =>
 async function npm($: $T, name: string): Promise<Info> {
   const [latest, dl] = await Promise.all([
     json($, `https://registry.npmjs.org/${name}/latest`),
-    json($, `https://api.npmjs.org/downloads/point/last-week/${name}`).catch(() => ({ status: 0, body: undefined })),
+    json($, `https://api.npmjs.org/downloads/point/last-week/${name}`),
   ])
   if (latest.status === 404) return { missing: true }
   return {
@@ -37,7 +41,7 @@ async function npm($: $T, name: string): Promise<Info> {
 async function pypi($: $T, name: string): Promise<Info> {
   const [meta, stats] = await Promise.all([
     json($, `https://pypi.org/pypi/${name}/json`),
-    json($, `https://pypistats.org/api/packages/${name.toLowerCase()}/recent`).catch(() => ({ status: 0, body: undefined })),
+    json($, `https://pypistats.org/api/packages/${name.toLowerCase()}/recent`),
   ])
   if (meta.status === 404) return { missing: true }
   const info = meta.body?.info ?? {}
@@ -57,11 +61,19 @@ async function pypi($: $T, name: string): Promise<Info> {
   }
 }
 
+/** Answers this session, so a retried install isn't looked up again. A miss isn't kept. */
+const seen = new Map<string, Info>()
+
 /** What the registry says, or undefined when it can't be reached in time. */
 async function lookup($: $T, w: Wanted): Promise<Info | undefined> {
+  const key = `${w.eco}:${w.name.toLowerCase()}`
+  const hit = seen.get(key)
+  if (hit) return hit
   const ask = (w.eco === 'npm' ? npm($, w.name) : pypi($, w.name)).catch(() => undefined)
   const late = $.clock.sleep(LOOKUP_MS).then(() => undefined)
-  return Promise.race([ask, late])
+  const info = await Promise.race([ask, late])
+  if (info) seen.set(key, info)
+  return info
 }
 
 export const register: Register = (on, options) => {

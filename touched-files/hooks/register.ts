@@ -20,9 +20,8 @@ export const register: Register = on => {
     if (ran.deny !== undefined || ran.isError) return ran
     const found = hits(String(e.tool), e as unknown as Record<string, unknown>, (ran.text ?? '').length)
     if (!found.length) return ran
-    const root = await $.session.cwd()
-    const now = await $.clock.now()
-    await update($, files, list => add(list, found, root, now).slice(-KEEP))
+    const root = (await $.session.root()).replace(/\/+$/, '')
+    await update($, files, list => add(list, found, root).slice(-KEEP))
     return ran
   }).catch(($, e, next) => next(e))
 
