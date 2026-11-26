@@ -1,0 +1,20 @@
+{
+  "name": "secrets-guard",
+  "version": "0.1.0",
+  "description": "Stops Claude writing API keys, tokens and private keys into files, commits and PR bodies, and says which line, never the value.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "allowIgnored": {
+      "type": "boolean",
+      "title": "Allow gitignored files",
+      "description": "Let Claude write keys into files git ignores, such as .env, since they never reach a commit",
+      "default": true
+    }
+  }
+}

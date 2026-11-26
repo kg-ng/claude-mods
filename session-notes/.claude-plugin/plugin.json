@@ -1,0 +1,12 @@
+{
+  "name": "session-notes",
+  "version": "0.1.0",
+  "description": "/handoff writes a handoff note for the session: what you asked, commits, files Claude edited, the last test and lint results, what's not committed, and what's next. Save it to a file, or turn it into a PR description.",
+  "author": {
+    "name": "kg-ng",
+    "url": "https://github.com/kg-ng"
+  },
+  "repository": "https://github.com/kg-ng/claude-mods",
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

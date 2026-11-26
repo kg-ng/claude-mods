@@ -1,6 +1,6 @@
 {
   "name": "claude-mods",
-  "description": "Claude Code mods: operator-board (a side pane for running sessions), persona (terminal themes), guard (a seatbelt for shell commands) and more.",
+  "description": "Claude Code mods: operator-board (a side pane for running sessions), persona (terminal themes), guard and secrets-guard (seatbelts), check-on-edit, test-cards and more.",
   "owner": {
     "name": "kg-ng",
     "url": "https://github.com/kg-ng"
@@ -33,6 +33,38 @@
     {
       "name": "focus",
       "source": "./focus"
+    },
+    {
+      "name": "secrets-guard",
+      "source": "./secrets-guard"
+    },
+    {
+      "name": "check-on-edit",
+      "source": "./check-on-edit"
+    },
+    {
+      "name": "test-cards",
+      "source": "./test-cards"
+    },
+    {
+      "name": "procs",
+      "source": "./procs"
+    },
+    {
+      "name": "trace-fold",
+      "source": "./trace-fold"
+    },
+    {
+      "name": "dep-check",
+      "source": "./dep-check"
+    },
+    {
+      "name": "touched-files",
+      "source": "./touched-files"
+    },
+    {
+      "name": "session-notes",
+      "source": "./session-notes"
     }
   ]
 }

@@ -13,12 +13,31 @@ Mods for [Claude Code](https://claude.com/claude-code), published as a plugin ma
 | [`turn-meter`](turn-meter) | 0.1.0 | Each turn's tokens and cost on its closing line, `Baked for 42s · 180k in · 3.1k out · $0.41`, expensive turns in amber. |
 | [`chimes`](chimes) | 0.1.0 | Soft sounds for when Claude finishes, needs you, or a mod reports CI passed or failed. Quiet while you type. macOS. |
 | [`focus`](focus) | 0.1.0 | A focus timer in the status line: `/focus-timer 25` holds other mods' notifications and sounds until the break, then sends one summary. |
+| [`secrets-guard`](secrets-guard) | 0.1.0 | Stops Claude writing API keys, tokens and private keys into files, commits and PR bodies. Says which line and what kind, never the value. |
+| [`check-on-edit`](check-on-edit) | 0.1.0 | After each edit, runs your project's own linter on that file (eslint, biome, ruff, gofmt, go vet, shellcheck) and hands the problems back to Claude in the same turn. |
+| [`test-cards`](test-cards) | 0.1.0 | Folds a test run's output to one line, `✓ 142 passed · ✗ 3 failed · 4.2s`, with the failing tests named under it and **show output** to unfold it. |
+| [`procs`](procs) | 0.1.0 | A band for what's left running: Claude's background commands and the ports held in your project, with **stop** and **kill**. Tells Claude who holds a port. |
+| [`trace-fold`](trace-fold) | 0.1.0 | Folds library and runtime frames in stack traces to one line each, `… 6 library frames (express)`, so your own frames stand out. |
+| [`dep-check`](dep-check) | 0.1.0 | Looks up each package Claude installs: version, license, downloads, age. Stops lookalikes of popular names (`expresss`) and barely used packages until you `/deps allow` them. |
+| [`touched-files`](touched-files) | 0.1.0 | `/touched`: a heat map of the files Claude read and edited this session, and about how many tokens of context each took. |
+| [`session-notes`](session-notes) | 0.1.0 | `/handoff`: a handoff note for the session, with what you asked, commits, files edited, test results, what's not committed and what's next. Save it, or turn it into a PR description. |
 
 **Also for GitHub Copilot CLI:** [`copilot/operator-board`](copilot/operator-board) brings the board, to-do and checkpoint tools to Copilot CLI extensions, sharing the same files, so both tools see one list. No pane: Copilot extensions don't have one.
 
 ### What's new
 
-**Five new mods**, each its own install:
+**Eight new mods for developers**, each its own install:
+
+- [**secrets-guard**](#secrets-guard): stops Claude writing API keys, tokens and private keys into files, commits and PR bodies. Says which line and what kind, never the value.
+- [**check-on-edit**](#check-on-edit): after each edit, runs your project's own linter on that file (eslint, biome, ruff, gofmt, go vet, shellcheck) and hands the problems back to Claude in the same turn.
+- [**test-cards**](#test-cards): folds a test run's output to one line, `✓ 142 passed · ✗ 3 failed · 4.2s`, with the failing tests named under it and **show output** to unfold it.
+- [**procs**](#procs): a band for what's left running: Claude's background commands and the ports held in your project, with **stop** and **kill**. Tells Claude who holds a port.
+- [**trace-fold**](#trace-fold): folds library and runtime frames in stack traces to one line each, `… 6 library frames (express)`, so your own frames stand out.
+- [**dep-check**](#dep-check): looks up each package Claude installs: version, license, downloads, age. Stops lookalikes of popular names (`expresss`) and barely used packages until you `/deps allow` them.
+- [**touched-files**](#touched-files): `/touched`: a heat map of the files Claude read and edited this session, and about how many tokens of context each took.
+- [**session-notes**](#session-notes): `/handoff`: a handoff note for the session, with what you asked, commits, files edited, test results, what's not committed and what's next. Save it, or turn it into a PR description.
+
+From the release before, **five new mods**:
 
 - [**guard**](#guard): stops pushes onto `main` and `rm -rf` outside the project, and strips Claude co-author lines.
 - [**diff-cards**](#diff-cards): each edit's diff folds to one line, `+12 −18 · 2 hunks`.
@@ -66,13 +85,17 @@ claude plugin install diff-cards@claude-mods
 claude plugin install turn-meter@claude-mods
 claude plugin install chimes@claude-mods
 claude plugin install focus@claude-mods
-claude plugin install diff-cards@claude-mods
-claude plugin install turn-meter@claude-mods
-claude plugin install chimes@claude-mods
-claude plugin install focus@claude-mods
+claude plugin install secrets-guard@claude-mods
+claude plugin install check-on-edit@claude-mods
+claude plugin install test-cards@claude-mods
+claude plugin install procs@claude-mods
+claude plugin install trace-fold@claude-mods
+claude plugin install dep-check@claude-mods
+claude plugin install touched-files@claude-mods
+claude plugin install session-notes@claude-mods
 ```
 
-You can install either mod on its own. **Restart Claude Code** afterwards to load them.
+You can install any mod on its own. **Restart Claude Code** afterwards to load them.
 
 To check they loaded, type `/operator` (the pane opens) and `/persona` (the picker opens).
 
@@ -197,6 +220,38 @@ Soft sounds, so you can look away while Claude works: **finished** after a turn 
 
 <img src="docs/images/focus.svg" width="620" alt="Illustration: the focus timer in the status line, then the break summary">
 
+## secrets-guard
+
+Before Claude writes a file, commits or sends a PR body, secrets-guard looks for API keys, tokens and private keys in what's about to go out: AWS, GitHub, Anthropic, OpenAI, Stripe, Slack and more, private keys, passwords in URLs, and long random values named like `api_key` or `secret`. It stops the call and tells Claude which line and what kind of key, never the value. Gitignored files such as `.env` pass. `/secrets` shows what it stopped. See [secrets-guard/README.md](secrets-guard/README.md).
+
+## check-on-edit
+
+After each edit, check-on-edit runs the linter your project already has on that one file (biome or eslint, ruff, gofmt and go vet, shellcheck) and hands the problems back to Claude in the same turn, so it fixes them right away. Read-only checks only: nothing rewrites the file. Turn on **Typecheck too** for tsc or mypy, or set your own command. See [check-on-edit/README.md](check-on-edit/README.md).
+
+## test-cards
+
+A test run's output folds to one line, `✓ 140 passed · ✗ 2 failed · 4.21s · vitest`, with the failing tests named under it and **show output** to unfold the runner's own output. It reads the summaries of vitest, jest, pytest, go test, cargo test, bun test and mocha, however you start them. See [test-cards/README.md](test-cards/README.md).
+
+## procs
+
+A band above the prompt for what's still running in your project: Claude's background commands with **stop**, and processes listening on ports with **kill** (found with `lsof`). When a command fails with "address already in use", Claude is told which process holds the port. See [procs/README.md](procs/README.md).
+
+## trace-fold
+
+Stack traces in a command's output are drawn with each run of library and runtime frames folded to one line, `… 6 library frames (express)`, so your own frames stand out. JavaScript, Python, Java and Kotlin, and Go. **show all** unfolds it, and Claude still reads every frame. See [trace-fold/README.md](trace-fold/README.md).
+
+## dep-check
+
+When Claude installs a package with npm, pnpm, yarn, bun, pip, uv or poetry, dep-check looks it up first: version, license, weekly downloads and age. A name one letter off a popular package (`expresss`, `reqeusts`), a package almost nobody downloads, or a brand new one is stopped until you run `/deps allow <name>`. See [dep-check/README.md](dep-check/README.md).
+
+## touched-files
+
+`/touched` shows a heat map of the files Claude read and edited this session, with about how many tokens of context each took, hottest first, and how much went on files it only read. See [touched-files/README.md](touched-files/README.md).
+
+## session-notes
+
+`/handoff` writes a handoff note from what the session did: the prompts you typed, commits since it started, files Claude edited, the last result of each test and lint command, what's not committed, and what's next. `/handoff save` writes it to `.claude/handoff.md`, and `/handoff pr` asks Claude for a PR description from it. See [session-notes/README.md](session-notes/README.md).
+
 ## Try it
 
 A walkthrough in your own repo. It makes a throwaway branch and PR, which you delete at the end.
@@ -217,7 +272,15 @@ claude plugin update guard@claude-mods
 claude plugin update diff-cards@claude-mods
 claude plugin update turn-meter@claude-mods
 claude plugin update chimes@claude-mods
-claude plugin update focus@claude-mods          # then restart Claude Code
+claude plugin update focus@claude-mods
+claude plugin update secrets-guard@claude-mods
+claude plugin update check-on-edit@claude-mods
+claude plugin update test-cards@claude-mods
+claude plugin update procs@claude-mods
+claude plugin update trace-fold@claude-mods
+claude plugin update dep-check@claude-mods
+claude plugin update touched-files@claude-mods
+claude plugin update session-notes@claude-mods  # then restart Claude Code
 ```
 
 ```sh
@@ -228,6 +291,14 @@ claude plugin uninstall diff-cards@claude-mods
 claude plugin uninstall turn-meter@claude-mods
 claude plugin uninstall chimes@claude-mods
 claude plugin uninstall focus@claude-mods
+claude plugin uninstall secrets-guard@claude-mods
+claude plugin uninstall check-on-edit@claude-mods
+claude plugin uninstall test-cards@claude-mods
+claude plugin uninstall procs@claude-mods
+claude plugin uninstall trace-fold@claude-mods
+claude plugin uninstall dep-check@claude-mods
+claude plugin uninstall touched-files@claude-mods
+claude plugin uninstall session-notes@claude-mods
 claude plugin marketplace remove claude-mods
 ```
 
